@@ -1,24 +1,34 @@
-import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:google_chrome/google_chrome.dart';
+import 'pretty_logging.dart';
 
 main() async {
   var chrome = new Chrome();
-  chrome.devTools.logger.onRecord.listen(print);
-  await chrome.start(
-    builder: new ChromeBuilder()
-        .disableGpu()
-        .windowSize(600, 400)
-        .remoteDebuggingPort(9222),
-  );
-  chrome.stderr.pipe(stderr);
+  chrome.logger.onRecord.listen(prettyLog);
 
-  await new Future.delayed(const Duration(seconds: 10), () async {
-    print('Starting work...');
-    await chrome.devTools.page
-        .navigate(url: 'https://angel-dart.github.io')
-        .timeout(const Duration(seconds: 10));
-    var snapshot = await chrome.devTools.domSnapshot.getSnapshot();
-    print('DOM Node count: ${snapshot.domNodes.length}');
-  });
+  try {
+    await chrome.start();
+    //chrome.stderr.pipe(stderr);
+
+    await chrome.page.enable();
+    await chrome.network.enable();
+    await chrome.dom.enable();
+
+    // Set a custom `User-Agent` header
+    await chrome.network.setUserAgentOverride(
+      userAgent: 'package:google_chrome',
+    );
+
+    // Surf to a URL...
+    await chrome.page.navigate(url: 'https://angel-dart.github.io');
+
+    // Easily save a screenshot of the current page!
+    var screenshot = await chrome.page.captureScreenshot(format: 'png');
+    var imgData = BASE64.decode(screenshot.data);
+    await new File('screenshot.png').writeAsBytes(imgData);
+    print('Saved to screenshot.png!');
+  } finally {
+    await chrome.kill();
+  }
 }

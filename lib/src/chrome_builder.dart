@@ -6,10 +6,16 @@ import 'chrome.dart';
 class ChromeBuilder {
   // TODO: All of https://cs.chromium.org/chromium/src/headless/app/headless_shell_switches.cc
   final List<String> _args = [];
+  String _chromePath;
 
   ChromeBuilder add(String arg) {
     _args.add(arg);
     return this;
+  }
+
+  /// Set an explicit path for the Chrome executable. Use this if starting Node, Opera, etc.
+  ChromeBuilder chromePath(String path) {
+    return this.._chromePath = path;
   }
 
   /// Spawn a headless browser (no UI);
@@ -41,5 +47,6 @@ class ChromeBuilder {
   ChromeBuilder remoteDebuggingPort(int port) =>
       add('--remote-debugging-port=$port');
 
-  Future<Process> spawn() => Chrome.spawn(_args);
+  Future<Process> spawn({bool runInShell}) =>
+      Chrome.spawn(_args, chromePath: _chromePath, runInShell: runInShell);
 }

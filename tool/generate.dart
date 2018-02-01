@@ -244,15 +244,15 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                               ..type = new Reference('Map');
                           }),
                         )
-                      ..body = new Block((b) {
-                        // Apply all fields
-                        for (Map spec in command['returns']) {
-                          var name = spec['name'];
-                          // TODO: Check if the target type needs to be deserialized
-                          // TODO: Check if the target type is a List of deserializing-necessary objects
-                          b.statements.add(new Code("$name = map['$name'];"));
-                        }
-                      });
+                        ..body = new Block((b) {
+                          // Apply all fields
+                          for (Map spec in command['returns']) {
+                            var name = spec['name'];
+                            // TODO: Check if the target type needs to be deserialized
+                            // TODO: Check if the target type is a List of deserializing-necessary objects
+                            b.statements.add(new Code("$name = map['$name'];"));
+                          }
+                        });
                     }));
                   }));
                 }
@@ -269,27 +269,27 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                 ..docs.add('/** ${command['description'] ?? ''} */')
                 ..returns = returnType ?? new Reference('dart_async.Future')
                 ..body = new Block((b) {
-                  var buf = new StringBuffer();
-                  buf
-                    ..write("return _devtools.client.sendRequest("
-                        "'${d.name}.${command['name']}', {");
+                  b.statements.add(new Code('var params = {};'));
 
                   if (command.containsKey('parameters')) {
-                    int i = 0;
-
                     for (Map parameter in command['parameters']) {
                       var name = parameter['name'];
 
-                      if (i++ > 0) buf.write(', ');
-                      buf.write('"$name": $name');
+                      b.statements.add(new Code('''
+                      if ($name != null)
+                        params['$name'] = $name;
+                      '''));
                     }
                   }
 
-                  buf.write("})");
+                  var buf = new StringBuffer();
+                  buf..write("return _devtools.rpc.sendRequest('${d
+                        .name}.${command['name']}', params)");
 
                   if (responseClassName != null) {
                     // We need to deserialize this
-                    buf.write('.then((response) => new $responseClassName(response))');
+                    buf.write(
+                        '.then((response) => new $responseClassName(response))');
                   }
 
                   buf.write(";");
@@ -310,8 +310,8 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
     mixinBuilder.methods.add(new Method((b) {
       b
         ..type = MethodType.getter
-        ..name = 'client'
-        ..returns = new Reference('json_rpc_2.Client');
+        ..name = 'rpc'
+        ..returns = new Reference('json_rpc_2.Peer');
     }));
   });
 }

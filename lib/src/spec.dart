@@ -3094,10 +3094,15 @@ class DevToolsAccessibility {
 /** Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists. */
   dart_async.Future<AccessibilityGetPartialAXTreeResponse> getPartialAXTree(
       {int nodeId, bool fetchRelatives}) {
-    return _devtools.client.sendRequest('Accessibility.getPartialAXTree', {
-      "nodeId": nodeId,
-      "fetchRelatives": fetchRelatives
-    }).then((response) => new AccessibilityGetPartialAXTreeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (fetchRelatives != null) params['fetchRelatives'] = fetchRelatives;
+
+    return _devtools.rpc
+        .sendRequest('Accessibility.getPartialAXTree', params)
+        .then(
+            (response) => new AccessibilityGetPartialAXTreeResponse(response));
   }
 }
 
@@ -3132,64 +3137,92 @@ class DevToolsAnimation {
 
 /** Disables animation domain notifications. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Animation.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Animation.disable', params);
   }
 
 /** Enables animation domain notifications. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Animation.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Animation.enable', params);
   }
 
 /** Returns the current time of the an animation. */
   dart_async.Future<AnimationGetCurrentTimeResponse> getCurrentTime(
       {String id}) {
-    return _devtools.client
-        .sendRequest('Animation.getCurrentTime', {"id": id}).then(
-            (response) => new AnimationGetCurrentTimeResponse(response));
+    var params = {};
+    if (id != null) params['id'] = id;
+
+    return _devtools.rpc
+        .sendRequest('Animation.getCurrentTime', params)
+        .then((response) => new AnimationGetCurrentTimeResponse(response));
   }
 
 /** Gets the playback rate of the document timeline. */
   dart_async.Future<AnimationGetPlaybackRateResponse> getPlaybackRate() {
-    return _devtools.client.sendRequest('Animation.getPlaybackRate', {}).then(
-        (response) => new AnimationGetPlaybackRateResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Animation.getPlaybackRate', params)
+        .then((response) => new AnimationGetPlaybackRateResponse(response));
   }
 
 /** Releases a set of animations to no longer be manipulated. */
   dart_async.Future releaseAnimations({List animations}) {
-    return _devtools.client
-        .sendRequest('Animation.releaseAnimations', {"animations": animations});
+    var params = {};
+    if (animations != null) params['animations'] = animations;
+
+    return _devtools.rpc.sendRequest('Animation.releaseAnimations', params);
   }
 
 /** Gets the remote object of the Animation. */
   dart_async.Future<AnimationResolveAnimationResponse> resolveAnimation(
       {String animationId}) {
-    return _devtools.client.sendRequest('Animation.resolveAnimation', {
-      "animationId": animationId
-    }).then((response) => new AnimationResolveAnimationResponse(response));
+    var params = {};
+    if (animationId != null) params['animationId'] = animationId;
+
+    return _devtools.rpc
+        .sendRequest('Animation.resolveAnimation', params)
+        .then((response) => new AnimationResolveAnimationResponse(response));
   }
 
 /** Seek a set of animations to a particular time within each animation. */
   dart_async.Future seekAnimations({List animations, num currentTime}) {
-    return _devtools.client.sendRequest('Animation.seekAnimations',
-        {"animations": animations, "currentTime": currentTime});
+    var params = {};
+    if (animations != null) params['animations'] = animations;
+
+    if (currentTime != null) params['currentTime'] = currentTime;
+
+    return _devtools.rpc.sendRequest('Animation.seekAnimations', params);
   }
 
 /** Sets the paused state of a set of animations. */
   dart_async.Future setPaused({List animations, bool paused}) {
-    return _devtools.client.sendRequest(
-        'Animation.setPaused', {"animations": animations, "paused": paused});
+    var params = {};
+    if (animations != null) params['animations'] = animations;
+
+    if (paused != null) params['paused'] = paused;
+
+    return _devtools.rpc.sendRequest('Animation.setPaused', params);
   }
 
 /** Sets the playback rate of the document timeline. */
   dart_async.Future setPlaybackRate({num playbackRate}) {
-    return _devtools.client.sendRequest(
-        'Animation.setPlaybackRate', {"playbackRate": playbackRate});
+    var params = {};
+    if (playbackRate != null) params['playbackRate'] = playbackRate;
+
+    return _devtools.rpc.sendRequest('Animation.setPlaybackRate', params);
   }
 
 /** Sets the timing of an animation node. */
   dart_async.Future setTiming({String animationId, num duration, num delay}) {
-    return _devtools.client.sendRequest('Animation.setTiming',
-        {"animationId": animationId, "duration": duration, "delay": delay});
+    var params = {};
+    if (animationId != null) params['animationId'] = animationId;
+
+    if (duration != null) params['duration'] = duration;
+
+    if (delay != null) params['delay'] = delay;
+
+    return _devtools.rpc.sendRequest('Animation.setTiming', params);
   }
 }
 
@@ -3224,37 +3257,43 @@ class DevToolsApplicationCache {
 
 /** Enables application cache domain notifications. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('ApplicationCache.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('ApplicationCache.enable', params);
   }
 
 /** Returns relevant application cache data for the document in given frame. */
   dart_async.Future<ApplicationCacheGetApplicationCacheForFrameResponse>
       getApplicationCacheForFrame({String frameId}) {
-    return _devtools.client.sendRequest(
-        'ApplicationCache.getApplicationCacheForFrame', {
-      "frameId": frameId
-    }).then((response) =>
-        new ApplicationCacheGetApplicationCacheForFrameResponse(response));
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    return _devtools.rpc
+        .sendRequest('ApplicationCache.getApplicationCacheForFrame', params)
+        .then((response) =>
+            new ApplicationCacheGetApplicationCacheForFrameResponse(response));
   }
 
 /** Returns array of frame identifiers with manifest urls for each frame containing a document
 associated with some application cache. */
   dart_async.Future<ApplicationCacheGetFramesWithManifestsResponse>
       getFramesWithManifests() {
-    return _devtools.client
-        .sendRequest('ApplicationCache.getFramesWithManifests', {}).then(
-            (response) =>
-                new ApplicationCacheGetFramesWithManifestsResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('ApplicationCache.getFramesWithManifests', params)
+        .then((response) =>
+            new ApplicationCacheGetFramesWithManifestsResponse(response));
   }
 
 /** Returns manifest URL for document in the given frame. */
   dart_async.Future<ApplicationCacheGetManifestForFrameResponse>
       getManifestForFrame({String frameId}) {
-    return _devtools.client.sendRequest(
-        'ApplicationCache.getManifestForFrame', {
-      "frameId": frameId
-    }).then((response) =>
-        new ApplicationCacheGetManifestForFrameResponse(response));
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    return _devtools.rpc
+        .sendRequest('ApplicationCache.getManifestForFrame', params)
+        .then((response) =>
+            new ApplicationCacheGetManifestForFrameResponse(response));
   }
 }
 
@@ -3281,12 +3320,18 @@ class DevToolsAudits {
 applies to images. */
   dart_async.Future<AuditsGetEncodedResponseResponse> getEncodedResponse(
       {String requestId, String encoding, num quality, bool sizeOnly}) {
-    return _devtools.client.sendRequest('Audits.getEncodedResponse', {
-      "requestId": requestId,
-      "encoding": encoding,
-      "quality": quality,
-      "sizeOnly": sizeOnly
-    }).then((response) => new AuditsGetEncodedResponseResponse(response));
+    var params = {};
+    if (requestId != null) params['requestId'] = requestId;
+
+    if (encoding != null) params['encoding'] = encoding;
+
+    if (quality != null) params['quality'] = quality;
+
+    if (sizeOnly != null) params['sizeOnly'] = sizeOnly;
+
+    return _devtools.rpc
+        .sendRequest('Audits.getEncodedResponse', params)
+        .then((response) => new AuditsGetEncodedResponseResponse(response));
   }
 }
 
@@ -3352,50 +3397,69 @@ class DevToolsBrowser {
 
 /** Close browser gracefully. */
   dart_async.Future close() {
-    return _devtools.client.sendRequest('Browser.close', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Browser.close', params);
   }
 
 /** Returns version information. */
   dart_async.Future<BrowserGetVersionResponse> getVersion() {
-    return _devtools.client.sendRequest('Browser.getVersion', {}).then(
-        (response) => new BrowserGetVersionResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Browser.getVersion', params)
+        .then((response) => new BrowserGetVersionResponse(response));
   }
 
 /** Get Chrome histograms. */
   dart_async.Future<BrowserGetHistogramsResponse> getHistograms(
       {String query}) {
-    return _devtools.client
-        .sendRequest('Browser.getHistograms', {"query": query}).then(
-            (response) => new BrowserGetHistogramsResponse(response));
+    var params = {};
+    if (query != null) params['query'] = query;
+
+    return _devtools.rpc
+        .sendRequest('Browser.getHistograms', params)
+        .then((response) => new BrowserGetHistogramsResponse(response));
   }
 
 /** Get a Chrome histogram by name. */
   dart_async.Future<BrowserGetHistogramResponse> getHistogram({String name}) {
-    return _devtools.client
-        .sendRequest('Browser.getHistogram', {"name": name}).then(
-            (response) => new BrowserGetHistogramResponse(response));
+    var params = {};
+    if (name != null) params['name'] = name;
+
+    return _devtools.rpc
+        .sendRequest('Browser.getHistogram', params)
+        .then((response) => new BrowserGetHistogramResponse(response));
   }
 
 /** Get position and size of the browser window. */
   dart_async.Future<BrowserGetWindowBoundsResponse> getWindowBounds(
       {int windowId}) {
-    return _devtools.client
-        .sendRequest('Browser.getWindowBounds', {"windowId": windowId}).then(
-            (response) => new BrowserGetWindowBoundsResponse(response));
+    var params = {};
+    if (windowId != null) params['windowId'] = windowId;
+
+    return _devtools.rpc
+        .sendRequest('Browser.getWindowBounds', params)
+        .then((response) => new BrowserGetWindowBoundsResponse(response));
   }
 
 /** Get the browser window that contains the devtools target. */
   dart_async.Future<BrowserGetWindowForTargetResponse> getWindowForTarget(
       {String targetId}) {
-    return _devtools.client
-        .sendRequest('Browser.getWindowForTarget', {"targetId": targetId}).then(
-            (response) => new BrowserGetWindowForTargetResponse(response));
+    var params = {};
+    if (targetId != null) params['targetId'] = targetId;
+
+    return _devtools.rpc
+        .sendRequest('Browser.getWindowForTarget', params)
+        .then((response) => new BrowserGetWindowForTargetResponse(response));
   }
 
 /** Set position and/or size of the browser window. */
   dart_async.Future setWindowBounds({int windowId, Bounds bounds}) {
-    return _devtools.client.sendRequest(
-        'Browser.setWindowBounds', {"windowId": windowId, "bounds": bounds});
+    var params = {};
+    if (windowId != null) params['windowId'] = windowId;
+
+    if (bounds != null) params['bounds'] = bounds;
+
+    return _devtools.rpc.sendRequest('Browser.setWindowBounds', params);
   }
 }
 
@@ -3571,175 +3635,247 @@ class DevToolsCSS {
 position specified by `location`. */
   dart_async.Future<CSSAddRuleResponse> addRule(
       {String styleSheetId, String ruleText, SourceRange location}) {
-    return _devtools.client.sendRequest('CSS.addRule', {
-      "styleSheetId": styleSheetId,
-      "ruleText": ruleText,
-      "location": location
-    }).then((response) => new CSSAddRuleResponse(response));
+    var params = {};
+    if (styleSheetId != null) params['styleSheetId'] = styleSheetId;
+
+    if (ruleText != null) params['ruleText'] = ruleText;
+
+    if (location != null) params['location'] = location;
+
+    return _devtools.rpc
+        .sendRequest('CSS.addRule', params)
+        .then((response) => new CSSAddRuleResponse(response));
   }
 
 /** Returns all class names from specified stylesheet. */
   dart_async.Future<CSSCollectClassNamesResponse> collectClassNames(
       {String styleSheetId}) {
-    return _devtools.client.sendRequest('CSS.collectClassNames', {
-      "styleSheetId": styleSheetId
-    }).then((response) => new CSSCollectClassNamesResponse(response));
+    var params = {};
+    if (styleSheetId != null) params['styleSheetId'] = styleSheetId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.collectClassNames', params)
+        .then((response) => new CSSCollectClassNamesResponse(response));
   }
 
 /** Creates a new special "via-inspector" stylesheet in the frame with given `frameId`. */
   dart_async.Future<CSSCreateStyleSheetResponse> createStyleSheet(
       {String frameId}) {
-    return _devtools.client
-        .sendRequest('CSS.createStyleSheet', {"frameId": frameId}).then(
-            (response) => new CSSCreateStyleSheetResponse(response));
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.createStyleSheet', params)
+        .then((response) => new CSSCreateStyleSheetResponse(response));
   }
 
 /** Disables the CSS agent for the given page. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('CSS.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('CSS.disable', params);
   }
 
 /** Enables the CSS agent for the given page. Clients should not assume that the CSS agent has been
 enabled until the result of this command is received. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('CSS.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('CSS.enable', params);
   }
 
 /** Ensures that the given node will have specified pseudo-classes whenever its style is computed by
 the browser. */
   dart_async.Future forcePseudoState({int nodeId, List forcedPseudoClasses}) {
-    return _devtools.client.sendRequest('CSS.forcePseudoState',
-        {"nodeId": nodeId, "forcedPseudoClasses": forcedPseudoClasses});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (forcedPseudoClasses != null)
+      params['forcedPseudoClasses'] = forcedPseudoClasses;
+
+    return _devtools.rpc.sendRequest('CSS.forcePseudoState', params);
   }
 
 /**  */
   dart_async.Future<CSSGetBackgroundColorsResponse> getBackgroundColors(
       {int nodeId}) {
-    return _devtools.client
-        .sendRequest('CSS.getBackgroundColors', {"nodeId": nodeId}).then(
-            (response) => new CSSGetBackgroundColorsResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.getBackgroundColors', params)
+        .then((response) => new CSSGetBackgroundColorsResponse(response));
   }
 
 /** Returns the computed style for a DOM node identified by `nodeId`. */
   dart_async.Future<CSSGetComputedStyleForNodeResponse> getComputedStyleForNode(
       {int nodeId}) {
-    return _devtools.client
-        .sendRequest('CSS.getComputedStyleForNode', {"nodeId": nodeId}).then(
-            (response) => new CSSGetComputedStyleForNodeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.getComputedStyleForNode', params)
+        .then((response) => new CSSGetComputedStyleForNodeResponse(response));
   }
 
 /** Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM
 attributes) for a DOM node identified by `nodeId`. */
   dart_async.Future<CSSGetInlineStylesForNodeResponse> getInlineStylesForNode(
       {int nodeId}) {
-    return _devtools.client
-        .sendRequest('CSS.getInlineStylesForNode', {"nodeId": nodeId}).then(
-            (response) => new CSSGetInlineStylesForNodeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.getInlineStylesForNode', params)
+        .then((response) => new CSSGetInlineStylesForNodeResponse(response));
   }
 
 /** Returns requested styles for a DOM node identified by `nodeId`. */
   dart_async.Future<CSSGetMatchedStylesForNodeResponse> getMatchedStylesForNode(
       {int nodeId}) {
-    return _devtools.client
-        .sendRequest('CSS.getMatchedStylesForNode', {"nodeId": nodeId}).then(
-            (response) => new CSSGetMatchedStylesForNodeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.getMatchedStylesForNode', params)
+        .then((response) => new CSSGetMatchedStylesForNodeResponse(response));
   }
 
 /** Returns all media queries parsed by the rendering engine. */
   dart_async.Future<CSSGetMediaQueriesResponse> getMediaQueries() {
-    return _devtools.client.sendRequest('CSS.getMediaQueries', {}).then(
-        (response) => new CSSGetMediaQueriesResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('CSS.getMediaQueries', params)
+        .then((response) => new CSSGetMediaQueriesResponse(response));
   }
 
 /** Requests information about platform fonts which we used to render child TextNodes in the given
 node. */
   dart_async.Future<CSSGetPlatformFontsForNodeResponse> getPlatformFontsForNode(
       {int nodeId}) {
-    return _devtools.client
-        .sendRequest('CSS.getPlatformFontsForNode', {"nodeId": nodeId}).then(
-            (response) => new CSSGetPlatformFontsForNodeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.getPlatformFontsForNode', params)
+        .then((response) => new CSSGetPlatformFontsForNodeResponse(response));
   }
 
 /** Returns the current textual content and the URL for a stylesheet. */
   dart_async.Future<CSSGetStyleSheetTextResponse> getStyleSheetText(
       {String styleSheetId}) {
-    return _devtools.client.sendRequest('CSS.getStyleSheetText', {
-      "styleSheetId": styleSheetId
-    }).then((response) => new CSSGetStyleSheetTextResponse(response));
+    var params = {};
+    if (styleSheetId != null) params['styleSheetId'] = styleSheetId;
+
+    return _devtools.rpc
+        .sendRequest('CSS.getStyleSheetText', params)
+        .then((response) => new CSSGetStyleSheetTextResponse(response));
   }
 
 /** Find a rule with the given active property for the given node and set the new value for this
 property */
   dart_async.Future setEffectivePropertyValueForNode(
       {int nodeId, String propertyName, String value}) {
-    return _devtools.client.sendRequest('CSS.setEffectivePropertyValueForNode',
-        {"nodeId": nodeId, "propertyName": propertyName, "value": value});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (propertyName != null) params['propertyName'] = propertyName;
+
+    if (value != null) params['value'] = value;
+
+    return _devtools.rpc
+        .sendRequest('CSS.setEffectivePropertyValueForNode', params);
   }
 
 /** Modifies the keyframe rule key text. */
   dart_async.Future<CSSSetKeyframeKeyResponse> setKeyframeKey(
       {String styleSheetId, SourceRange range, String keyText}) {
-    return _devtools.client.sendRequest('CSS.setKeyframeKey', {
-      "styleSheetId": styleSheetId,
-      "range": range,
-      "keyText": keyText
-    }).then((response) => new CSSSetKeyframeKeyResponse(response));
+    var params = {};
+    if (styleSheetId != null) params['styleSheetId'] = styleSheetId;
+
+    if (range != null) params['range'] = range;
+
+    if (keyText != null) params['keyText'] = keyText;
+
+    return _devtools.rpc
+        .sendRequest('CSS.setKeyframeKey', params)
+        .then((response) => new CSSSetKeyframeKeyResponse(response));
   }
 
 /** Modifies the rule selector. */
   dart_async.Future<CSSSetMediaTextResponse> setMediaText(
       {String styleSheetId, SourceRange range, String text}) {
-    return _devtools.client.sendRequest('CSS.setMediaText', {
-      "styleSheetId": styleSheetId,
-      "range": range,
-      "text": text
-    }).then((response) => new CSSSetMediaTextResponse(response));
+    var params = {};
+    if (styleSheetId != null) params['styleSheetId'] = styleSheetId;
+
+    if (range != null) params['range'] = range;
+
+    if (text != null) params['text'] = text;
+
+    return _devtools.rpc
+        .sendRequest('CSS.setMediaText', params)
+        .then((response) => new CSSSetMediaTextResponse(response));
   }
 
 /** Modifies the rule selector. */
   dart_async.Future<CSSSetRuleSelectorResponse> setRuleSelector(
       {String styleSheetId, SourceRange range, String selector}) {
-    return _devtools.client.sendRequest('CSS.setRuleSelector', {
-      "styleSheetId": styleSheetId,
-      "range": range,
-      "selector": selector
-    }).then((response) => new CSSSetRuleSelectorResponse(response));
+    var params = {};
+    if (styleSheetId != null) params['styleSheetId'] = styleSheetId;
+
+    if (range != null) params['range'] = range;
+
+    if (selector != null) params['selector'] = selector;
+
+    return _devtools.rpc
+        .sendRequest('CSS.setRuleSelector', params)
+        .then((response) => new CSSSetRuleSelectorResponse(response));
   }
 
 /** Sets the new stylesheet text. */
   dart_async.Future<CSSSetStyleSheetTextResponse> setStyleSheetText(
       {String styleSheetId, String text}) {
-    return _devtools.client.sendRequest('CSS.setStyleSheetText', {
-      "styleSheetId": styleSheetId,
-      "text": text
-    }).then((response) => new CSSSetStyleSheetTextResponse(response));
+    var params = {};
+    if (styleSheetId != null) params['styleSheetId'] = styleSheetId;
+
+    if (text != null) params['text'] = text;
+
+    return _devtools.rpc
+        .sendRequest('CSS.setStyleSheetText', params)
+        .then((response) => new CSSSetStyleSheetTextResponse(response));
   }
 
 /** Applies specified style edits one after another in the given order. */
   dart_async.Future<CSSSetStyleTextsResponse> setStyleTexts(
       {List<StyleDeclarationEdit> edits}) {
-    return _devtools.client
-        .sendRequest('CSS.setStyleTexts', {"edits": edits}).then(
-            (response) => new CSSSetStyleTextsResponse(response));
+    var params = {};
+    if (edits != null) params['edits'] = edits;
+
+    return _devtools.rpc
+        .sendRequest('CSS.setStyleTexts', params)
+        .then((response) => new CSSSetStyleTextsResponse(response));
   }
 
 /** Enables the selector recording. */
   dart_async.Future startRuleUsageTracking() {
-    return _devtools.client.sendRequest('CSS.startRuleUsageTracking', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('CSS.startRuleUsageTracking', params);
   }
 
 /** Stop tracking rule usage and return the list of rules that were used since last call to
 `takeCoverageDelta` (or since start of coverage instrumentation) */
   dart_async.Future<CSSStopRuleUsageTrackingResponse> stopRuleUsageTracking() {
-    return _devtools.client.sendRequest('CSS.stopRuleUsageTracking', {}).then(
-        (response) => new CSSStopRuleUsageTrackingResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('CSS.stopRuleUsageTracking', params)
+        .then((response) => new CSSStopRuleUsageTrackingResponse(response));
   }
 
 /** Obtain list of rules that became used since last call to this method (or since start of coverage
 instrumentation) */
   dart_async.Future<CSSTakeCoverageDeltaResponse> takeCoverageDelta() {
-    return _devtools.client.sendRequest('CSS.takeCoverageDelta', {}).then(
-        (response) => new CSSTakeCoverageDeltaResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('CSS.takeCoverageDelta', params)
+        .then((response) => new CSSTakeCoverageDeltaResponse(response));
   }
 }
 
@@ -3777,42 +3913,61 @@ class DevToolsCacheStorage {
 
 /** Deletes a cache. */
   dart_async.Future deleteCache({String cacheId}) {
-    return _devtools.client
-        .sendRequest('CacheStorage.deleteCache', {"cacheId": cacheId});
+    var params = {};
+    if (cacheId != null) params['cacheId'] = cacheId;
+
+    return _devtools.rpc.sendRequest('CacheStorage.deleteCache', params);
   }
 
 /** Deletes a cache entry. */
   dart_async.Future deleteEntry({String cacheId, String request}) {
-    return _devtools.client.sendRequest(
-        'CacheStorage.deleteEntry', {"cacheId": cacheId, "request": request});
+    var params = {};
+    if (cacheId != null) params['cacheId'] = cacheId;
+
+    if (request != null) params['request'] = request;
+
+    return _devtools.rpc.sendRequest('CacheStorage.deleteEntry', params);
   }
 
 /** Requests cache names. */
   dart_async.Future<CacheStorageRequestCacheNamesResponse> requestCacheNames(
       {String securityOrigin}) {
-    return _devtools.client.sendRequest('CacheStorage.requestCacheNames', {
-      "securityOrigin": securityOrigin
-    }).then((response) => new CacheStorageRequestCacheNamesResponse(response));
+    var params = {};
+    if (securityOrigin != null) params['securityOrigin'] = securityOrigin;
+
+    return _devtools.rpc
+        .sendRequest('CacheStorage.requestCacheNames', params)
+        .then(
+            (response) => new CacheStorageRequestCacheNamesResponse(response));
   }
 
 /** Fetches cache entry. */
   dart_async.Future<CacheStorageRequestCachedResponseResponse>
       requestCachedResponse({String cacheId, String requestURL}) {
-    return _devtools.client.sendRequest('CacheStorage.requestCachedResponse', {
-      "cacheId": cacheId,
-      "requestURL": requestURL
-    }).then(
-        (response) => new CacheStorageRequestCachedResponseResponse(response));
+    var params = {};
+    if (cacheId != null) params['cacheId'] = cacheId;
+
+    if (requestURL != null) params['requestURL'] = requestURL;
+
+    return _devtools.rpc
+        .sendRequest('CacheStorage.requestCachedResponse', params)
+        .then((response) =>
+            new CacheStorageRequestCachedResponseResponse(response));
   }
 
 /** Requests data from cache. */
   dart_async.Future<CacheStorageRequestEntriesResponse> requestEntries(
       {String cacheId, int skipCount, int pageSize}) {
-    return _devtools.client.sendRequest('CacheStorage.requestEntries', {
-      "cacheId": cacheId,
-      "skipCount": skipCount,
-      "pageSize": pageSize
-    }).then((response) => new CacheStorageRequestEntriesResponse(response));
+    var params = {};
+    if (cacheId != null) params['cacheId'] = cacheId;
+
+    if (skipCount != null) params['skipCount'] = skipCount;
+
+    if (pageSize != null) params['pageSize'] = pageSize;
+
+    return _devtools.rpc
+        .sendRequest('CacheStorage.requestEntries', params)
+        .then((response) => new CacheStorageRequestEntriesResponse(response));
   }
 }
 
@@ -3995,21 +4150,30 @@ class DevToolsDOM {
 /** Collects class names for the node with given id and all of it's child nodes. */
   dart_async.Future<DOMCollectClassNamesFromSubtreeResponse>
       collectClassNamesFromSubtree({int nodeId}) {
-    return _devtools.client.sendRequest('DOM.collectClassNamesFromSubtree', {
-      "nodeId": nodeId
-    }).then(
-        (response) => new DOMCollectClassNamesFromSubtreeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.collectClassNamesFromSubtree', params)
+        .then((response) =>
+            new DOMCollectClassNamesFromSubtreeResponse(response));
   }
 
 /** Creates a deep copy of the specified node and places it into the target container before the
 given anchor. */
   dart_async.Future<DOMCopyToResponse> copyTo(
       {int nodeId, int targetNodeId, int insertBeforeNodeId}) {
-    return _devtools.client.sendRequest('DOM.copyTo', {
-      "nodeId": nodeId,
-      "targetNodeId": targetNodeId,
-      "insertBeforeNodeId": insertBeforeNodeId
-    }).then((response) => new DOMCopyToResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (targetNodeId != null) params['targetNodeId'] = targetNodeId;
+
+    if (insertBeforeNodeId != null)
+      params['insertBeforeNodeId'] = insertBeforeNodeId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.copyTo', params)
+        .then((response) => new DOMCopyToResponse(response));
   }
 
 /** Describes node given its id, does not require domain to be enabled. Does not start tracking any
@@ -4020,295 +4184,430 @@ objects, can be used for automation. */
       Object objectId,
       int depth,
       bool pierce}) {
-    return _devtools.client.sendRequest('DOM.describeNode', {
-      "nodeId": nodeId,
-      "backendNodeId": backendNodeId,
-      "objectId": objectId,
-      "depth": depth,
-      "pierce": pierce
-    }).then((response) => new DOMDescribeNodeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (backendNodeId != null) params['backendNodeId'] = backendNodeId;
+
+    if (objectId != null) params['objectId'] = objectId;
+
+    if (depth != null) params['depth'] = depth;
+
+    if (pierce != null) params['pierce'] = pierce;
+
+    return _devtools.rpc
+        .sendRequest('DOM.describeNode', params)
+        .then((response) => new DOMDescribeNodeResponse(response));
   }
 
 /** Disables DOM agent for the given page. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('DOM.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.disable', params);
   }
 
 /** Discards search results from the session with the given id. `getSearchResults` should no longer
 be called for that search. */
   dart_async.Future discardSearchResults({String searchId}) {
-    return _devtools.client
-        .sendRequest('DOM.discardSearchResults', {"searchId": searchId});
+    var params = {};
+    if (searchId != null) params['searchId'] = searchId;
+
+    return _devtools.rpc.sendRequest('DOM.discardSearchResults', params);
   }
 
 /** Enables DOM agent for the given page. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('DOM.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.enable', params);
   }
 
 /** Focuses the given element. */
   dart_async.Future focus({int nodeId, int backendNodeId, Object objectId}) {
-    return _devtools.client.sendRequest('DOM.focus', {
-      "nodeId": nodeId,
-      "backendNodeId": backendNodeId,
-      "objectId": objectId
-    });
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (backendNodeId != null) params['backendNodeId'] = backendNodeId;
+
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc.sendRequest('DOM.focus', params);
   }
 
 /** Returns attributes for the specified node. */
   dart_async.Future<DOMGetAttributesResponse> getAttributes({int nodeId}) {
-    return _devtools.client
-        .sendRequest('DOM.getAttributes', {"nodeId": nodeId}).then(
-            (response) => new DOMGetAttributesResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getAttributes', params)
+        .then((response) => new DOMGetAttributesResponse(response));
   }
 
 /** Returns boxes for the given node. */
   dart_async.Future<DOMGetBoxModelResponse> getBoxModel(
       {int nodeId, int backendNodeId, Object objectId}) {
-    return _devtools.client.sendRequest('DOM.getBoxModel', {
-      "nodeId": nodeId,
-      "backendNodeId": backendNodeId,
-      "objectId": objectId
-    }).then((response) => new DOMGetBoxModelResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (backendNodeId != null) params['backendNodeId'] = backendNodeId;
+
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getBoxModel', params)
+        .then((response) => new DOMGetBoxModelResponse(response));
   }
 
 /** Returns the root DOM node (and optionally the subtree) to the caller. */
   dart_async.Future<DOMGetDocumentResponse> getDocument(
       {int depth, bool pierce}) {
-    return _devtools.client.sendRequest('DOM.getDocument', {
-      "depth": depth,
-      "pierce": pierce
-    }).then((response) => new DOMGetDocumentResponse(response));
+    var params = {};
+    if (depth != null) params['depth'] = depth;
+
+    if (pierce != null) params['pierce'] = pierce;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getDocument', params)
+        .then((response) => new DOMGetDocumentResponse(response));
   }
 
 /** Returns the root DOM node (and optionally the subtree) to the caller. */
   dart_async.Future<DOMGetFlattenedDocumentResponse> getFlattenedDocument(
       {int depth, bool pierce}) {
-    return _devtools.client.sendRequest('DOM.getFlattenedDocument', {
-      "depth": depth,
-      "pierce": pierce
-    }).then((response) => new DOMGetFlattenedDocumentResponse(response));
+    var params = {};
+    if (depth != null) params['depth'] = depth;
+
+    if (pierce != null) params['pierce'] = pierce;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getFlattenedDocument', params)
+        .then((response) => new DOMGetFlattenedDocumentResponse(response));
   }
 
 /** Returns node id at given location. */
   dart_async.Future<DOMGetNodeForLocationResponse> getNodeForLocation(
       {int x, int y, bool includeUserAgentShadowDOM}) {
-    return _devtools.client.sendRequest('DOM.getNodeForLocation', {
-      "x": x,
-      "y": y,
-      "includeUserAgentShadowDOM": includeUserAgentShadowDOM
-    }).then((response) => new DOMGetNodeForLocationResponse(response));
+    var params = {};
+    if (x != null) params['x'] = x;
+
+    if (y != null) params['y'] = y;
+
+    if (includeUserAgentShadowDOM != null)
+      params['includeUserAgentShadowDOM'] = includeUserAgentShadowDOM;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getNodeForLocation', params)
+        .then((response) => new DOMGetNodeForLocationResponse(response));
   }
 
 /** Returns node's HTML markup. */
   dart_async.Future<DOMGetOuterHTMLResponse> getOuterHTML(
       {int nodeId, int backendNodeId, Object objectId}) {
-    return _devtools.client.sendRequest('DOM.getOuterHTML', {
-      "nodeId": nodeId,
-      "backendNodeId": backendNodeId,
-      "objectId": objectId
-    }).then((response) => new DOMGetOuterHTMLResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (backendNodeId != null) params['backendNodeId'] = backendNodeId;
+
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getOuterHTML', params)
+        .then((response) => new DOMGetOuterHTMLResponse(response));
   }
 
 /** Returns the id of the nearest ancestor that is a relayout boundary. */
   dart_async.Future<DOMGetRelayoutBoundaryResponse> getRelayoutBoundary(
       {int nodeId}) {
-    return _devtools.client
-        .sendRequest('DOM.getRelayoutBoundary', {"nodeId": nodeId}).then(
-            (response) => new DOMGetRelayoutBoundaryResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getRelayoutBoundary', params)
+        .then((response) => new DOMGetRelayoutBoundaryResponse(response));
   }
 
 /** Returns search results from given `fromIndex` to given `toIndex` from the search with the given
 identifier. */
   dart_async.Future<DOMGetSearchResultsResponse> getSearchResults(
       {String searchId, int fromIndex, int toIndex}) {
-    return _devtools.client.sendRequest('DOM.getSearchResults', {
-      "searchId": searchId,
-      "fromIndex": fromIndex,
-      "toIndex": toIndex
-    }).then((response) => new DOMGetSearchResultsResponse(response));
+    var params = {};
+    if (searchId != null) params['searchId'] = searchId;
+
+    if (fromIndex != null) params['fromIndex'] = fromIndex;
+
+    if (toIndex != null) params['toIndex'] = toIndex;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getSearchResults', params)
+        .then((response) => new DOMGetSearchResultsResponse(response));
   }
 
 /** Hides any highlight. */
   dart_async.Future hideHighlight() {
-    return _devtools.client.sendRequest('DOM.hideHighlight', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.hideHighlight', params);
   }
 
 /** Highlights DOM node. */
   dart_async.Future highlightNode() {
-    return _devtools.client.sendRequest('DOM.highlightNode', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.highlightNode', params);
   }
 
 /** Highlights given rectangle. */
   dart_async.Future highlightRect() {
-    return _devtools.client.sendRequest('DOM.highlightRect', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.highlightRect', params);
   }
 
 /** Marks last undoable state. */
   dart_async.Future markUndoableState() {
-    return _devtools.client.sendRequest('DOM.markUndoableState', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.markUndoableState', params);
   }
 
 /** Moves node into the new container, places it before the given anchor. */
   dart_async.Future<DOMMoveToResponse> moveTo(
       {int nodeId, int targetNodeId, int insertBeforeNodeId}) {
-    return _devtools.client.sendRequest('DOM.moveTo', {
-      "nodeId": nodeId,
-      "targetNodeId": targetNodeId,
-      "insertBeforeNodeId": insertBeforeNodeId
-    }).then((response) => new DOMMoveToResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (targetNodeId != null) params['targetNodeId'] = targetNodeId;
+
+    if (insertBeforeNodeId != null)
+      params['insertBeforeNodeId'] = insertBeforeNodeId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.moveTo', params)
+        .then((response) => new DOMMoveToResponse(response));
   }
 
 /** Searches for a given string in the DOM tree. Use `getSearchResults` to access search results or
 `cancelSearch` to end this search session. */
   dart_async.Future<DOMPerformSearchResponse> performSearch(
       {String query, bool includeUserAgentShadowDOM}) {
-    return _devtools.client.sendRequest('DOM.performSearch', {
-      "query": query,
-      "includeUserAgentShadowDOM": includeUserAgentShadowDOM
-    }).then((response) => new DOMPerformSearchResponse(response));
+    var params = {};
+    if (query != null) params['query'] = query;
+
+    if (includeUserAgentShadowDOM != null)
+      params['includeUserAgentShadowDOM'] = includeUserAgentShadowDOM;
+
+    return _devtools.rpc
+        .sendRequest('DOM.performSearch', params)
+        .then((response) => new DOMPerformSearchResponse(response));
   }
 
 /** Requests that the node is sent to the caller given its path. // FIXME, use XPath */
   dart_async.Future<DOMPushNodeByPathToFrontendResponse>
       pushNodeByPathToFrontend({String path}) {
-    return _devtools.client
-        .sendRequest('DOM.pushNodeByPathToFrontend', {"path": path}).then(
-            (response) => new DOMPushNodeByPathToFrontendResponse(response));
+    var params = {};
+    if (path != null) params['path'] = path;
+
+    return _devtools.rpc
+        .sendRequest('DOM.pushNodeByPathToFrontend', params)
+        .then((response) => new DOMPushNodeByPathToFrontendResponse(response));
   }
 
 /** Requests that a batch of nodes is sent to the caller given their backend node ids. */
   dart_async.Future<DOMPushNodesByBackendIdsToFrontendResponse>
       pushNodesByBackendIdsToFrontend({List<int> backendNodeIds}) {
-    return _devtools.client.sendRequest('DOM.pushNodesByBackendIdsToFrontend', {
-      "backendNodeIds": backendNodeIds
-    }).then(
-        (response) => new DOMPushNodesByBackendIdsToFrontendResponse(response));
+    var params = {};
+    if (backendNodeIds != null) params['backendNodeIds'] = backendNodeIds;
+
+    return _devtools.rpc
+        .sendRequest('DOM.pushNodesByBackendIdsToFrontend', params)
+        .then((response) =>
+            new DOMPushNodesByBackendIdsToFrontendResponse(response));
   }
 
 /** Executes `querySelector` on a given node. */
   dart_async.Future<DOMQuerySelectorResponse> querySelector(
       {int nodeId, String selector}) {
-    return _devtools.client.sendRequest('DOM.querySelector', {
-      "nodeId": nodeId,
-      "selector": selector
-    }).then((response) => new DOMQuerySelectorResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (selector != null) params['selector'] = selector;
+
+    return _devtools.rpc
+        .sendRequest('DOM.querySelector', params)
+        .then((response) => new DOMQuerySelectorResponse(response));
   }
 
 /** Executes `querySelectorAll` on a given node. */
   dart_async.Future<DOMQuerySelectorAllResponse> querySelectorAll(
       {int nodeId, String selector}) {
-    return _devtools.client.sendRequest('DOM.querySelectorAll', {
-      "nodeId": nodeId,
-      "selector": selector
-    }).then((response) => new DOMQuerySelectorAllResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (selector != null) params['selector'] = selector;
+
+    return _devtools.rpc
+        .sendRequest('DOM.querySelectorAll', params)
+        .then((response) => new DOMQuerySelectorAllResponse(response));
   }
 
 /** Re-does the last undone action. */
   dart_async.Future redo() {
-    return _devtools.client.sendRequest('DOM.redo', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.redo', params);
   }
 
 /** Removes attribute with given name from an element with given id. */
   dart_async.Future removeAttribute({int nodeId, String name}) {
-    return _devtools.client
-        .sendRequest('DOM.removeAttribute', {"nodeId": nodeId, "name": name});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (name != null) params['name'] = name;
+
+    return _devtools.rpc.sendRequest('DOM.removeAttribute', params);
   }
 
 /** Removes node with given id. */
   dart_async.Future removeNode({int nodeId}) {
-    return _devtools.client.sendRequest('DOM.removeNode', {"nodeId": nodeId});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc.sendRequest('DOM.removeNode', params);
   }
 
 /** Requests that children of the node with given id are returned to the caller in form of
 `setChildNodes` events where not only immediate children are retrieved, but all children down to
 the specified depth. */
   dart_async.Future requestChildNodes({int nodeId, int depth, bool pierce}) {
-    return _devtools.client.sendRequest('DOM.requestChildNodes',
-        {"nodeId": nodeId, "depth": depth, "pierce": pierce});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (depth != null) params['depth'] = depth;
+
+    if (pierce != null) params['pierce'] = pierce;
+
+    return _devtools.rpc.sendRequest('DOM.requestChildNodes', params);
   }
 
 /** Requests that the node is sent to the caller given the JavaScript node object reference. All
 nodes that form the path from the node to the root are also sent to the client as a series of
 `setChildNodes` notifications. */
   dart_async.Future<DOMRequestNodeResponse> requestNode({Object objectId}) {
-    return _devtools.client
-        .sendRequest('DOM.requestNode', {"objectId": objectId}).then(
-            (response) => new DOMRequestNodeResponse(response));
+    var params = {};
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.requestNode', params)
+        .then((response) => new DOMRequestNodeResponse(response));
   }
 
 /** Resolves the JavaScript node object for a given NodeId or BackendNodeId. */
   dart_async.Future<DOMResolveNodeResponse> resolveNode(
       {int nodeId, int backendNodeId, String objectGroup}) {
-    return _devtools.client.sendRequest('DOM.resolveNode', {
-      "nodeId": nodeId,
-      "backendNodeId": backendNodeId,
-      "objectGroup": objectGroup
-    }).then((response) => new DOMResolveNodeResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (backendNodeId != null) params['backendNodeId'] = backendNodeId;
+
+    if (objectGroup != null) params['objectGroup'] = objectGroup;
+
+    return _devtools.rpc
+        .sendRequest('DOM.resolveNode', params)
+        .then((response) => new DOMResolveNodeResponse(response));
   }
 
 /** Sets attribute for an element with given id. */
   dart_async.Future setAttributeValue({int nodeId, String name, String value}) {
-    return _devtools.client.sendRequest('DOM.setAttributeValue',
-        {"nodeId": nodeId, "name": name, "value": value});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (name != null) params['name'] = name;
+
+    if (value != null) params['value'] = value;
+
+    return _devtools.rpc.sendRequest('DOM.setAttributeValue', params);
   }
 
 /** Sets attributes on element with given id. This method is useful when user edits some existing
 attribute value and types in several attribute name/value pairs. */
   dart_async.Future setAttributesAsText(
       {int nodeId, String text, String name}) {
-    return _devtools.client.sendRequest('DOM.setAttributesAsText',
-        {"nodeId": nodeId, "text": text, "name": name});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (text != null) params['text'] = text;
+
+    if (name != null) params['name'] = name;
+
+    return _devtools.rpc.sendRequest('DOM.setAttributesAsText', params);
   }
 
 /** Sets files for the given file input element. */
   dart_async.Future setFileInputFiles(
       {List files, int nodeId, int backendNodeId, Object objectId}) {
-    return _devtools.client.sendRequest('DOM.setFileInputFiles', {
-      "files": files,
-      "nodeId": nodeId,
-      "backendNodeId": backendNodeId,
-      "objectId": objectId
-    });
+    var params = {};
+    if (files != null) params['files'] = files;
+
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (backendNodeId != null) params['backendNodeId'] = backendNodeId;
+
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc.sendRequest('DOM.setFileInputFiles', params);
   }
 
 /** Enables console to refer to the node with given id via $x (see Command Line API for more details
 $x functions). */
   dart_async.Future setInspectedNode({int nodeId}) {
-    return _devtools.client
-        .sendRequest('DOM.setInspectedNode', {"nodeId": nodeId});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc.sendRequest('DOM.setInspectedNode', params);
   }
 
 /** Sets node name for a node with given id. */
   dart_async.Future<DOMSetNodeNameResponse> setNodeName(
       {int nodeId, String name}) {
-    return _devtools.client
-        .sendRequest('DOM.setNodeName', {"nodeId": nodeId, "name": name}).then(
-            (response) => new DOMSetNodeNameResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (name != null) params['name'] = name;
+
+    return _devtools.rpc
+        .sendRequest('DOM.setNodeName', params)
+        .then((response) => new DOMSetNodeNameResponse(response));
   }
 
 /** Sets node value for a node with given id. */
   dart_async.Future setNodeValue({int nodeId, String value}) {
-    return _devtools.client
-        .sendRequest('DOM.setNodeValue', {"nodeId": nodeId, "value": value});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (value != null) params['value'] = value;
+
+    return _devtools.rpc.sendRequest('DOM.setNodeValue', params);
   }
 
 /** Sets node HTML markup, returns new node id. */
   dart_async.Future setOuterHTML({int nodeId, String outerHTML}) {
-    return _devtools.client.sendRequest(
-        'DOM.setOuterHTML', {"nodeId": nodeId, "outerHTML": outerHTML});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (outerHTML != null) params['outerHTML'] = outerHTML;
+
+    return _devtools.rpc.sendRequest('DOM.setOuterHTML', params);
   }
 
 /** Undoes the last performed action. */
   dart_async.Future undo() {
-    return _devtools.client.sendRequest('DOM.undo', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOM.undo', params);
   }
 
 /** Returns iframe node that owns iframe with the given domain. */
   dart_async.Future<DOMGetFrameOwnerResponse> getFrameOwner({String frameId}) {
-    return _devtools.client
-        .sendRequest('DOM.getFrameOwner', {"frameId": frameId}).then(
-            (response) => new DOMGetFrameOwnerResponse(response));
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    return _devtools.rpc
+        .sendRequest('DOM.getFrameOwner', params)
+        .then((response) => new DOMGetFrameOwnerResponse(response));
   }
 }
 
@@ -4328,64 +4627,94 @@ class DevToolsDOMDebugger {
 /** Returns event listeners of the given object. */
   dart_async.Future<DOMDebuggerGetEventListenersResponse> getEventListeners(
       {Object objectId, int depth, bool pierce}) {
-    return _devtools.client.sendRequest('DOMDebugger.getEventListeners', {
-      "objectId": objectId,
-      "depth": depth,
-      "pierce": pierce
-    }).then((response) => new DOMDebuggerGetEventListenersResponse(response));
+    var params = {};
+    if (objectId != null) params['objectId'] = objectId;
+
+    if (depth != null) params['depth'] = depth;
+
+    if (pierce != null) params['pierce'] = pierce;
+
+    return _devtools.rpc
+        .sendRequest('DOMDebugger.getEventListeners', params)
+        .then((response) => new DOMDebuggerGetEventListenersResponse(response));
   }
 
 /** Removes DOM breakpoint that was set using `setDOMBreakpoint`. */
   dart_async.Future removeDOMBreakpoint({int nodeId, String type}) {
-    return _devtools.client.sendRequest(
-        'DOMDebugger.removeDOMBreakpoint', {"nodeId": nodeId, "type": type});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (type != null) params['type'] = type;
+
+    return _devtools.rpc.sendRequest('DOMDebugger.removeDOMBreakpoint', params);
   }
 
 /** Removes breakpoint on particular DOM event. */
   dart_async.Future removeEventListenerBreakpoint(
       {String eventName, String targetName}) {
-    return _devtools.client.sendRequest(
-        'DOMDebugger.removeEventListenerBreakpoint',
-        {"eventName": eventName, "targetName": targetName});
+    var params = {};
+    if (eventName != null) params['eventName'] = eventName;
+
+    if (targetName != null) params['targetName'] = targetName;
+
+    return _devtools.rpc
+        .sendRequest('DOMDebugger.removeEventListenerBreakpoint', params);
   }
 
 /** Removes breakpoint on particular native event. */
   dart_async.Future removeInstrumentationBreakpoint({String eventName}) {
-    return _devtools.client.sendRequest(
-        'DOMDebugger.removeInstrumentationBreakpoint',
-        {"eventName": eventName});
+    var params = {};
+    if (eventName != null) params['eventName'] = eventName;
+
+    return _devtools.rpc
+        .sendRequest('DOMDebugger.removeInstrumentationBreakpoint', params);
   }
 
 /** Removes breakpoint from XMLHttpRequest. */
   dart_async.Future removeXHRBreakpoint({String url}) {
-    return _devtools.client
-        .sendRequest('DOMDebugger.removeXHRBreakpoint', {"url": url});
+    var params = {};
+    if (url != null) params['url'] = url;
+
+    return _devtools.rpc.sendRequest('DOMDebugger.removeXHRBreakpoint', params);
   }
 
 /** Sets breakpoint on particular operation with DOM. */
   dart_async.Future setDOMBreakpoint({int nodeId, String type}) {
-    return _devtools.client.sendRequest(
-        'DOMDebugger.setDOMBreakpoint', {"nodeId": nodeId, "type": type});
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (type != null) params['type'] = type;
+
+    return _devtools.rpc.sendRequest('DOMDebugger.setDOMBreakpoint', params);
   }
 
 /** Sets breakpoint on particular DOM event. */
   dart_async.Future setEventListenerBreakpoint(
       {String eventName, String targetName}) {
-    return _devtools.client.sendRequest(
-        'DOMDebugger.setEventListenerBreakpoint',
-        {"eventName": eventName, "targetName": targetName});
+    var params = {};
+    if (eventName != null) params['eventName'] = eventName;
+
+    if (targetName != null) params['targetName'] = targetName;
+
+    return _devtools.rpc
+        .sendRequest('DOMDebugger.setEventListenerBreakpoint', params);
   }
 
 /** Sets breakpoint on particular native event. */
   dart_async.Future setInstrumentationBreakpoint({String eventName}) {
-    return _devtools.client.sendRequest(
-        'DOMDebugger.setInstrumentationBreakpoint', {"eventName": eventName});
+    var params = {};
+    if (eventName != null) params['eventName'] = eventName;
+
+    return _devtools.rpc
+        .sendRequest('DOMDebugger.setInstrumentationBreakpoint', params);
   }
 
 /** Sets breakpoint on XMLHttpRequest. */
   dart_async.Future setXHRBreakpoint({String url}) {
-    return _devtools.client
-        .sendRequest('DOMDebugger.setXHRBreakpoint', {"url": url});
+    var params = {};
+    if (url != null) params['url'] = url;
+
+    return _devtools.rpc.sendRequest('DOMDebugger.setXHRBreakpoint', params);
   }
 }
 
@@ -4414,10 +4743,16 @@ white-listed computed style information for the nodes. Shadow DOM in the returne
 flattened. */
   dart_async.Future<DOMSnapshotGetSnapshotResponse> getSnapshot(
       {List computedStyleWhitelist, bool includeEventListeners}) {
-    return _devtools.client.sendRequest('DOMSnapshot.getSnapshot', {
-      "computedStyleWhitelist": computedStyleWhitelist,
-      "includeEventListeners": includeEventListeners
-    }).then((response) => new DOMSnapshotGetSnapshotResponse(response));
+    var params = {};
+    if (computedStyleWhitelist != null)
+      params['computedStyleWhitelist'] = computedStyleWhitelist;
+
+    if (includeEventListeners != null)
+      params['includeEventListeners'] = includeEventListeners;
+
+    return _devtools.rpc
+        .sendRequest('DOMSnapshot.getSnapshot', params)
+        .then((response) => new DOMSnapshotGetSnapshotResponse(response));
   }
 }
 
@@ -4436,39 +4771,56 @@ class DevToolsDOMStorage {
 
 /**  */
   dart_async.Future clear({StorageId storageId}) {
-    return _devtools.client
-        .sendRequest('DOMStorage.clear', {"storageId": storageId});
+    var params = {};
+    if (storageId != null) params['storageId'] = storageId;
+
+    return _devtools.rpc.sendRequest('DOMStorage.clear', params);
   }
 
 /** Disables storage tracking, prevents storage events from being sent to the client. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('DOMStorage.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOMStorage.disable', params);
   }
 
 /** Enables storage tracking, storage events will now be delivered to the client. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('DOMStorage.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('DOMStorage.enable', params);
   }
 
 /**  */
   dart_async.Future<DOMStorageGetDOMStorageItemsResponse> getDOMStorageItems(
       {StorageId storageId}) {
-    return _devtools.client.sendRequest('DOMStorage.getDOMStorageItems', {
-      "storageId": storageId
-    }).then((response) => new DOMStorageGetDOMStorageItemsResponse(response));
+    var params = {};
+    if (storageId != null) params['storageId'] = storageId;
+
+    return _devtools.rpc
+        .sendRequest('DOMStorage.getDOMStorageItems', params)
+        .then((response) => new DOMStorageGetDOMStorageItemsResponse(response));
   }
 
 /**  */
   dart_async.Future removeDOMStorageItem({StorageId storageId, String key}) {
-    return _devtools.client.sendRequest('DOMStorage.removeDOMStorageItem',
-        {"storageId": storageId, "key": key});
+    var params = {};
+    if (storageId != null) params['storageId'] = storageId;
+
+    if (key != null) params['key'] = key;
+
+    return _devtools.rpc.sendRequest('DOMStorage.removeDOMStorageItem', params);
   }
 
 /**  */
   dart_async.Future setDOMStorageItem(
       {StorageId storageId, String key, String value}) {
-    return _devtools.client.sendRequest('DOMStorage.setDOMStorageItem',
-        {"storageId": storageId, "key": key, "value": value});
+    var params = {};
+    if (storageId != null) params['storageId'] = storageId;
+
+    if (key != null) params['key'] = key;
+
+    if (value != null) params['value'] = value;
+
+    return _devtools.rpc.sendRequest('DOMStorage.setDOMStorageItem', params);
   }
 }
 
@@ -4501,29 +4853,39 @@ class DevToolsDatabase {
 
 /** Disables database tracking, prevents database events from being sent to the client. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Database.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Database.disable', params);
   }
 
 /** Enables database tracking, database events will now be delivered to the client. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Database.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Database.enable', params);
   }
 
 /**  */
   dart_async.Future<DatabaseExecuteSQLResponse> executeSQL(
       {String databaseId, String query}) {
-    return _devtools.client.sendRequest('Database.executeSQL', {
-      "databaseId": databaseId,
-      "query": query
-    }).then((response) => new DatabaseExecuteSQLResponse(response));
+    var params = {};
+    if (databaseId != null) params['databaseId'] = databaseId;
+
+    if (query != null) params['query'] = query;
+
+    return _devtools.rpc
+        .sendRequest('Database.executeSQL', params)
+        .then((response) => new DatabaseExecuteSQLResponse(response));
   }
 
 /**  */
   dart_async.Future<DatabaseGetDatabaseTableNamesResponse>
       getDatabaseTableNames({String databaseId}) {
-    return _devtools.client.sendRequest('Database.getDatabaseTableNames', {
-      "databaseId": databaseId
-    }).then((response) => new DatabaseGetDatabaseTableNamesResponse(response));
+    var params = {};
+    if (databaseId != null) params['databaseId'] = databaseId;
+
+    return _devtools.rpc
+        .sendRequest('Database.getDatabaseTableNames', params)
+        .then(
+            (response) => new DatabaseGetDatabaseTableNamesResponse(response));
   }
 }
 
@@ -4534,16 +4896,23 @@ class DevToolsDeviceOrientation {
 
 /** Clears the overridden Device Orientation. */
   dart_async.Future clearDeviceOrientationOverride() {
-    return _devtools.client
-        .sendRequest('DeviceOrientation.clearDeviceOrientationOverride', {});
+    var params = {};
+    return _devtools.rpc.sendRequest(
+        'DeviceOrientation.clearDeviceOrientationOverride', params);
   }
 
 /** Overrides the Device Orientation. */
   dart_async.Future setDeviceOrientationOverride(
       {num alpha, num beta, num gamma}) {
-    return _devtools.client.sendRequest(
-        'DeviceOrientation.setDeviceOrientationOverride',
-        {"alpha": alpha, "beta": beta, "gamma": gamma});
+    var params = {};
+    if (alpha != null) params['alpha'] = alpha;
+
+    if (beta != null) params['beta'] = beta;
+
+    if (gamma != null) params['gamma'] = gamma;
+
+    return _devtools.rpc
+        .sendRequest('DeviceOrientation.setDeviceOrientationOverride', params);
   }
 }
 
@@ -4570,38 +4939,48 @@ class DevToolsEmulation {
 
 /** Tells whether emulation is supported. */
   dart_async.Future<EmulationCanEmulateResponse> canEmulate() {
-    return _devtools.client.sendRequest('Emulation.canEmulate', {}).then(
-        (response) => new EmulationCanEmulateResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Emulation.canEmulate', params)
+        .then((response) => new EmulationCanEmulateResponse(response));
   }
 
 /** Clears the overriden device metrics. */
   dart_async.Future clearDeviceMetricsOverride() {
-    return _devtools.client
-        .sendRequest('Emulation.clearDeviceMetricsOverride', {});
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Emulation.clearDeviceMetricsOverride', params);
   }
 
 /** Clears the overriden Geolocation Position and Error. */
   dart_async.Future clearGeolocationOverride() {
-    return _devtools.client
-        .sendRequest('Emulation.clearGeolocationOverride', {});
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Emulation.clearGeolocationOverride', params);
   }
 
 /** Requests that page scale factor is reset to initial values. */
   dart_async.Future resetPageScaleFactor() {
-    return _devtools.client.sendRequest('Emulation.resetPageScaleFactor', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Emulation.resetPageScaleFactor', params);
   }
 
 /** Enables CPU throttling to emulate slow CPUs. */
   dart_async.Future setCPUThrottlingRate({num rate}) {
-    return _devtools.client
-        .sendRequest('Emulation.setCPUThrottlingRate', {"rate": rate});
+    var params = {};
+    if (rate != null) params['rate'] = rate;
+
+    return _devtools.rpc.sendRequest('Emulation.setCPUThrottlingRate', params);
   }
 
 /** Sets or clears an override of the default background color of the frame. This override is used
 if the content does not specify one. */
   dart_async.Future setDefaultBackgroundColorOverride({RGBA color}) {
-    return _devtools.client.sendRequest(
-        'Emulation.setDefaultBackgroundColorOverride', {"color": color});
+    var params = {};
+    if (color != null) params['color'] = color;
+
+    return _devtools.rpc
+        .sendRequest('Emulation.setDefaultBackgroundColorOverride', params);
   }
 
 /** Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
@@ -4620,66 +4999,108 @@ query results). */
       bool dontSetVisibleSize,
       ScreenOrientation screenOrientation,
       Viewport viewport}) {
-    return _devtools.client.sendRequest('Emulation.setDeviceMetricsOverride', {
-      "width": width,
-      "height": height,
-      "deviceScaleFactor": deviceScaleFactor,
-      "mobile": mobile,
-      "scale": scale,
-      "screenWidth": screenWidth,
-      "screenHeight": screenHeight,
-      "positionX": positionX,
-      "positionY": positionY,
-      "dontSetVisibleSize": dontSetVisibleSize,
-      "screenOrientation": screenOrientation,
-      "viewport": viewport
-    });
+    var params = {};
+    if (width != null) params['width'] = width;
+
+    if (height != null) params['height'] = height;
+
+    if (deviceScaleFactor != null)
+      params['deviceScaleFactor'] = deviceScaleFactor;
+
+    if (mobile != null) params['mobile'] = mobile;
+
+    if (scale != null) params['scale'] = scale;
+
+    if (screenWidth != null) params['screenWidth'] = screenWidth;
+
+    if (screenHeight != null) params['screenHeight'] = screenHeight;
+
+    if (positionX != null) params['positionX'] = positionX;
+
+    if (positionY != null) params['positionY'] = positionY;
+
+    if (dontSetVisibleSize != null)
+      params['dontSetVisibleSize'] = dontSetVisibleSize;
+
+    if (screenOrientation != null)
+      params['screenOrientation'] = screenOrientation;
+
+    if (viewport != null) params['viewport'] = viewport;
+
+    return _devtools.rpc
+        .sendRequest('Emulation.setDeviceMetricsOverride', params);
   }
 
 /**  */
   dart_async.Future setEmitTouchEventsForMouse(
       {bool enabled, String configuration}) {
-    return _devtools.client.sendRequest('Emulation.setEmitTouchEventsForMouse',
-        {"enabled": enabled, "configuration": configuration});
+    var params = {};
+    if (enabled != null) params['enabled'] = enabled;
+
+    if (configuration != null) params['configuration'] = configuration;
+
+    return _devtools.rpc
+        .sendRequest('Emulation.setEmitTouchEventsForMouse', params);
   }
 
 /** Emulates the given media for CSS media queries. */
   dart_async.Future setEmulatedMedia({String media}) {
-    return _devtools.client
-        .sendRequest('Emulation.setEmulatedMedia', {"media": media});
+    var params = {};
+    if (media != null) params['media'] = media;
+
+    return _devtools.rpc.sendRequest('Emulation.setEmulatedMedia', params);
   }
 
 /** Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
 unavailable. */
   dart_async.Future setGeolocationOverride(
       {num latitude, num longitude, num accuracy}) {
-    return _devtools.client.sendRequest('Emulation.setGeolocationOverride',
-        {"latitude": latitude, "longitude": longitude, "accuracy": accuracy});
+    var params = {};
+    if (latitude != null) params['latitude'] = latitude;
+
+    if (longitude != null) params['longitude'] = longitude;
+
+    if (accuracy != null) params['accuracy'] = accuracy;
+
+    return _devtools.rpc
+        .sendRequest('Emulation.setGeolocationOverride', params);
   }
 
 /** Overrides value returned by the javascript navigator object. */
   dart_async.Future setNavigatorOverrides({String platform}) {
-    return _devtools.client
-        .sendRequest('Emulation.setNavigatorOverrides', {"platform": platform});
+    var params = {};
+    if (platform != null) params['platform'] = platform;
+
+    return _devtools.rpc.sendRequest('Emulation.setNavigatorOverrides', params);
   }
 
 /** Sets a specified page scale factor. */
   dart_async.Future setPageScaleFactor({num pageScaleFactor}) {
-    return _devtools.client.sendRequest(
-        'Emulation.setPageScaleFactor', {"pageScaleFactor": pageScaleFactor});
+    var params = {};
+    if (pageScaleFactor != null) params['pageScaleFactor'] = pageScaleFactor;
+
+    return _devtools.rpc.sendRequest('Emulation.setPageScaleFactor', params);
   }
 
 /** Switches script execution in the page. */
   dart_async.Future setScriptExecutionDisabled({bool value}) {
-    return _devtools.client
-        .sendRequest('Emulation.setScriptExecutionDisabled', {"value": value});
+    var params = {};
+    if (value != null) params['value'] = value;
+
+    return _devtools.rpc
+        .sendRequest('Emulation.setScriptExecutionDisabled', params);
   }
 
 /** Enables touch on platforms which do not support them. */
   dart_async.Future setTouchEmulationEnabled(
       {bool enabled, int maxTouchPoints}) {
-    return _devtools.client.sendRequest('Emulation.setTouchEmulationEnabled',
-        {"enabled": enabled, "maxTouchPoints": maxTouchPoints});
+    var params = {};
+    if (enabled != null) params['enabled'] = enabled;
+
+    if (maxTouchPoints != null) params['maxTouchPoints'] = maxTouchPoints;
+
+    return _devtools.rpc
+        .sendRequest('Emulation.setTouchEmulationEnabled', params);
   }
 
 /** Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets
@@ -4689,20 +5110,34 @@ the current virtual time policy.  Note this supersedes any previous time budget.
       num budget,
       int maxVirtualTimeTaskStarvationCount,
       bool waitForNavigation}) {
-    return _devtools.client.sendRequest('Emulation.setVirtualTimePolicy', {
-      "policy": policy,
-      "budget": budget,
-      "maxVirtualTimeTaskStarvationCount": maxVirtualTimeTaskStarvationCount,
-      "waitForNavigation": waitForNavigation
-    }).then((response) => new EmulationSetVirtualTimePolicyResponse(response));
+    var params = {};
+    if (policy != null) params['policy'] = policy;
+
+    if (budget != null) params['budget'] = budget;
+
+    if (maxVirtualTimeTaskStarvationCount != null)
+      params['maxVirtualTimeTaskStarvationCount'] =
+          maxVirtualTimeTaskStarvationCount;
+
+    if (waitForNavigation != null)
+      params['waitForNavigation'] = waitForNavigation;
+
+    return _devtools.rpc
+        .sendRequest('Emulation.setVirtualTimePolicy', params)
+        .then(
+            (response) => new EmulationSetVirtualTimePolicyResponse(response));
   }
 
 /** Resizes the frame/viewport of the page. Note that this does not affect the frame's container
 (e.g. browser window). Can be used to produce screenshots of the specified size. Not supported
 on Android. */
   dart_async.Future setVisibleSize({int width, int height}) {
-    return _devtools.client.sendRequest(
-        'Emulation.setVisibleSize', {"width": width, "height": height});
+    var params = {};
+    if (width != null) params['width'] = width;
+
+    if (height != null) params['height'] = height;
+
+    return _devtools.rpc.sendRequest('Emulation.setVisibleSize', params);
   }
 }
 
@@ -4734,23 +5169,33 @@ BeginFrameControl. */
       num interval,
       bool noDisplayUpdates,
       ScreenshotParams screenshot}) {
-    return _devtools.client.sendRequest('HeadlessExperimental.beginFrame', {
-      "frameTime": frameTime,
-      "deadline": deadline,
-      "interval": interval,
-      "noDisplayUpdates": noDisplayUpdates,
-      "screenshot": screenshot
-    }).then((response) => new HeadlessExperimentalBeginFrameResponse(response));
+    var params = {};
+    if (frameTime != null) params['frameTime'] = frameTime;
+
+    if (deadline != null) params['deadline'] = deadline;
+
+    if (interval != null) params['interval'] = interval;
+
+    if (noDisplayUpdates != null) params['noDisplayUpdates'] = noDisplayUpdates;
+
+    if (screenshot != null) params['screenshot'] = screenshot;
+
+    return _devtools.rpc
+        .sendRequest('HeadlessExperimental.beginFrame', params)
+        .then(
+            (response) => new HeadlessExperimentalBeginFrameResponse(response));
   }
 
 /** Disables headless events for the target. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('HeadlessExperimental.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('HeadlessExperimental.disable', params);
   }
 
 /** Enables headless events for the target. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('HeadlessExperimental.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('HeadlessExperimental.enable', params);
   }
 }
 
@@ -4783,24 +5228,35 @@ class DevToolsIO {
 
 /** Close the stream, discard any temporary backing storage. */
   dart_async.Future close({String handle}) {
-    return _devtools.client.sendRequest('IO.close', {"handle": handle});
+    var params = {};
+    if (handle != null) params['handle'] = handle;
+
+    return _devtools.rpc.sendRequest('IO.close', params);
   }
 
 /** Read a chunk of the stream */
   dart_async.Future<IOReadResponse> read(
       {String handle, int offset, int size}) {
-    return _devtools.client.sendRequest('IO.read', {
-      "handle": handle,
-      "offset": offset,
-      "size": size
-    }).then((response) => new IOReadResponse(response));
+    var params = {};
+    if (handle != null) params['handle'] = handle;
+
+    if (offset != null) params['offset'] = offset;
+
+    if (size != null) params['size'] = size;
+
+    return _devtools.rpc
+        .sendRequest('IO.read', params)
+        .then((response) => new IOReadResponse(response));
   }
 
 /** Return UUID of Blob object specified by a remote object id. */
   dart_async.Future<IOResolveBlobResponse> resolveBlob({Object objectId}) {
-    return _devtools.client
-        .sendRequest('IO.resolveBlob', {"objectId": objectId}).then(
-            (response) => new IOResolveBlobResponse(response));
+    var params = {};
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc
+        .sendRequest('IO.resolveBlob', params)
+        .then((response) => new IOResolveBlobResponse(response));
   }
 }
 
@@ -4839,18 +5295,25 @@ class DevToolsIndexedDB {
 /** Clears all entries from an object store. */
   dart_async.Future clearObjectStore(
       {String securityOrigin, String databaseName, String objectStoreName}) {
-    return _devtools.client.sendRequest('IndexedDB.clearObjectStore', {
-      "securityOrigin": securityOrigin,
-      "databaseName": databaseName,
-      "objectStoreName": objectStoreName
-    });
+    var params = {};
+    if (securityOrigin != null) params['securityOrigin'] = securityOrigin;
+
+    if (databaseName != null) params['databaseName'] = databaseName;
+
+    if (objectStoreName != null) params['objectStoreName'] = objectStoreName;
+
+    return _devtools.rpc.sendRequest('IndexedDB.clearObjectStore', params);
   }
 
 /** Deletes a database. */
   dart_async.Future deleteDatabase(
       {String securityOrigin, String databaseName}) {
-    return _devtools.client.sendRequest('IndexedDB.deleteDatabase',
-        {"securityOrigin": securityOrigin, "databaseName": databaseName});
+    var params = {};
+    if (securityOrigin != null) params['securityOrigin'] = securityOrigin;
+
+    if (databaseName != null) params['databaseName'] = databaseName;
+
+    return _devtools.rpc.sendRequest('IndexedDB.deleteDatabase', params);
   }
 
 /** Delete a range of entries from an object store */
@@ -4859,22 +5322,29 @@ class DevToolsIndexedDB {
       String databaseName,
       String objectStoreName,
       KeyRange keyRange}) {
-    return _devtools.client.sendRequest('IndexedDB.deleteObjectStoreEntries', {
-      "securityOrigin": securityOrigin,
-      "databaseName": databaseName,
-      "objectStoreName": objectStoreName,
-      "keyRange": keyRange
-    });
+    var params = {};
+    if (securityOrigin != null) params['securityOrigin'] = securityOrigin;
+
+    if (databaseName != null) params['databaseName'] = databaseName;
+
+    if (objectStoreName != null) params['objectStoreName'] = objectStoreName;
+
+    if (keyRange != null) params['keyRange'] = keyRange;
+
+    return _devtools.rpc
+        .sendRequest('IndexedDB.deleteObjectStoreEntries', params);
   }
 
 /** Disables events from backend. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('IndexedDB.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('IndexedDB.disable', params);
   }
 
 /** Enables events from backend. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('IndexedDB.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('IndexedDB.enable', params);
   }
 
 /** Requests data from object store or index. */
@@ -4886,32 +5356,49 @@ class DevToolsIndexedDB {
       int skipCount,
       int pageSize,
       KeyRange keyRange}) {
-    return _devtools.client.sendRequest('IndexedDB.requestData', {
-      "securityOrigin": securityOrigin,
-      "databaseName": databaseName,
-      "objectStoreName": objectStoreName,
-      "indexName": indexName,
-      "skipCount": skipCount,
-      "pageSize": pageSize,
-      "keyRange": keyRange
-    }).then((response) => new IndexedDBRequestDataResponse(response));
+    var params = {};
+    if (securityOrigin != null) params['securityOrigin'] = securityOrigin;
+
+    if (databaseName != null) params['databaseName'] = databaseName;
+
+    if (objectStoreName != null) params['objectStoreName'] = objectStoreName;
+
+    if (indexName != null) params['indexName'] = indexName;
+
+    if (skipCount != null) params['skipCount'] = skipCount;
+
+    if (pageSize != null) params['pageSize'] = pageSize;
+
+    if (keyRange != null) params['keyRange'] = keyRange;
+
+    return _devtools.rpc
+        .sendRequest('IndexedDB.requestData', params)
+        .then((response) => new IndexedDBRequestDataResponse(response));
   }
 
 /** Requests database with given name in given frame. */
   dart_async.Future<IndexedDBRequestDatabaseResponse> requestDatabase(
       {String securityOrigin, String databaseName}) {
-    return _devtools.client.sendRequest('IndexedDB.requestDatabase', {
-      "securityOrigin": securityOrigin,
-      "databaseName": databaseName
-    }).then((response) => new IndexedDBRequestDatabaseResponse(response));
+    var params = {};
+    if (securityOrigin != null) params['securityOrigin'] = securityOrigin;
+
+    if (databaseName != null) params['databaseName'] = databaseName;
+
+    return _devtools.rpc
+        .sendRequest('IndexedDB.requestDatabase', params)
+        .then((response) => new IndexedDBRequestDatabaseResponse(response));
   }
 
 /** Requests database names for given security origin. */
   dart_async.Future<IndexedDBRequestDatabaseNamesResponse> requestDatabaseNames(
       {String securityOrigin}) {
-    return _devtools.client.sendRequest('IndexedDB.requestDatabaseNames', {
-      "securityOrigin": securityOrigin
-    }).then((response) => new IndexedDBRequestDatabaseNamesResponse(response));
+    var params = {};
+    if (securityOrigin != null) params['securityOrigin'] = securityOrigin;
+
+    return _devtools.rpc
+        .sendRequest('IndexedDB.requestDatabaseNames', params)
+        .then(
+            (response) => new IndexedDBRequestDatabaseNamesResponse(response));
   }
 }
 
@@ -4936,22 +5423,38 @@ class DevToolsInput {
       bool isKeypad,
       bool isSystemKey,
       int location}) {
-    return _devtools.client.sendRequest('Input.dispatchKeyEvent', {
-      "type": type,
-      "modifiers": modifiers,
-      "timestamp": timestamp,
-      "text": text,
-      "unmodifiedText": unmodifiedText,
-      "keyIdentifier": keyIdentifier,
-      "code": code,
-      "key": key,
-      "windowsVirtualKeyCode": windowsVirtualKeyCode,
-      "nativeVirtualKeyCode": nativeVirtualKeyCode,
-      "autoRepeat": autoRepeat,
-      "isKeypad": isKeypad,
-      "isSystemKey": isSystemKey,
-      "location": location
-    });
+    var params = {};
+    if (type != null) params['type'] = type;
+
+    if (modifiers != null) params['modifiers'] = modifiers;
+
+    if (timestamp != null) params['timestamp'] = timestamp;
+
+    if (text != null) params['text'] = text;
+
+    if (unmodifiedText != null) params['unmodifiedText'] = unmodifiedText;
+
+    if (keyIdentifier != null) params['keyIdentifier'] = keyIdentifier;
+
+    if (code != null) params['code'] = code;
+
+    if (key != null) params['key'] = key;
+
+    if (windowsVirtualKeyCode != null)
+      params['windowsVirtualKeyCode'] = windowsVirtualKeyCode;
+
+    if (nativeVirtualKeyCode != null)
+      params['nativeVirtualKeyCode'] = nativeVirtualKeyCode;
+
+    if (autoRepeat != null) params['autoRepeat'] = autoRepeat;
+
+    if (isKeypad != null) params['isKeypad'] = isKeypad;
+
+    if (isSystemKey != null) params['isSystemKey'] = isSystemKey;
+
+    if (location != null) params['location'] = location;
+
+    return _devtools.rpc.sendRequest('Input.dispatchKeyEvent', params);
   }
 
 /** Dispatches a mouse event to the page. */
@@ -4965,17 +5468,26 @@ class DevToolsInput {
       int clickCount,
       num deltaX,
       num deltaY}) {
-    return _devtools.client.sendRequest('Input.dispatchMouseEvent', {
-      "type": type,
-      "x": x,
-      "y": y,
-      "modifiers": modifiers,
-      "timestamp": timestamp,
-      "button": button,
-      "clickCount": clickCount,
-      "deltaX": deltaX,
-      "deltaY": deltaY
-    });
+    var params = {};
+    if (type != null) params['type'] = type;
+
+    if (x != null) params['x'] = x;
+
+    if (y != null) params['y'] = y;
+
+    if (modifiers != null) params['modifiers'] = modifiers;
+
+    if (timestamp != null) params['timestamp'] = timestamp;
+
+    if (button != null) params['button'] = button;
+
+    if (clickCount != null) params['clickCount'] = clickCount;
+
+    if (deltaX != null) params['deltaX'] = deltaX;
+
+    if (deltaY != null) params['deltaY'] = deltaY;
+
+    return _devtools.rpc.sendRequest('Input.dispatchMouseEvent', params);
   }
 
 /** Dispatches a touch event to the page. */
@@ -4984,12 +5496,16 @@ class DevToolsInput {
       List<TouchPoint> touchPoints,
       int modifiers,
       num timestamp}) {
-    return _devtools.client.sendRequest('Input.dispatchTouchEvent', {
-      "type": type,
-      "touchPoints": touchPoints,
-      "modifiers": modifiers,
-      "timestamp": timestamp
-    });
+    var params = {};
+    if (type != null) params['type'] = type;
+
+    if (touchPoints != null) params['touchPoints'] = touchPoints;
+
+    if (modifiers != null) params['modifiers'] = modifiers;
+
+    if (timestamp != null) params['timestamp'] = timestamp;
+
+    return _devtools.rpc.sendRequest('Input.dispatchTouchEvent', params);
   }
 
 /** Emulates touch event from the mouse event parameters. */
@@ -5003,23 +5519,35 @@ class DevToolsInput {
       num deltaY,
       int modifiers,
       int clickCount}) {
-    return _devtools.client.sendRequest('Input.emulateTouchFromMouseEvent', {
-      "type": type,
-      "x": x,
-      "y": y,
-      "button": button,
-      "timestamp": timestamp,
-      "deltaX": deltaX,
-      "deltaY": deltaY,
-      "modifiers": modifiers,
-      "clickCount": clickCount
-    });
+    var params = {};
+    if (type != null) params['type'] = type;
+
+    if (x != null) params['x'] = x;
+
+    if (y != null) params['y'] = y;
+
+    if (button != null) params['button'] = button;
+
+    if (timestamp != null) params['timestamp'] = timestamp;
+
+    if (deltaX != null) params['deltaX'] = deltaX;
+
+    if (deltaY != null) params['deltaY'] = deltaY;
+
+    if (modifiers != null) params['modifiers'] = modifiers;
+
+    if (clickCount != null) params['clickCount'] = clickCount;
+
+    return _devtools.rpc
+        .sendRequest('Input.emulateTouchFromMouseEvent', params);
   }
 
 /** Ignores input events (useful while auditing page). */
   dart_async.Future setIgnoreInputEvents({bool ignore}) {
-    return _devtools.client
-        .sendRequest('Input.setIgnoreInputEvents', {"ignore": ignore});
+    var params = {};
+    if (ignore != null) params['ignore'] = ignore;
+
+    return _devtools.rpc.sendRequest('Input.setIgnoreInputEvents', params);
   }
 
 /** Synthesizes a pinch gesture over a time period by issuing appropriate touch events. */
@@ -5029,13 +5557,19 @@ class DevToolsInput {
       num scaleFactor,
       int relativeSpeed,
       String gestureSourceType}) {
-    return _devtools.client.sendRequest('Input.synthesizePinchGesture', {
-      "x": x,
-      "y": y,
-      "scaleFactor": scaleFactor,
-      "relativeSpeed": relativeSpeed,
-      "gestureSourceType": gestureSourceType
-    });
+    var params = {};
+    if (x != null) params['x'] = x;
+
+    if (y != null) params['y'] = y;
+
+    if (scaleFactor != null) params['scaleFactor'] = scaleFactor;
+
+    if (relativeSpeed != null) params['relativeSpeed'] = relativeSpeed;
+
+    if (gestureSourceType != null)
+      params['gestureSourceType'] = gestureSourceType;
+
+    return _devtools.rpc.sendRequest('Input.synthesizePinchGesture', params);
   }
 
 /** Synthesizes a scroll gesture over a time period by issuing appropriate touch events. */
@@ -5052,32 +5586,52 @@ class DevToolsInput {
       int repeatCount,
       int repeatDelayMs,
       String interactionMarkerName}) {
-    return _devtools.client.sendRequest('Input.synthesizeScrollGesture', {
-      "x": x,
-      "y": y,
-      "xDistance": xDistance,
-      "yDistance": yDistance,
-      "xOverscroll": xOverscroll,
-      "yOverscroll": yOverscroll,
-      "preventFling": preventFling,
-      "speed": speed,
-      "gestureSourceType": gestureSourceType,
-      "repeatCount": repeatCount,
-      "repeatDelayMs": repeatDelayMs,
-      "interactionMarkerName": interactionMarkerName
-    });
+    var params = {};
+    if (x != null) params['x'] = x;
+
+    if (y != null) params['y'] = y;
+
+    if (xDistance != null) params['xDistance'] = xDistance;
+
+    if (yDistance != null) params['yDistance'] = yDistance;
+
+    if (xOverscroll != null) params['xOverscroll'] = xOverscroll;
+
+    if (yOverscroll != null) params['yOverscroll'] = yOverscroll;
+
+    if (preventFling != null) params['preventFling'] = preventFling;
+
+    if (speed != null) params['speed'] = speed;
+
+    if (gestureSourceType != null)
+      params['gestureSourceType'] = gestureSourceType;
+
+    if (repeatCount != null) params['repeatCount'] = repeatCount;
+
+    if (repeatDelayMs != null) params['repeatDelayMs'] = repeatDelayMs;
+
+    if (interactionMarkerName != null)
+      params['interactionMarkerName'] = interactionMarkerName;
+
+    return _devtools.rpc.sendRequest('Input.synthesizeScrollGesture', params);
   }
 
 /** Synthesizes a tap gesture over a time period by issuing appropriate touch events. */
   dart_async.Future synthesizeTapGesture(
       {num x, num y, int duration, int tapCount, String gestureSourceType}) {
-    return _devtools.client.sendRequest('Input.synthesizeTapGesture', {
-      "x": x,
-      "y": y,
-      "duration": duration,
-      "tapCount": tapCount,
-      "gestureSourceType": gestureSourceType
-    });
+    var params = {};
+    if (x != null) params['x'] = x;
+
+    if (y != null) params['y'] = y;
+
+    if (duration != null) params['duration'] = duration;
+
+    if (tapCount != null) params['tapCount'] = tapCount;
+
+    if (gestureSourceType != null)
+      params['gestureSourceType'] = gestureSourceType;
+
+    return _devtools.rpc.sendRequest('Input.synthesizeTapGesture', params);
   }
 }
 
@@ -5088,12 +5642,14 @@ class DevToolsInspector {
 
 /** Disables inspector domain notifications. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Inspector.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Inspector.disable', params);
   }
 
 /** Enables inspector domain notifications. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Inspector.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Inspector.enable', params);
   }
 }
 
@@ -5153,71 +5709,99 @@ class DevToolsLayerTree {
 /** Provides the reasons why the given layer was composited. */
   dart_async.Future<LayerTreeCompositingReasonsResponse> compositingReasons(
       {String layerId}) {
-    return _devtools.client
-        .sendRequest('LayerTree.compositingReasons', {"layerId": layerId}).then(
-            (response) => new LayerTreeCompositingReasonsResponse(response));
+    var params = {};
+    if (layerId != null) params['layerId'] = layerId;
+
+    return _devtools.rpc
+        .sendRequest('LayerTree.compositingReasons', params)
+        .then((response) => new LayerTreeCompositingReasonsResponse(response));
   }
 
 /** Disables compositing tree inspection. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('LayerTree.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('LayerTree.disable', params);
   }
 
 /** Enables compositing tree inspection. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('LayerTree.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('LayerTree.enable', params);
   }
 
 /** Returns the snapshot identifier. */
   dart_async.Future<LayerTreeLoadSnapshotResponse> loadSnapshot(
       {List<PictureTile> tiles}) {
-    return _devtools.client
-        .sendRequest('LayerTree.loadSnapshot', {"tiles": tiles}).then(
-            (response) => new LayerTreeLoadSnapshotResponse(response));
+    var params = {};
+    if (tiles != null) params['tiles'] = tiles;
+
+    return _devtools.rpc
+        .sendRequest('LayerTree.loadSnapshot', params)
+        .then((response) => new LayerTreeLoadSnapshotResponse(response));
   }
 
 /** Returns the layer snapshot identifier. */
   dart_async.Future<LayerTreeMakeSnapshotResponse> makeSnapshot(
       {String layerId}) {
-    return _devtools.client
-        .sendRequest('LayerTree.makeSnapshot', {"layerId": layerId}).then(
-            (response) => new LayerTreeMakeSnapshotResponse(response));
+    var params = {};
+    if (layerId != null) params['layerId'] = layerId;
+
+    return _devtools.rpc
+        .sendRequest('LayerTree.makeSnapshot', params)
+        .then((response) => new LayerTreeMakeSnapshotResponse(response));
   }
 
 /**  */
   dart_async.Future<LayerTreeProfileSnapshotResponse> profileSnapshot(
       {String snapshotId, int minRepeatCount, num minDuration, Rect clipRect}) {
-    return _devtools.client.sendRequest('LayerTree.profileSnapshot', {
-      "snapshotId": snapshotId,
-      "minRepeatCount": minRepeatCount,
-      "minDuration": minDuration,
-      "clipRect": clipRect
-    }).then((response) => new LayerTreeProfileSnapshotResponse(response));
+    var params = {};
+    if (snapshotId != null) params['snapshotId'] = snapshotId;
+
+    if (minRepeatCount != null) params['minRepeatCount'] = minRepeatCount;
+
+    if (minDuration != null) params['minDuration'] = minDuration;
+
+    if (clipRect != null) params['clipRect'] = clipRect;
+
+    return _devtools.rpc
+        .sendRequest('LayerTree.profileSnapshot', params)
+        .then((response) => new LayerTreeProfileSnapshotResponse(response));
   }
 
 /** Releases layer snapshot captured by the back-end. */
   dart_async.Future releaseSnapshot({String snapshotId}) {
-    return _devtools.client
-        .sendRequest('LayerTree.releaseSnapshot', {"snapshotId": snapshotId});
+    var params = {};
+    if (snapshotId != null) params['snapshotId'] = snapshotId;
+
+    return _devtools.rpc.sendRequest('LayerTree.releaseSnapshot', params);
   }
 
 /** Replays the layer snapshot and returns the resulting bitmap. */
   dart_async.Future<LayerTreeReplaySnapshotResponse> replaySnapshot(
       {String snapshotId, int fromStep, int toStep, num scale}) {
-    return _devtools.client.sendRequest('LayerTree.replaySnapshot', {
-      "snapshotId": snapshotId,
-      "fromStep": fromStep,
-      "toStep": toStep,
-      "scale": scale
-    }).then((response) => new LayerTreeReplaySnapshotResponse(response));
+    var params = {};
+    if (snapshotId != null) params['snapshotId'] = snapshotId;
+
+    if (fromStep != null) params['fromStep'] = fromStep;
+
+    if (toStep != null) params['toStep'] = toStep;
+
+    if (scale != null) params['scale'] = scale;
+
+    return _devtools.rpc
+        .sendRequest('LayerTree.replaySnapshot', params)
+        .then((response) => new LayerTreeReplaySnapshotResponse(response));
   }
 
 /** Replays the layer snapshot and returns canvas log. */
   dart_async.Future<LayerTreeSnapshotCommandLogResponse> snapshotCommandLog(
       {String snapshotId}) {
-    return _devtools.client.sendRequest('LayerTree.snapshotCommandLog', {
-      "snapshotId": snapshotId
-    }).then((response) => new LayerTreeSnapshotCommandLogResponse(response));
+    var params = {};
+    if (snapshotId != null) params['snapshotId'] = snapshotId;
+
+    return _devtools.rpc
+        .sendRequest('LayerTree.snapshotCommandLog', params)
+        .then((response) => new LayerTreeSnapshotCommandLogResponse(response));
   }
 }
 
@@ -5228,29 +5812,35 @@ class DevToolsLog {
 
 /** Clears the log. */
   dart_async.Future clear() {
-    return _devtools.client.sendRequest('Log.clear', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Log.clear', params);
   }
 
 /** Disables log domain, prevents further log entries from being reported to the client. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Log.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Log.disable', params);
   }
 
 /** Enables log domain, sends the entries collected so far to the client by means of the
 `entryAdded` notification. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Log.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Log.enable', params);
   }
 
 /** start violation reporting. */
   dart_async.Future startViolationsReport({List<ViolationSetting> config}) {
-    return _devtools.client
-        .sendRequest('Log.startViolationsReport', {"config": config});
+    var params = {};
+    if (config != null) params['config'] = config;
+
+    return _devtools.rpc.sendRequest('Log.startViolationsReport', params);
   }
 
 /** Stop violation reporting. */
   dart_async.Future stopViolationsReport() {
-    return _devtools.client.sendRequest('Log.stopViolationsReport', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Log.stopViolationsReport', params);
   }
 }
 
@@ -5291,55 +5881,71 @@ class DevToolsMemory {
 
 /**  */
   dart_async.Future<MemoryGetDOMCountersResponse> getDOMCounters() {
-    return _devtools.client.sendRequest('Memory.getDOMCounters', {}).then(
-        (response) => new MemoryGetDOMCountersResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Memory.getDOMCounters', params)
+        .then((response) => new MemoryGetDOMCountersResponse(response));
   }
 
 /**  */
   dart_async.Future prepareForLeakDetection() {
-    return _devtools.client.sendRequest('Memory.prepareForLeakDetection', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Memory.prepareForLeakDetection', params);
   }
 
 /** Enable/disable suppressing memory pressure notifications in all processes. */
   dart_async.Future setPressureNotificationsSuppressed({bool suppressed}) {
-    return _devtools.client.sendRequest(
-        'Memory.setPressureNotificationsSuppressed',
-        {"suppressed": suppressed});
+    var params = {};
+    if (suppressed != null) params['suppressed'] = suppressed;
+
+    return _devtools.rpc
+        .sendRequest('Memory.setPressureNotificationsSuppressed', params);
   }
 
 /** Simulate a memory pressure notification in all processes. */
   dart_async.Future simulatePressureNotification({String level}) {
-    return _devtools.client
-        .sendRequest('Memory.simulatePressureNotification', {"level": level});
+    var params = {};
+    if (level != null) params['level'] = level;
+
+    return _devtools.rpc
+        .sendRequest('Memory.simulatePressureNotification', params);
   }
 
 /** Start collecting native memory profile. */
   dart_async.Future startSampling(
       {int samplingInterval, bool suppressRandomness}) {
-    return _devtools.client.sendRequest('Memory.startSampling', {
-      "samplingInterval": samplingInterval,
-      "suppressRandomness": suppressRandomness
-    });
+    var params = {};
+    if (samplingInterval != null) params['samplingInterval'] = samplingInterval;
+
+    if (suppressRandomness != null)
+      params['suppressRandomness'] = suppressRandomness;
+
+    return _devtools.rpc.sendRequest('Memory.startSampling', params);
   }
 
 /** Stop collecting native memory profile. */
   dart_async.Future stopSampling() {
-    return _devtools.client.sendRequest('Memory.stopSampling', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Memory.stopSampling', params);
   }
 
 /** Retrieve native memory allocations profile collected since process startup. */
   dart_async.Future<MemoryGetAllTimeSamplingProfileResponse>
       getAllTimeSamplingProfile() {
-    return _devtools.client
-        .sendRequest('Memory.getAllTimeSamplingProfile', {}).then((response) =>
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Memory.getAllTimeSamplingProfile', params)
+        .then((response) =>
             new MemoryGetAllTimeSamplingProfileResponse(response));
   }
 
 /** Retrieve native memory allocations profile collected since last
 `startSampling` call. */
   dart_async.Future<MemoryGetSamplingProfileResponse> getSamplingProfile() {
-    return _devtools.client.sendRequest('Memory.getSamplingProfile', {}).then(
-        (response) => new MemoryGetSamplingProfileResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Memory.getSamplingProfile', params)
+        .then((response) => new MemoryGetSamplingProfileResponse(response));
   }
 }
 
@@ -5445,36 +6051,42 @@ class DevToolsNetwork {
 /** Tells whether clearing browser cache is supported. */
   dart_async.Future<NetworkCanClearBrowserCacheResponse>
       canClearBrowserCache() {
-    return _devtools.client
-        .sendRequest('Network.canClearBrowserCache', {}).then(
-            (response) => new NetworkCanClearBrowserCacheResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Network.canClearBrowserCache', params)
+        .then((response) => new NetworkCanClearBrowserCacheResponse(response));
   }
 
 /** Tells whether clearing browser cookies is supported. */
   dart_async.Future<NetworkCanClearBrowserCookiesResponse>
       canClearBrowserCookies() {
-    return _devtools.client
-        .sendRequest('Network.canClearBrowserCookies', {}).then(
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Network.canClearBrowserCookies', params)
+        .then(
             (response) => new NetworkCanClearBrowserCookiesResponse(response));
   }
 
 /** Tells whether emulation of network conditions is supported. */
   dart_async.Future<NetworkCanEmulateNetworkConditionsResponse>
       canEmulateNetworkConditions() {
-    return _devtools.client
-        .sendRequest('Network.canEmulateNetworkConditions', {}).then(
-            (response) =>
-                new NetworkCanEmulateNetworkConditionsResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Network.canEmulateNetworkConditions', params)
+        .then((response) =>
+            new NetworkCanEmulateNetworkConditionsResponse(response));
   }
 
 /** Clears browser cache. */
   dart_async.Future clearBrowserCache() {
-    return _devtools.client.sendRequest('Network.clearBrowserCache', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Network.clearBrowserCache', params);
   }
 
 /** Clears browser cookies. */
   dart_async.Future clearBrowserCookies() {
-    return _devtools.client.sendRequest('Network.clearBrowserCookies', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Network.clearBrowserCookies', params);
   }
 
 /** Response to Network.requestIntercepted which either modifies the request to continue with any
@@ -5490,28 +6102,47 @@ event will be sent with the same InterceptionId. */
       String postData,
       Headers headers,
       AuthChallengeResponse authChallengeResponse}) {
-    return _devtools.client.sendRequest('Network.continueInterceptedRequest', {
-      "interceptionId": interceptionId,
-      "errorReason": errorReason,
-      "rawResponse": rawResponse,
-      "url": url,
-      "method": method,
-      "postData": postData,
-      "headers": headers,
-      "authChallengeResponse": authChallengeResponse
-    });
+    var params = {};
+    if (interceptionId != null) params['interceptionId'] = interceptionId;
+
+    if (errorReason != null) params['errorReason'] = errorReason;
+
+    if (rawResponse != null) params['rawResponse'] = rawResponse;
+
+    if (url != null) params['url'] = url;
+
+    if (method != null) params['method'] = method;
+
+    if (postData != null) params['postData'] = postData;
+
+    if (headers != null) params['headers'] = headers;
+
+    if (authChallengeResponse != null)
+      params['authChallengeResponse'] = authChallengeResponse;
+
+    return _devtools.rpc
+        .sendRequest('Network.continueInterceptedRequest', params);
   }
 
 /** Deletes browser cookies with matching name and url or domain/path pair. */
   dart_async.Future deleteCookies(
       {String name, String url, String domain, String path}) {
-    return _devtools.client.sendRequest('Network.deleteCookies',
-        {"name": name, "url": url, "domain": domain, "path": path});
+    var params = {};
+    if (name != null) params['name'] = name;
+
+    if (url != null) params['url'] = url;
+
+    if (domain != null) params['domain'] = domain;
+
+    if (path != null) params['path'] = path;
+
+    return _devtools.rpc.sendRequest('Network.deleteCookies', params);
   }
 
 /** Disables network tracking, prevents network events from being sent to the client. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Network.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Network.disable', params);
   }
 
 /** Activates emulation of network conditions. */
@@ -5521,13 +6152,20 @@ event will be sent with the same InterceptionId. */
       num downloadThroughput,
       num uploadThroughput,
       String connectionType}) {
-    return _devtools.client.sendRequest('Network.emulateNetworkConditions', {
-      "offline": offline,
-      "latency": latency,
-      "downloadThroughput": downloadThroughput,
-      "uploadThroughput": uploadThroughput,
-      "connectionType": connectionType
-    });
+    var params = {};
+    if (offline != null) params['offline'] = offline;
+
+    if (latency != null) params['latency'] = latency;
+
+    if (downloadThroughput != null)
+      params['downloadThroughput'] = downloadThroughput;
+
+    if (uploadThroughput != null) params['uploadThroughput'] = uploadThroughput;
+
+    if (connectionType != null) params['connectionType'] = connectionType;
+
+    return _devtools.rpc
+        .sendRequest('Network.emulateNetworkConditions', params);
   }
 
 /** Enables network tracking, network events will now be delivered to the client. */
@@ -5535,97 +6173,132 @@ event will be sent with the same InterceptionId. */
       {int maxTotalBufferSize,
       int maxResourceBufferSize,
       int maxPostDataSize}) {
-    return _devtools.client.sendRequest('Network.enable', {
-      "maxTotalBufferSize": maxTotalBufferSize,
-      "maxResourceBufferSize": maxResourceBufferSize,
-      "maxPostDataSize": maxPostDataSize
-    });
+    var params = {};
+    if (maxTotalBufferSize != null)
+      params['maxTotalBufferSize'] = maxTotalBufferSize;
+
+    if (maxResourceBufferSize != null)
+      params['maxResourceBufferSize'] = maxResourceBufferSize;
+
+    if (maxPostDataSize != null) params['maxPostDataSize'] = maxPostDataSize;
+
+    return _devtools.rpc.sendRequest('Network.enable', params);
   }
 
 /** Returns all browser cookies. Depending on the backend support, will return detailed cookie
 information in the `cookies` field. */
   dart_async.Future<NetworkGetAllCookiesResponse> getAllCookies() {
-    return _devtools.client.sendRequest('Network.getAllCookies', {}).then(
-        (response) => new NetworkGetAllCookiesResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Network.getAllCookies', params)
+        .then((response) => new NetworkGetAllCookiesResponse(response));
   }
 
 /** Returns the DER-encoded certificate. */
   dart_async.Future<NetworkGetCertificateResponse> getCertificate(
       {String origin}) {
-    return _devtools.client
-        .sendRequest('Network.getCertificate', {"origin": origin}).then(
-            (response) => new NetworkGetCertificateResponse(response));
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    return _devtools.rpc
+        .sendRequest('Network.getCertificate', params)
+        .then((response) => new NetworkGetCertificateResponse(response));
   }
 
 /** Returns all browser cookies for the current URL. Depending on the backend support, will return
 detailed cookie information in the `cookies` field. */
   dart_async.Future<NetworkGetCookiesResponse> getCookies({List urls}) {
-    return _devtools.client
-        .sendRequest('Network.getCookies', {"urls": urls}).then(
-            (response) => new NetworkGetCookiesResponse(response));
+    var params = {};
+    if (urls != null) params['urls'] = urls;
+
+    return _devtools.rpc
+        .sendRequest('Network.getCookies', params)
+        .then((response) => new NetworkGetCookiesResponse(response));
   }
 
 /** Returns content served for the given request. */
   dart_async.Future<NetworkGetResponseBodyResponse> getResponseBody(
       {String requestId}) {
-    return _devtools.client
-        .sendRequest('Network.getResponseBody', {"requestId": requestId}).then(
-            (response) => new NetworkGetResponseBodyResponse(response));
+    var params = {};
+    if (requestId != null) params['requestId'] = requestId;
+
+    return _devtools.rpc
+        .sendRequest('Network.getResponseBody', params)
+        .then((response) => new NetworkGetResponseBodyResponse(response));
   }
 
 /** Returns post data sent with the request. Returns an error when no data was sent with the request. */
   dart_async.Future<NetworkGetRequestPostDataResponse> getRequestPostData(
       {String requestId}) {
-    return _devtools.client.sendRequest('Network.getRequestPostData', {
-      "requestId": requestId
-    }).then((response) => new NetworkGetRequestPostDataResponse(response));
+    var params = {};
+    if (requestId != null) params['requestId'] = requestId;
+
+    return _devtools.rpc
+        .sendRequest('Network.getRequestPostData', params)
+        .then((response) => new NetworkGetRequestPostDataResponse(response));
   }
 
 /** Returns content served for the given currently intercepted request. */
   dart_async.Future<NetworkGetResponseBodyForInterceptionResponse>
       getResponseBodyForInterception({String interceptionId}) {
-    return _devtools.client.sendRequest(
-        'Network.getResponseBodyForInterception', {
-      "interceptionId": interceptionId
-    }).then((response) =>
-        new NetworkGetResponseBodyForInterceptionResponse(response));
+    var params = {};
+    if (interceptionId != null) params['interceptionId'] = interceptionId;
+
+    return _devtools.rpc
+        .sendRequest('Network.getResponseBodyForInterception', params)
+        .then((response) =>
+            new NetworkGetResponseBodyForInterceptionResponse(response));
   }
 
 /** This method sends a new XMLHttpRequest which is identical to the original one. The following
 parameters should be identical: method, url, async, request body, extra headers, withCredentials
 attribute, user, password. */
   dart_async.Future replayXHR({String requestId}) {
-    return _devtools.client
-        .sendRequest('Network.replayXHR', {"requestId": requestId});
+    var params = {};
+    if (requestId != null) params['requestId'] = requestId;
+
+    return _devtools.rpc.sendRequest('Network.replayXHR', params);
   }
 
 /** Searches for given string in response content. */
   dart_async.Future<NetworkSearchInResponseBodyResponse> searchInResponseBody(
       {String requestId, String query, bool caseSensitive, bool isRegex}) {
-    return _devtools.client.sendRequest('Network.searchInResponseBody', {
-      "requestId": requestId,
-      "query": query,
-      "caseSensitive": caseSensitive,
-      "isRegex": isRegex
-    }).then((response) => new NetworkSearchInResponseBodyResponse(response));
+    var params = {};
+    if (requestId != null) params['requestId'] = requestId;
+
+    if (query != null) params['query'] = query;
+
+    if (caseSensitive != null) params['caseSensitive'] = caseSensitive;
+
+    if (isRegex != null) params['isRegex'] = isRegex;
+
+    return _devtools.rpc
+        .sendRequest('Network.searchInResponseBody', params)
+        .then((response) => new NetworkSearchInResponseBodyResponse(response));
   }
 
 /** Blocks URLs from loading. */
   dart_async.Future setBlockedURLs({List urls}) {
-    return _devtools.client
-        .sendRequest('Network.setBlockedURLs', {"urls": urls});
+    var params = {};
+    if (urls != null) params['urls'] = urls;
+
+    return _devtools.rpc.sendRequest('Network.setBlockedURLs', params);
   }
 
 /** Toggles ignoring of service worker for each request. */
   dart_async.Future setBypassServiceWorker({bool bypass}) {
-    return _devtools.client
-        .sendRequest('Network.setBypassServiceWorker', {"bypass": bypass});
+    var params = {};
+    if (bypass != null) params['bypass'] = bypass;
+
+    return _devtools.rpc.sendRequest('Network.setBypassServiceWorker', params);
   }
 
 /** Toggles ignoring cache for each request. If `true`, cache will not be used. */
   dart_async.Future setCacheDisabled({bool cacheDisabled}) {
-    return _devtools.client.sendRequest(
-        'Network.setCacheDisabled', {"cacheDisabled": cacheDisabled});
+    var params = {};
+    if (cacheDisabled != null) params['cacheDisabled'] = cacheDisabled;
+
+    return _devtools.rpc.sendRequest('Network.setCacheDisabled', params);
   }
 
 /** Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist. */
@@ -5639,48 +6312,72 @@ attribute, user, password. */
       bool httpOnly,
       String sameSite,
       num expires}) {
-    return _devtools.client.sendRequest('Network.setCookie', {
-      "name": name,
-      "value": value,
-      "url": url,
-      "domain": domain,
-      "path": path,
-      "secure": secure,
-      "httpOnly": httpOnly,
-      "sameSite": sameSite,
-      "expires": expires
-    }).then((response) => new NetworkSetCookieResponse(response));
+    var params = {};
+    if (name != null) params['name'] = name;
+
+    if (value != null) params['value'] = value;
+
+    if (url != null) params['url'] = url;
+
+    if (domain != null) params['domain'] = domain;
+
+    if (path != null) params['path'] = path;
+
+    if (secure != null) params['secure'] = secure;
+
+    if (httpOnly != null) params['httpOnly'] = httpOnly;
+
+    if (sameSite != null) params['sameSite'] = sameSite;
+
+    if (expires != null) params['expires'] = expires;
+
+    return _devtools.rpc
+        .sendRequest('Network.setCookie', params)
+        .then((response) => new NetworkSetCookieResponse(response));
   }
 
 /** Sets given cookies. */
   dart_async.Future setCookies({List<CookieParam> cookies}) {
-    return _devtools.client
-        .sendRequest('Network.setCookies', {"cookies": cookies});
+    var params = {};
+    if (cookies != null) params['cookies'] = cookies;
+
+    return _devtools.rpc.sendRequest('Network.setCookies', params);
   }
 
 /** For testing. */
   dart_async.Future setDataSizeLimitsForTest(
       {int maxTotalSize, int maxResourceSize}) {
-    return _devtools.client.sendRequest('Network.setDataSizeLimitsForTest',
-        {"maxTotalSize": maxTotalSize, "maxResourceSize": maxResourceSize});
+    var params = {};
+    if (maxTotalSize != null) params['maxTotalSize'] = maxTotalSize;
+
+    if (maxResourceSize != null) params['maxResourceSize'] = maxResourceSize;
+
+    return _devtools.rpc
+        .sendRequest('Network.setDataSizeLimitsForTest', params);
   }
 
 /** Specifies whether to always send extra HTTP headers with the requests from this page. */
   dart_async.Future setExtraHTTPHeaders({Headers headers}) {
-    return _devtools.client
-        .sendRequest('Network.setExtraHTTPHeaders', {"headers": headers});
+    var params = {};
+    if (headers != null) params['headers'] = headers;
+
+    return _devtools.rpc.sendRequest('Network.setExtraHTTPHeaders', params);
   }
 
 /** Sets the requests to intercept that match a the provided patterns and optionally resource types. */
   dart_async.Future setRequestInterception({List<RequestPattern> patterns}) {
-    return _devtools.client
-        .sendRequest('Network.setRequestInterception', {"patterns": patterns});
+    var params = {};
+    if (patterns != null) params['patterns'] = patterns;
+
+    return _devtools.rpc.sendRequest('Network.setRequestInterception', params);
   }
 
 /** Allows overriding user agent with the given string. */
   dart_async.Future setUserAgentOverride({String userAgent}) {
-    return _devtools.client
-        .sendRequest('Network.setUserAgentOverride', {"userAgent": userAgent});
+    var params = {};
+    if (userAgent != null) params['userAgent'] = userAgent;
+
+    return _devtools.rpc.sendRequest('Network.setUserAgentOverride', params);
   }
 }
 
@@ -5699,36 +6396,46 @@ class DevToolsOverlay {
 
 /** Disables domain notifications. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Overlay.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Overlay.disable', params);
   }
 
 /** Enables domain notifications. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Overlay.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Overlay.enable', params);
   }
 
 /** For testing. */
   dart_async.Future<OverlayGetHighlightObjectForTestResponse>
       getHighlightObjectForTest({int nodeId}) {
-    return _devtools.client.sendRequest('Overlay.getHighlightObjectForTest', {
-      "nodeId": nodeId
-    }).then(
-        (response) => new OverlayGetHighlightObjectForTestResponse(response));
+    var params = {};
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    return _devtools.rpc
+        .sendRequest('Overlay.getHighlightObjectForTest', params)
+        .then((response) =>
+            new OverlayGetHighlightObjectForTestResponse(response));
   }
 
 /** Hides any highlight. */
   dart_async.Future hideHighlight() {
-    return _devtools.client.sendRequest('Overlay.hideHighlight', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Overlay.hideHighlight', params);
   }
 
 /** Highlights owner element of the frame with given id. */
   dart_async.Future highlightFrame(
       {String frameId, RGBA contentColor, RGBA contentOutlineColor}) {
-    return _devtools.client.sendRequest('Overlay.highlightFrame', {
-      "frameId": frameId,
-      "contentColor": contentColor,
-      "contentOutlineColor": contentOutlineColor
-    });
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    if (contentColor != null) params['contentColor'] = contentColor;
+
+    if (contentOutlineColor != null)
+      params['contentOutlineColor'] = contentOutlineColor;
+
+    return _devtools.rpc.sendRequest('Overlay.highlightFrame', params);
   }
 
 /** Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or
@@ -5738,81 +6445,118 @@ objectId must be specified. */
       int nodeId,
       int backendNodeId,
       Object objectId}) {
-    return _devtools.client.sendRequest('Overlay.highlightNode', {
-      "highlightConfig": highlightConfig,
-      "nodeId": nodeId,
-      "backendNodeId": backendNodeId,
-      "objectId": objectId
-    });
+    var params = {};
+    if (highlightConfig != null) params['highlightConfig'] = highlightConfig;
+
+    if (nodeId != null) params['nodeId'] = nodeId;
+
+    if (backendNodeId != null) params['backendNodeId'] = backendNodeId;
+
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc.sendRequest('Overlay.highlightNode', params);
   }
 
 /** Highlights given quad. Coordinates are absolute with respect to the main frame viewport. */
   dart_async.Future highlightQuad({List quad, RGBA color, RGBA outlineColor}) {
-    return _devtools.client.sendRequest('Overlay.highlightQuad',
-        {"quad": quad, "color": color, "outlineColor": outlineColor});
+    var params = {};
+    if (quad != null) params['quad'] = quad;
+
+    if (color != null) params['color'] = color;
+
+    if (outlineColor != null) params['outlineColor'] = outlineColor;
+
+    return _devtools.rpc.sendRequest('Overlay.highlightQuad', params);
   }
 
 /** Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. */
   dart_async.Future highlightRect(
       {int x, int y, int width, int height, RGBA color, RGBA outlineColor}) {
-    return _devtools.client.sendRequest('Overlay.highlightRect', {
-      "x": x,
-      "y": y,
-      "width": width,
-      "height": height,
-      "color": color,
-      "outlineColor": outlineColor
-    });
+    var params = {};
+    if (x != null) params['x'] = x;
+
+    if (y != null) params['y'] = y;
+
+    if (width != null) params['width'] = width;
+
+    if (height != null) params['height'] = height;
+
+    if (color != null) params['color'] = color;
+
+    if (outlineColor != null) params['outlineColor'] = outlineColor;
+
+    return _devtools.rpc.sendRequest('Overlay.highlightRect', params);
   }
 
 /** Enters the 'inspect' mode. In this mode, elements that user is hovering over are highlighted.
 Backend then generates 'inspectNodeRequested' event upon element selection. */
   dart_async.Future setInspectMode(
       {String mode, HighlightConfig highlightConfig}) {
-    return _devtools.client.sendRequest('Overlay.setInspectMode',
-        {"mode": mode, "highlightConfig": highlightConfig});
+    var params = {};
+    if (mode != null) params['mode'] = mode;
+
+    if (highlightConfig != null) params['highlightConfig'] = highlightConfig;
+
+    return _devtools.rpc.sendRequest('Overlay.setInspectMode', params);
   }
 
 /**  */
   dart_async.Future setPausedInDebuggerMessage({String message}) {
-    return _devtools.client.sendRequest(
-        'Overlay.setPausedInDebuggerMessage', {"message": message});
+    var params = {};
+    if (message != null) params['message'] = message;
+
+    return _devtools.rpc
+        .sendRequest('Overlay.setPausedInDebuggerMessage', params);
   }
 
 /** Requests that backend shows debug borders on layers */
   dart_async.Future setShowDebugBorders({bool show}) {
-    return _devtools.client
-        .sendRequest('Overlay.setShowDebugBorders', {"show": show});
+    var params = {};
+    if (show != null) params['show'] = show;
+
+    return _devtools.rpc.sendRequest('Overlay.setShowDebugBorders', params);
   }
 
 /** Requests that backend shows the FPS counter */
   dart_async.Future setShowFPSCounter({bool show}) {
-    return _devtools.client
-        .sendRequest('Overlay.setShowFPSCounter', {"show": show});
+    var params = {};
+    if (show != null) params['show'] = show;
+
+    return _devtools.rpc.sendRequest('Overlay.setShowFPSCounter', params);
   }
 
 /** Requests that backend shows paint rectangles */
   dart_async.Future setShowPaintRects({bool result}) {
-    return _devtools.client
-        .sendRequest('Overlay.setShowPaintRects', {"result": result});
+    var params = {};
+    if (result != null) params['result'] = result;
+
+    return _devtools.rpc.sendRequest('Overlay.setShowPaintRects', params);
   }
 
 /** Requests that backend shows scroll bottleneck rects */
   dart_async.Future setShowScrollBottleneckRects({bool show}) {
-    return _devtools.client
-        .sendRequest('Overlay.setShowScrollBottleneckRects', {"show": show});
+    var params = {};
+    if (show != null) params['show'] = show;
+
+    return _devtools.rpc
+        .sendRequest('Overlay.setShowScrollBottleneckRects', params);
   }
 
 /** Paints viewport size upon main frame resize. */
   dart_async.Future setShowViewportSizeOnResize({bool show}) {
-    return _devtools.client
-        .sendRequest('Overlay.setShowViewportSizeOnResize', {"show": show});
+    var params = {};
+    if (show != null) params['show'] = show;
+
+    return _devtools.rpc
+        .sendRequest('Overlay.setShowViewportSizeOnResize', params);
   }
 
 /**  */
   dart_async.Future setSuspended({bool suspended}) {
-    return _devtools.client
-        .sendRequest('Overlay.setSuspended', {"suspended": suspended});
+    var params = {};
+    if (suspended != null) params['suspended'] = suspended;
+
+    return _devtools.rpc.sendRequest('Overlay.setSuspended', params);
   }
 }
 
@@ -5960,146 +6704,202 @@ class DevToolsPage {
 /** Deprecated, please use addScriptToEvaluateOnNewDocument instead. */
   dart_async.Future<PageAddScriptToEvaluateOnLoadResponse>
       addScriptToEvaluateOnLoad({String scriptSource}) {
-    return _devtools.client.sendRequest('Page.addScriptToEvaluateOnLoad', {
-      "scriptSource": scriptSource
-    }).then((response) => new PageAddScriptToEvaluateOnLoadResponse(response));
+    var params = {};
+    if (scriptSource != null) params['scriptSource'] = scriptSource;
+
+    return _devtools.rpc
+        .sendRequest('Page.addScriptToEvaluateOnLoad', params)
+        .then(
+            (response) => new PageAddScriptToEvaluateOnLoadResponse(response));
   }
 
 /** Evaluates given script in every frame upon creation (before loading frame's scripts). */
   dart_async.Future<PageAddScriptToEvaluateOnNewDocumentResponse>
       addScriptToEvaluateOnNewDocument({String source}) {
-    return _devtools.client.sendRequest(
-        'Page.addScriptToEvaluateOnNewDocument', {
-      "source": source
-    }).then((response) =>
-        new PageAddScriptToEvaluateOnNewDocumentResponse(response));
+    var params = {};
+    if (source != null) params['source'] = source;
+
+    return _devtools.rpc
+        .sendRequest('Page.addScriptToEvaluateOnNewDocument', params)
+        .then((response) =>
+            new PageAddScriptToEvaluateOnNewDocumentResponse(response));
   }
 
 /** Brings page to front (activates tab). */
   dart_async.Future bringToFront() {
-    return _devtools.client.sendRequest('Page.bringToFront', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.bringToFront', params);
   }
 
 /** Capture page screenshot. */
   dart_async.Future<PageCaptureScreenshotResponse> captureScreenshot(
       {String format, int quality, Viewport clip, bool fromSurface}) {
-    return _devtools.client.sendRequest('Page.captureScreenshot', {
-      "format": format,
-      "quality": quality,
-      "clip": clip,
-      "fromSurface": fromSurface
-    }).then((response) => new PageCaptureScreenshotResponse(response));
+    var params = {};
+    if (format != null) params['format'] = format;
+
+    if (quality != null) params['quality'] = quality;
+
+    if (clip != null) params['clip'] = clip;
+
+    if (fromSurface != null) params['fromSurface'] = fromSurface;
+
+    return _devtools.rpc
+        .sendRequest('Page.captureScreenshot', params)
+        .then((response) => new PageCaptureScreenshotResponse(response));
   }
 
 /** Clears the overriden device metrics. */
   dart_async.Future clearDeviceMetricsOverride() {
-    return _devtools.client.sendRequest('Page.clearDeviceMetricsOverride', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.clearDeviceMetricsOverride', params);
   }
 
 /** Clears the overridden Device Orientation. */
   dart_async.Future clearDeviceOrientationOverride() {
-    return _devtools.client
-        .sendRequest('Page.clearDeviceOrientationOverride', {});
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Page.clearDeviceOrientationOverride', params);
   }
 
 /** Clears the overriden Geolocation Position and Error. */
   dart_async.Future clearGeolocationOverride() {
-    return _devtools.client.sendRequest('Page.clearGeolocationOverride', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.clearGeolocationOverride', params);
   }
 
 /** Creates an isolated world for the given frame. */
   dart_async.Future<PageCreateIsolatedWorldResponse> createIsolatedWorld(
       {String frameId, String worldName, bool grantUniveralAccess}) {
-    return _devtools.client.sendRequest('Page.createIsolatedWorld', {
-      "frameId": frameId,
-      "worldName": worldName,
-      "grantUniveralAccess": grantUniveralAccess
-    }).then((response) => new PageCreateIsolatedWorldResponse(response));
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    if (worldName != null) params['worldName'] = worldName;
+
+    if (grantUniveralAccess != null)
+      params['grantUniveralAccess'] = grantUniveralAccess;
+
+    return _devtools.rpc
+        .sendRequest('Page.createIsolatedWorld', params)
+        .then((response) => new PageCreateIsolatedWorldResponse(response));
   }
 
 /** Deletes browser cookie with given name, domain and path. */
   dart_async.Future deleteCookie({String cookieName, String url}) {
-    return _devtools.client.sendRequest(
-        'Page.deleteCookie', {"cookieName": cookieName, "url": url});
+    var params = {};
+    if (cookieName != null) params['cookieName'] = cookieName;
+
+    if (url != null) params['url'] = url;
+
+    return _devtools.rpc.sendRequest('Page.deleteCookie', params);
   }
 
 /** Disables page domain notifications. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Page.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.disable', params);
   }
 
 /** Enables page domain notifications. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Page.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.enable', params);
   }
 
 /**  */
   dart_async.Future<PageGetAppManifestResponse> getAppManifest() {
-    return _devtools.client.sendRequest('Page.getAppManifest', {}).then(
-        (response) => new PageGetAppManifestResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Page.getAppManifest', params)
+        .then((response) => new PageGetAppManifestResponse(response));
   }
 
 /** Returns all browser cookies. Depending on the backend support, will return detailed cookie
 information in the `cookies` field. */
   dart_async.Future<PageGetCookiesResponse> getCookies() {
-    return _devtools.client.sendRequest('Page.getCookies', {}).then(
-        (response) => new PageGetCookiesResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Page.getCookies', params)
+        .then((response) => new PageGetCookiesResponse(response));
   }
 
 /** Returns present frame tree structure. */
   dart_async.Future<PageGetFrameTreeResponse> getFrameTree() {
-    return _devtools.client.sendRequest('Page.getFrameTree', {}).then(
-        (response) => new PageGetFrameTreeResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Page.getFrameTree', params)
+        .then((response) => new PageGetFrameTreeResponse(response));
   }
 
 /** Returns metrics relating to the layouting of the page, such as viewport bounds/scale. */
   dart_async.Future<PageGetLayoutMetricsResponse> getLayoutMetrics() {
-    return _devtools.client.sendRequest('Page.getLayoutMetrics', {}).then(
-        (response) => new PageGetLayoutMetricsResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Page.getLayoutMetrics', params)
+        .then((response) => new PageGetLayoutMetricsResponse(response));
   }
 
 /** Returns navigation history for the current page. */
   dart_async.Future<PageGetNavigationHistoryResponse> getNavigationHistory() {
-    return _devtools.client.sendRequest('Page.getNavigationHistory', {}).then(
-        (response) => new PageGetNavigationHistoryResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Page.getNavigationHistory', params)
+        .then((response) => new PageGetNavigationHistoryResponse(response));
   }
 
 /** Returns content of the given resource. */
   dart_async.Future<PageGetResourceContentResponse> getResourceContent(
       {String frameId, String url}) {
-    return _devtools.client.sendRequest('Page.getResourceContent', {
-      "frameId": frameId,
-      "url": url
-    }).then((response) => new PageGetResourceContentResponse(response));
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    if (url != null) params['url'] = url;
+
+    return _devtools.rpc
+        .sendRequest('Page.getResourceContent', params)
+        .then((response) => new PageGetResourceContentResponse(response));
   }
 
 /** Returns present frame / resource tree structure. */
   dart_async.Future<PageGetResourceTreeResponse> getResourceTree() {
-    return _devtools.client.sendRequest('Page.getResourceTree', {}).then(
-        (response) => new PageGetResourceTreeResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Page.getResourceTree', params)
+        .then((response) => new PageGetResourceTreeResponse(response));
   }
 
 /** Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload). */
   dart_async.Future handleJavaScriptDialog({bool accept, String promptText}) {
-    return _devtools.client.sendRequest('Page.handleJavaScriptDialog',
-        {"accept": accept, "promptText": promptText});
+    var params = {};
+    if (accept != null) params['accept'] = accept;
+
+    if (promptText != null) params['promptText'] = promptText;
+
+    return _devtools.rpc.sendRequest('Page.handleJavaScriptDialog', params);
   }
 
 /** Navigates current page to the given URL. */
   dart_async.Future<PageNavigateResponse> navigate(
       {String url, String referrer, String transitionType, String frameId}) {
-    return _devtools.client.sendRequest('Page.navigate', {
-      "url": url,
-      "referrer": referrer,
-      "transitionType": transitionType,
-      "frameId": frameId
-    }).then((response) => new PageNavigateResponse(response));
+    var params = {};
+    if (url != null) params['url'] = url;
+
+    if (referrer != null) params['referrer'] = referrer;
+
+    if (transitionType != null) params['transitionType'] = transitionType;
+
+    if (frameId != null) params['frameId'] = frameId;
+
+    return _devtools.rpc
+        .sendRequest('Page.navigate', params)
+        .then((response) => new PageNavigateResponse(response));
   }
 
 /** Navigates current page to the given history entry. */
   dart_async.Future navigateToHistoryEntry({int entryId}) {
-    return _devtools.client
-        .sendRequest('Page.navigateToHistoryEntry', {"entryId": entryId});
+    var params = {};
+    if (entryId != null) params['entryId'] = entryId;
+
+    return _devtools.rpc.sendRequest('Page.navigateToHistoryEntry', params);
   }
 
 /** Print page as PDF. */
@@ -6119,54 +6919,86 @@ information in the `cookies` field. */
       String headerTemplate,
       String footerTemplate,
       bool preferCSSPageSize}) {
-    return _devtools.client.sendRequest('Page.printToPDF', {
-      "landscape": landscape,
-      "displayHeaderFooter": displayHeaderFooter,
-      "printBackground": printBackground,
-      "scale": scale,
-      "paperWidth": paperWidth,
-      "paperHeight": paperHeight,
-      "marginTop": marginTop,
-      "marginBottom": marginBottom,
-      "marginLeft": marginLeft,
-      "marginRight": marginRight,
-      "pageRanges": pageRanges,
-      "ignoreInvalidPageRanges": ignoreInvalidPageRanges,
-      "headerTemplate": headerTemplate,
-      "footerTemplate": footerTemplate,
-      "preferCSSPageSize": preferCSSPageSize
-    }).then((response) => new PagePrintToPDFResponse(response));
+    var params = {};
+    if (landscape != null) params['landscape'] = landscape;
+
+    if (displayHeaderFooter != null)
+      params['displayHeaderFooter'] = displayHeaderFooter;
+
+    if (printBackground != null) params['printBackground'] = printBackground;
+
+    if (scale != null) params['scale'] = scale;
+
+    if (paperWidth != null) params['paperWidth'] = paperWidth;
+
+    if (paperHeight != null) params['paperHeight'] = paperHeight;
+
+    if (marginTop != null) params['marginTop'] = marginTop;
+
+    if (marginBottom != null) params['marginBottom'] = marginBottom;
+
+    if (marginLeft != null) params['marginLeft'] = marginLeft;
+
+    if (marginRight != null) params['marginRight'] = marginRight;
+
+    if (pageRanges != null) params['pageRanges'] = pageRanges;
+
+    if (ignoreInvalidPageRanges != null)
+      params['ignoreInvalidPageRanges'] = ignoreInvalidPageRanges;
+
+    if (headerTemplate != null) params['headerTemplate'] = headerTemplate;
+
+    if (footerTemplate != null) params['footerTemplate'] = footerTemplate;
+
+    if (preferCSSPageSize != null)
+      params['preferCSSPageSize'] = preferCSSPageSize;
+
+    return _devtools.rpc
+        .sendRequest('Page.printToPDF', params)
+        .then((response) => new PagePrintToPDFResponse(response));
   }
 
 /** Reloads given page optionally ignoring the cache. */
   dart_async.Future reload({bool ignoreCache, String scriptToEvaluateOnLoad}) {
-    return _devtools.client.sendRequest('Page.reload', {
-      "ignoreCache": ignoreCache,
-      "scriptToEvaluateOnLoad": scriptToEvaluateOnLoad
-    });
+    var params = {};
+    if (ignoreCache != null) params['ignoreCache'] = ignoreCache;
+
+    if (scriptToEvaluateOnLoad != null)
+      params['scriptToEvaluateOnLoad'] = scriptToEvaluateOnLoad;
+
+    return _devtools.rpc.sendRequest('Page.reload', params);
   }
 
 /** Deprecated, please use removeScriptToEvaluateOnNewDocument instead. */
   dart_async.Future removeScriptToEvaluateOnLoad({String identifier}) {
-    return _devtools.client.sendRequest(
-        'Page.removeScriptToEvaluateOnLoad', {"identifier": identifier});
+    var params = {};
+    if (identifier != null) params['identifier'] = identifier;
+
+    return _devtools.rpc
+        .sendRequest('Page.removeScriptToEvaluateOnLoad', params);
   }
 
 /** Removes given script from the list. */
   dart_async.Future removeScriptToEvaluateOnNewDocument({String identifier}) {
-    return _devtools.client.sendRequest(
-        'Page.removeScriptToEvaluateOnNewDocument', {"identifier": identifier});
+    var params = {};
+    if (identifier != null) params['identifier'] = identifier;
+
+    return _devtools.rpc
+        .sendRequest('Page.removeScriptToEvaluateOnNewDocument', params);
   }
 
 /**  */
   dart_async.Future requestAppBanner() {
-    return _devtools.client.sendRequest('Page.requestAppBanner', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.requestAppBanner', params);
   }
 
 /** Acknowledges that a screencast frame has been received by the frontend. */
   dart_async.Future screencastFrameAck({int sessionId}) {
-    return _devtools.client
-        .sendRequest('Page.screencastFrameAck', {"sessionId": sessionId});
+    var params = {};
+    if (sessionId != null) params['sessionId'] = sessionId;
+
+    return _devtools.rpc.sendRequest('Page.screencastFrameAck', params);
   }
 
 /** Searches for given string in resource content. */
@@ -6176,19 +7008,28 @@ information in the `cookies` field. */
       String query,
       bool caseSensitive,
       bool isRegex}) {
-    return _devtools.client.sendRequest('Page.searchInResource', {
-      "frameId": frameId,
-      "url": url,
-      "query": query,
-      "caseSensitive": caseSensitive,
-      "isRegex": isRegex
-    }).then((response) => new PageSearchInResourceResponse(response));
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    if (url != null) params['url'] = url;
+
+    if (query != null) params['query'] = query;
+
+    if (caseSensitive != null) params['caseSensitive'] = caseSensitive;
+
+    if (isRegex != null) params['isRegex'] = isRegex;
+
+    return _devtools.rpc
+        .sendRequest('Page.searchInResource', params)
+        .then((response) => new PageSearchInResourceResponse(response));
   }
 
 /** Enable Chrome's experimental ad filter on all sites. */
   dart_async.Future setAdBlockingEnabled({bool enabled}) {
-    return _devtools.client
-        .sendRequest('Page.setAdBlockingEnabled', {"enabled": enabled});
+    var params = {};
+    if (enabled != null) params['enabled'] = enabled;
+
+    return _devtools.rpc.sendRequest('Page.setAdBlockingEnabled', params);
   }
 
 /** Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
@@ -6207,61 +7048,103 @@ query results). */
       bool dontSetVisibleSize,
       ScreenOrientation screenOrientation,
       Viewport viewport}) {
-    return _devtools.client.sendRequest('Page.setDeviceMetricsOverride', {
-      "width": width,
-      "height": height,
-      "deviceScaleFactor": deviceScaleFactor,
-      "mobile": mobile,
-      "scale": scale,
-      "screenWidth": screenWidth,
-      "screenHeight": screenHeight,
-      "positionX": positionX,
-      "positionY": positionY,
-      "dontSetVisibleSize": dontSetVisibleSize,
-      "screenOrientation": screenOrientation,
-      "viewport": viewport
-    });
+    var params = {};
+    if (width != null) params['width'] = width;
+
+    if (height != null) params['height'] = height;
+
+    if (deviceScaleFactor != null)
+      params['deviceScaleFactor'] = deviceScaleFactor;
+
+    if (mobile != null) params['mobile'] = mobile;
+
+    if (scale != null) params['scale'] = scale;
+
+    if (screenWidth != null) params['screenWidth'] = screenWidth;
+
+    if (screenHeight != null) params['screenHeight'] = screenHeight;
+
+    if (positionX != null) params['positionX'] = positionX;
+
+    if (positionY != null) params['positionY'] = positionY;
+
+    if (dontSetVisibleSize != null)
+      params['dontSetVisibleSize'] = dontSetVisibleSize;
+
+    if (screenOrientation != null)
+      params['screenOrientation'] = screenOrientation;
+
+    if (viewport != null) params['viewport'] = viewport;
+
+    return _devtools.rpc.sendRequest('Page.setDeviceMetricsOverride', params);
   }
 
 /** Overrides the Device Orientation. */
   dart_async.Future setDeviceOrientationOverride(
       {num alpha, num beta, num gamma}) {
-    return _devtools.client.sendRequest('Page.setDeviceOrientationOverride',
-        {"alpha": alpha, "beta": beta, "gamma": gamma});
+    var params = {};
+    if (alpha != null) params['alpha'] = alpha;
+
+    if (beta != null) params['beta'] = beta;
+
+    if (gamma != null) params['gamma'] = gamma;
+
+    return _devtools.rpc
+        .sendRequest('Page.setDeviceOrientationOverride', params);
   }
 
 /** Sets given markup as the document's HTML. */
   dart_async.Future setDocumentContent({String frameId, String html}) {
-    return _devtools.client.sendRequest(
-        'Page.setDocumentContent', {"frameId": frameId, "html": html});
+    var params = {};
+    if (frameId != null) params['frameId'] = frameId;
+
+    if (html != null) params['html'] = html;
+
+    return _devtools.rpc.sendRequest('Page.setDocumentContent', params);
   }
 
 /** Set the behavior when downloading a file. */
   dart_async.Future setDownloadBehavior(
       {String behavior, String downloadPath}) {
-    return _devtools.client.sendRequest('Page.setDownloadBehavior',
-        {"behavior": behavior, "downloadPath": downloadPath});
+    var params = {};
+    if (behavior != null) params['behavior'] = behavior;
+
+    if (downloadPath != null) params['downloadPath'] = downloadPath;
+
+    return _devtools.rpc.sendRequest('Page.setDownloadBehavior', params);
   }
 
 /** Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
 unavailable. */
   dart_async.Future setGeolocationOverride(
       {num latitude, num longitude, num accuracy}) {
-    return _devtools.client.sendRequest('Page.setGeolocationOverride',
-        {"latitude": latitude, "longitude": longitude, "accuracy": accuracy});
+    var params = {};
+    if (latitude != null) params['latitude'] = latitude;
+
+    if (longitude != null) params['longitude'] = longitude;
+
+    if (accuracy != null) params['accuracy'] = accuracy;
+
+    return _devtools.rpc.sendRequest('Page.setGeolocationOverride', params);
   }
 
 /** Controls whether page will emit lifecycle events. */
   dart_async.Future setLifecycleEventsEnabled({bool enabled}) {
-    return _devtools.client
-        .sendRequest('Page.setLifecycleEventsEnabled', {"enabled": enabled});
+    var params = {};
+    if (enabled != null) params['enabled'] = enabled;
+
+    return _devtools.rpc.sendRequest('Page.setLifecycleEventsEnabled', params);
   }
 
 /** Toggles mouse event-based touch event emulation. */
   dart_async.Future setTouchEmulationEnabled(
       {bool enabled, String configuration}) {
-    return _devtools.client.sendRequest('Page.setTouchEmulationEnabled',
-        {"enabled": enabled, "configuration": configuration});
+    var params = {};
+    if (enabled != null) params['enabled'] = enabled;
+
+    if (configuration != null) params['configuration'] = configuration;
+
+    return _devtools.rpc.sendRequest('Page.setTouchEmulationEnabled', params);
   }
 
 /** Starts sending each frame using the `screencastFrame` event. */
@@ -6271,28 +7154,36 @@ unavailable. */
       int maxWidth,
       int maxHeight,
       int everyNthFrame}) {
-    return _devtools.client.sendRequest('Page.startScreencast', {
-      "format": format,
-      "quality": quality,
-      "maxWidth": maxWidth,
-      "maxHeight": maxHeight,
-      "everyNthFrame": everyNthFrame
-    });
+    var params = {};
+    if (format != null) params['format'] = format;
+
+    if (quality != null) params['quality'] = quality;
+
+    if (maxWidth != null) params['maxWidth'] = maxWidth;
+
+    if (maxHeight != null) params['maxHeight'] = maxHeight;
+
+    if (everyNthFrame != null) params['everyNthFrame'] = everyNthFrame;
+
+    return _devtools.rpc.sendRequest('Page.startScreencast', params);
   }
 
 /** Force the page stop all navigations and pending resource fetches. */
   dart_async.Future stopLoading() {
-    return _devtools.client.sendRequest('Page.stopLoading', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.stopLoading', params);
   }
 
 /** Crashes renderer on the IO thread, generates minidumps. */
   dart_async.Future crash() {
-    return _devtools.client.sendRequest('Page.crash', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.crash', params);
   }
 
 /** Stops sending each frame in the `screencastFrame`. */
   dart_async.Future stopScreencast() {
-    return _devtools.client.sendRequest('Page.stopScreencast', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Page.stopScreencast', params);
   }
 }
 
@@ -6311,18 +7202,22 @@ class DevToolsPerformance {
 
 /** Disable collecting and reporting metrics. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Performance.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Performance.disable', params);
   }
 
 /** Enable collecting and reporting metrics. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Performance.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Performance.enable', params);
   }
 
 /** Retrieve current values of run-time metrics. */
   dart_async.Future<PerformanceGetMetricsResponse> getMetrics() {
-    return _devtools.client.sendRequest('Performance.getMetrics', {}).then(
-        (response) => new PerformanceGetMetricsResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Performance.getMetrics', params)
+        .then((response) => new PerformanceGetMetricsResponse(response));
   }
 }
 
@@ -6333,31 +7228,43 @@ class DevToolsSecurity {
 
 /** Disables tracking security state changes. */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('Security.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Security.disable', params);
   }
 
 /** Enables tracking security state changes. */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('Security.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Security.enable', params);
   }
 
 /** Enable/disable whether all certificate errors should be ignored. */
   dart_async.Future setIgnoreCertificateErrors({bool ignore}) {
-    return _devtools.client
-        .sendRequest('Security.setIgnoreCertificateErrors', {"ignore": ignore});
+    var params = {};
+    if (ignore != null) params['ignore'] = ignore;
+
+    return _devtools.rpc
+        .sendRequest('Security.setIgnoreCertificateErrors', params);
   }
 
 /** Handles a certificate error that fired a certificateError event. */
   dart_async.Future handleCertificateError({int eventId, String action}) {
-    return _devtools.client.sendRequest('Security.handleCertificateError',
-        {"eventId": eventId, "action": action});
+    var params = {};
+    if (eventId != null) params['eventId'] = eventId;
+
+    if (action != null) params['action'] = action;
+
+    return _devtools.rpc.sendRequest('Security.handleCertificateError', params);
   }
 
 /** Enable/disable overriding certificate errors. If enabled, all certificate error events need to
 be handled by the DevTools client and should be answered with handleCertificateError commands. */
   dart_async.Future setOverrideCertificateErrors({bool override}) {
-    return _devtools.client.sendRequest(
-        'Security.setOverrideCertificateErrors', {"override": override});
+    var params = {};
+    if (override != null) params['override'] = override;
+
+    return _devtools.rpc
+        .sendRequest('Security.setOverrideCertificateErrors', params);
   }
 }
 
@@ -6369,77 +7276,107 @@ class DevToolsServiceWorker {
 /**  */
   dart_async.Future deliverPushMessage(
       {String origin, String registrationId, String data}) {
-    return _devtools.client.sendRequest('ServiceWorker.deliverPushMessage',
-        {"origin": origin, "registrationId": registrationId, "data": data});
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    if (registrationId != null) params['registrationId'] = registrationId;
+
+    if (data != null) params['data'] = data;
+
+    return _devtools.rpc
+        .sendRequest('ServiceWorker.deliverPushMessage', params);
   }
 
 /**  */
   dart_async.Future disable() {
-    return _devtools.client.sendRequest('ServiceWorker.disable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('ServiceWorker.disable', params);
   }
 
 /**  */
   dart_async.Future dispatchSyncEvent(
       {String origin, String registrationId, String tag, bool lastChance}) {
-    return _devtools.client.sendRequest('ServiceWorker.dispatchSyncEvent', {
-      "origin": origin,
-      "registrationId": registrationId,
-      "tag": tag,
-      "lastChance": lastChance
-    });
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    if (registrationId != null) params['registrationId'] = registrationId;
+
+    if (tag != null) params['tag'] = tag;
+
+    if (lastChance != null) params['lastChance'] = lastChance;
+
+    return _devtools.rpc.sendRequest('ServiceWorker.dispatchSyncEvent', params);
   }
 
 /**  */
   dart_async.Future enable() {
-    return _devtools.client.sendRequest('ServiceWorker.enable', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('ServiceWorker.enable', params);
   }
 
 /**  */
   dart_async.Future inspectWorker({String versionId}) {
-    return _devtools.client
-        .sendRequest('ServiceWorker.inspectWorker', {"versionId": versionId});
+    var params = {};
+    if (versionId != null) params['versionId'] = versionId;
+
+    return _devtools.rpc.sendRequest('ServiceWorker.inspectWorker', params);
   }
 
 /**  */
   dart_async.Future setForceUpdateOnPageLoad({bool forceUpdateOnPageLoad}) {
-    return _devtools.client.sendRequest(
-        'ServiceWorker.setForceUpdateOnPageLoad',
-        {"forceUpdateOnPageLoad": forceUpdateOnPageLoad});
+    var params = {};
+    if (forceUpdateOnPageLoad != null)
+      params['forceUpdateOnPageLoad'] = forceUpdateOnPageLoad;
+
+    return _devtools.rpc
+        .sendRequest('ServiceWorker.setForceUpdateOnPageLoad', params);
   }
 
 /**  */
   dart_async.Future skipWaiting({String scopeURL}) {
-    return _devtools.client
-        .sendRequest('ServiceWorker.skipWaiting', {"scopeURL": scopeURL});
+    var params = {};
+    if (scopeURL != null) params['scopeURL'] = scopeURL;
+
+    return _devtools.rpc.sendRequest('ServiceWorker.skipWaiting', params);
   }
 
 /**  */
   dart_async.Future startWorker({String scopeURL}) {
-    return _devtools.client
-        .sendRequest('ServiceWorker.startWorker', {"scopeURL": scopeURL});
+    var params = {};
+    if (scopeURL != null) params['scopeURL'] = scopeURL;
+
+    return _devtools.rpc.sendRequest('ServiceWorker.startWorker', params);
   }
 
 /**  */
   dart_async.Future stopAllWorkers() {
-    return _devtools.client.sendRequest('ServiceWorker.stopAllWorkers', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('ServiceWorker.stopAllWorkers', params);
   }
 
 /**  */
   dart_async.Future stopWorker({String versionId}) {
-    return _devtools.client
-        .sendRequest('ServiceWorker.stopWorker', {"versionId": versionId});
+    var params = {};
+    if (versionId != null) params['versionId'] = versionId;
+
+    return _devtools.rpc.sendRequest('ServiceWorker.stopWorker', params);
   }
 
 /**  */
   dart_async.Future unregister({String scopeURL}) {
-    return _devtools.client
-        .sendRequest('ServiceWorker.unregister', {"scopeURL": scopeURL});
+    var params = {};
+    if (scopeURL != null) params['scopeURL'] = scopeURL;
+
+    return _devtools.rpc.sendRequest('ServiceWorker.unregister', params);
   }
 
 /**  */
   dart_async.Future updateRegistration({String scopeURL}) {
-    return _devtools.client.sendRequest(
-        'ServiceWorker.updateRegistration', {"scopeURL": scopeURL});
+    var params = {};
+    if (scopeURL != null) params['scopeURL'] = scopeURL;
+
+    return _devtools.rpc
+        .sendRequest('ServiceWorker.updateRegistration', params);
   }
 }
 
@@ -6464,40 +7401,58 @@ class DevToolsStorage {
 
 /** Clears storage for origin. */
   dart_async.Future clearDataForOrigin({String origin, String storageTypes}) {
-    return _devtools.client.sendRequest('Storage.clearDataForOrigin',
-        {"origin": origin, "storageTypes": storageTypes});
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    if (storageTypes != null) params['storageTypes'] = storageTypes;
+
+    return _devtools.rpc.sendRequest('Storage.clearDataForOrigin', params);
   }
 
 /** Returns usage and quota in bytes. */
   dart_async.Future<StorageGetUsageAndQuotaResponse> getUsageAndQuota(
       {String origin}) {
-    return _devtools.client
-        .sendRequest('Storage.getUsageAndQuota', {"origin": origin}).then(
-            (response) => new StorageGetUsageAndQuotaResponse(response));
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    return _devtools.rpc
+        .sendRequest('Storage.getUsageAndQuota', params)
+        .then((response) => new StorageGetUsageAndQuotaResponse(response));
   }
 
 /** Registers origin to be notified when an update occurs to its cache storage list. */
   dart_async.Future trackCacheStorageForOrigin({String origin}) {
-    return _devtools.client
-        .sendRequest('Storage.trackCacheStorageForOrigin', {"origin": origin});
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    return _devtools.rpc
+        .sendRequest('Storage.trackCacheStorageForOrigin', params);
   }
 
 /** Registers origin to be notified when an update occurs to its IndexedDB. */
   dart_async.Future trackIndexedDBForOrigin({String origin}) {
-    return _devtools.client
-        .sendRequest('Storage.trackIndexedDBForOrigin', {"origin": origin});
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    return _devtools.rpc.sendRequest('Storage.trackIndexedDBForOrigin', params);
   }
 
 /** Unregisters origin from receiving notifications for cache storage. */
   dart_async.Future untrackCacheStorageForOrigin({String origin}) {
-    return _devtools.client.sendRequest(
-        'Storage.untrackCacheStorageForOrigin', {"origin": origin});
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    return _devtools.rpc
+        .sendRequest('Storage.untrackCacheStorageForOrigin', params);
   }
 
 /** Unregisters origin from receiving notifications for IndexedDB. */
   dart_async.Future untrackIndexedDBForOrigin({String origin}) {
-    return _devtools.client
-        .sendRequest('Storage.untrackIndexedDBForOrigin', {"origin": origin});
+    var params = {};
+    if (origin != null) params['origin'] = origin;
+
+    return _devtools.rpc
+        .sendRequest('Storage.untrackIndexedDBForOrigin', params);
   }
 }
 
@@ -6525,8 +7480,10 @@ class DevToolsSystemInfo {
 
 /** Returns information about the system. */
   dart_async.Future<SystemInfoGetInfoResponse> getInfo() {
-    return _devtools.client.sendRequest('SystemInfo.getInfo', {}).then(
-        (response) => new SystemInfoGetInfoResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('SystemInfo.getInfo', params)
+        .then((response) => new SystemInfoGetInfoResponse(response));
   }
 }
 
@@ -6593,30 +7550,40 @@ class DevToolsTarget {
 
 /** Activates (focuses) the target. */
   dart_async.Future activateTarget({String targetId}) {
-    return _devtools.client
-        .sendRequest('Target.activateTarget', {"targetId": targetId});
+    var params = {};
+    if (targetId != null) params['targetId'] = targetId;
+
+    return _devtools.rpc.sendRequest('Target.activateTarget', params);
   }
 
 /** Attaches to the target with given id. */
   dart_async.Future<TargetAttachToTargetResponse> attachToTarget(
       {String targetId}) {
-    return _devtools.client
-        .sendRequest('Target.attachToTarget', {"targetId": targetId}).then(
-            (response) => new TargetAttachToTargetResponse(response));
+    var params = {};
+    if (targetId != null) params['targetId'] = targetId;
+
+    return _devtools.rpc
+        .sendRequest('Target.attachToTarget', params)
+        .then((response) => new TargetAttachToTargetResponse(response));
   }
 
 /** Closes the target. If the target is a page that gets closed too. */
   dart_async.Future<TargetCloseTargetResponse> closeTarget({String targetId}) {
-    return _devtools.client
-        .sendRequest('Target.closeTarget', {"targetId": targetId}).then(
-            (response) => new TargetCloseTargetResponse(response));
+    var params = {};
+    if (targetId != null) params['targetId'] = targetId;
+
+    return _devtools.rpc
+        .sendRequest('Target.closeTarget', params)
+        .then((response) => new TargetCloseTargetResponse(response));
   }
 
 /** Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than
 one. */
   dart_async.Future<TargetCreateBrowserContextResponse> createBrowserContext() {
-    return _devtools.client.sendRequest('Target.createBrowserContext', {}).then(
-        (response) => new TargetCreateBrowserContextResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Target.createBrowserContext', params)
+        .then((response) => new TargetCreateBrowserContextResponse(response));
   }
 
 /** Creates a new page. */
@@ -6626,48 +7593,74 @@ one. */
       int height,
       String browserContextId,
       bool enableBeginFrameControl}) {
-    return _devtools.client.sendRequest('Target.createTarget', {
-      "url": url,
-      "width": width,
-      "height": height,
-      "browserContextId": browserContextId,
-      "enableBeginFrameControl": enableBeginFrameControl
-    }).then((response) => new TargetCreateTargetResponse(response));
+    var params = {};
+    if (url != null) params['url'] = url;
+
+    if (width != null) params['width'] = width;
+
+    if (height != null) params['height'] = height;
+
+    if (browserContextId != null) params['browserContextId'] = browserContextId;
+
+    if (enableBeginFrameControl != null)
+      params['enableBeginFrameControl'] = enableBeginFrameControl;
+
+    return _devtools.rpc
+        .sendRequest('Target.createTarget', params)
+        .then((response) => new TargetCreateTargetResponse(response));
   }
 
 /** Detaches session with given id. */
   dart_async.Future detachFromTarget({String sessionId, String targetId}) {
-    return _devtools.client.sendRequest('Target.detachFromTarget',
-        {"sessionId": sessionId, "targetId": targetId});
+    var params = {};
+    if (sessionId != null) params['sessionId'] = sessionId;
+
+    if (targetId != null) params['targetId'] = targetId;
+
+    return _devtools.rpc.sendRequest('Target.detachFromTarget', params);
   }
 
 /** Deletes a BrowserContext, will fail of any open page uses it. */
   dart_async.Future<TargetDisposeBrowserContextResponse> disposeBrowserContext(
       {String browserContextId}) {
-    return _devtools.client.sendRequest('Target.disposeBrowserContext', {
-      "browserContextId": browserContextId
-    }).then((response) => new TargetDisposeBrowserContextResponse(response));
+    var params = {};
+    if (browserContextId != null) params['browserContextId'] = browserContextId;
+
+    return _devtools.rpc
+        .sendRequest('Target.disposeBrowserContext', params)
+        .then((response) => new TargetDisposeBrowserContextResponse(response));
   }
 
 /** Returns information about a target. */
   dart_async.Future<TargetGetTargetInfoResponse> getTargetInfo(
       {String targetId}) {
-    return _devtools.client
-        .sendRequest('Target.getTargetInfo', {"targetId": targetId}).then(
-            (response) => new TargetGetTargetInfoResponse(response));
+    var params = {};
+    if (targetId != null) params['targetId'] = targetId;
+
+    return _devtools.rpc
+        .sendRequest('Target.getTargetInfo', params)
+        .then((response) => new TargetGetTargetInfoResponse(response));
   }
 
 /** Retrieves a list of available targets. */
   dart_async.Future<TargetGetTargetsResponse> getTargets() {
-    return _devtools.client.sendRequest('Target.getTargets', {}).then(
-        (response) => new TargetGetTargetsResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Target.getTargets', params)
+        .then((response) => new TargetGetTargetsResponse(response));
   }
 
 /** Sends protocol message over session with given id. */
   dart_async.Future sendMessageToTarget(
       {String message, String sessionId, String targetId}) {
-    return _devtools.client.sendRequest('Target.sendMessageToTarget',
-        {"message": message, "sessionId": sessionId, "targetId": targetId});
+    var params = {};
+    if (message != null) params['message'] = message;
+
+    if (sessionId != null) params['sessionId'] = sessionId;
+
+    if (targetId != null) params['targetId'] = targetId;
+
+    return _devtools.rpc.sendRequest('Target.sendMessageToTarget', params);
   }
 
 /** Controls whether to automatically attach to new targets which are considered to be related to
@@ -6675,24 +7668,31 @@ this one. When turned on, attaches to all existing related targets as well. When
 automatically detaches from all currently attached targets. */
   dart_async.Future setAutoAttach(
       {bool autoAttach, bool waitForDebuggerOnStart}) {
-    return _devtools.client.sendRequest('Target.setAutoAttach', {
-      "autoAttach": autoAttach,
-      "waitForDebuggerOnStart": waitForDebuggerOnStart
-    });
+    var params = {};
+    if (autoAttach != null) params['autoAttach'] = autoAttach;
+
+    if (waitForDebuggerOnStart != null)
+      params['waitForDebuggerOnStart'] = waitForDebuggerOnStart;
+
+    return _devtools.rpc.sendRequest('Target.setAutoAttach', params);
   }
 
 /** Controls whether to discover available targets and notify via
 `targetCreated/targetInfoChanged/targetDestroyed` events. */
   dart_async.Future setDiscoverTargets({bool discover}) {
-    return _devtools.client
-        .sendRequest('Target.setDiscoverTargets', {"discover": discover});
+    var params = {};
+    if (discover != null) params['discover'] = discover;
+
+    return _devtools.rpc.sendRequest('Target.setDiscoverTargets', params);
   }
 
 /** Enables target discovery for the specified locations, when `setDiscoverTargets` was set to
 `true`. */
   dart_async.Future setRemoteLocations({List<RemoteLocation> locations}) {
-    return _devtools.client
-        .sendRequest('Target.setRemoteLocations', {"locations": locations});
+    var params = {};
+    if (locations != null) params['locations'] = locations;
+
+    return _devtools.rpc.sendRequest('Target.setRemoteLocations', params);
   }
 }
 
@@ -6703,12 +7703,18 @@ class DevToolsTethering {
 
 /** Request browser port binding. */
   dart_async.Future bind({int port}) {
-    return _devtools.client.sendRequest('Tethering.bind', {"port": port});
+    var params = {};
+    if (port != null) params['port'] = port;
+
+    return _devtools.rpc.sendRequest('Tethering.bind', params);
   }
 
 /** Request browser port unbinding. */
   dart_async.Future unbind({int port}) {
-    return _devtools.client.sendRequest('Tethering.unbind', {"port": port});
+    var params = {};
+    if (port != null) params['port'] = port;
+
+    return _devtools.rpc.sendRequest('Tethering.unbind', params);
   }
 }
 
@@ -6738,25 +7744,32 @@ class DevToolsTracing {
 
 /** Stop trace events collection. */
   dart_async.Future end() {
-    return _devtools.client.sendRequest('Tracing.end', {});
+    var params = {};
+    return _devtools.rpc.sendRequest('Tracing.end', params);
   }
 
 /** Gets supported tracing categories. */
   dart_async.Future<TracingGetCategoriesResponse> getCategories() {
-    return _devtools.client.sendRequest('Tracing.getCategories', {}).then(
-        (response) => new TracingGetCategoriesResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Tracing.getCategories', params)
+        .then((response) => new TracingGetCategoriesResponse(response));
   }
 
 /** Record a clock sync marker in the trace. */
   dart_async.Future recordClockSyncMarker({String syncId}) {
-    return _devtools.client
-        .sendRequest('Tracing.recordClockSyncMarker', {"syncId": syncId});
+    var params = {};
+    if (syncId != null) params['syncId'] = syncId;
+
+    return _devtools.rpc.sendRequest('Tracing.recordClockSyncMarker', params);
   }
 
 /** Request a global memory dump. */
   dart_async.Future<TracingRequestMemoryDumpResponse> requestMemoryDump() {
-    return _devtools.client.sendRequest('Tracing.requestMemoryDump', {}).then(
-        (response) => new TracingRequestMemoryDumpResponse(response));
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Tracing.requestMemoryDump', params)
+        .then((response) => new TracingRequestMemoryDumpResponse(response));
   }
 
 /** Start trace events collection. */
@@ -6767,14 +7780,22 @@ class DevToolsTracing {
       String transferMode,
       String streamCompression,
       TraceConfig traceConfig}) {
-    return _devtools.client.sendRequest('Tracing.start', {
-      "categories": categories,
-      "options": options,
-      "bufferUsageReportingInterval": bufferUsageReportingInterval,
-      "transferMode": transferMode,
-      "streamCompression": streamCompression,
-      "traceConfig": traceConfig
-    });
+    var params = {};
+    if (categories != null) params['categories'] = categories;
+
+    if (options != null) params['options'] = options;
+
+    if (bufferUsageReportingInterval != null)
+      params['bufferUsageReportingInterval'] = bufferUsageReportingInterval;
+
+    if (transferMode != null) params['transferMode'] = transferMode;
+
+    if (streamCompression != null)
+      params['streamCompression'] = streamCompression;
+
+    if (traceConfig != null) params['traceConfig'] = traceConfig;
+
+    return _devtools.rpc.sendRequest('Tracing.start', params);
   }
 }
 
@@ -7013,5 +8034,5 @@ abstract class ChromeDevToolsBase {
     return _devToolsTracing;
   }
 
-  json_rpc_2.Client get client;
+  json_rpc_2.Peer get rpc;
 }
