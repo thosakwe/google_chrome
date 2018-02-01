@@ -44,12 +44,23 @@ main(List<String> args) async {
 
 void Function(FileBuilder) generateFromSpec(Map spec) {
   return (builder) {
-    builder.body.addAll([
-      new Code('// AUTO-GENERATED. DO NOT MODIFY BY HAND.\n'),
-      new Code('//\n'),
-      new Code(
-          '// Chrome DevTools Protocol v${spec['version']['major']}.${spec['version']['minor']}\n\n'),
-    ]);
+    builder
+      ..directives.addAll([
+        new Directive.import(
+          'dart:async',
+          as: 'dart_async',
+        ),
+        new Directive.import(
+          'package:json_rpc_2/json_rpc_2.dart',
+          as: 'json_rpc_2',
+        ),
+      ])
+      ..body.addAll([
+        new Code('\n// AUTO-GENERATED. DO NOT MODIFY BY HAND.\n'),
+        new Code('//\n'),
+        new Code(
+            '// Chrome DevTools Protocol v${spec['version']['major']}.${spec['version']['minor']}\n\n'),
+      ]);
 
     var ctx = new Ctx();
     for (Map domain in spec['domains']) {
@@ -83,21 +94,14 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
           if (spec.containsKey('properties')) {
             for (Map prop in spec['properties']) {
               builder.fields.add(new Field((builder) {
-                builder.name = prop['name'];
-                builder.docs.add('/** ${prop['description'] ?? ''} */\n');
-
-                if (prop['\$ref'] is String)
-                  builder.type =
-                      new Reference(ctx.resolveType(prop['\$ref'], d));
-                else if (prop['type'] is String && prop['type'] != 'object') {
-                  var resolved = mapToType(prop, d, ctx, null);
-                  builder.type = new Reference(resolved);
-                } else if (prop['type'] == 'object') {
-                  // TODO: Figure out how to get these into Maps
-                  builder.type = new Reference('Map');
-                }
+                builder
+                  ..name = prop['name']
+                  ..docs.add('/** ${prop['description'] ?? ''} */')
+                  ..type = mapToReference(prop, d, ctx);
               }));
             }
+
+            builder.methods.add(generateToJsonMethod(spec['properties']));
           }
         });
 
@@ -119,6 +123,8 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
 
       //builder.body.add(generateDomainClass(domain));
     }
+
+    builder.body.add(generateMixinClass(ctx, builder));
   };
 }
 
@@ -126,6 +132,240 @@ Class generateDomainClass(Map domain) {
   return new Class((builder) {
     var rc = new ReCase(domain['domain']);
     builder..name = rc.pascalCase;
+  });
+}
+
+const String chromeDevToolsBase = 'ChromeDevToolsBase';
+final RegExp _caps = new RegExp(r'^[A-Z]+$');
+
+Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
+  return new Class((mixinBuilder) {
+    List<Code> assignments = [];
+
+    for (String domainName in ctx.domains.keys) {
+      var d = ctx.domains[domainName];
+      mixinBuilder
+        ..abstract = true
+        ..name = chromeDevToolsBase;
+
+      // Generate a class for each domain.
+      // It has one final field which points to the mixin.
+      fileBuilder.body.add(new Class((classBuilder) {
+        classBuilder
+          ..name = 'DevTools${d.name}'
+          ..fields.add(new Field((builder) {
+            builder
+              ..modifier = FieldModifier.final$
+              ..name = '_devtools'
+              ..type = new Reference(chromeDevToolsBase);
+          }))
+          ..constructors.add(new Constructor((builder) {
+            builder.requiredParameters.add(new Parameter((builder) {
+              builder
+                ..toThis = true
+                ..name = '_devtools';
+            }));
+          }));
+
+        // Add a reference to this class in the main mixin.
+        // One is private, one is public.
+        var rc = new ReCase(classBuilder.name);
+        mixinBuilder.fields.add(new Field((builder) {
+          builder
+            ..name = '_${rc.camelCase}'
+            ..type = new Reference(classBuilder.name);
+          assignments.add(
+              new Code('_${rc.camelCase} = new ${classBuilder.name}(this);'));
+        }));
+
+        mixinBuilder.methods.add(new Method((b) {
+          b
+            ..type = MethodType.getter
+            ..returns = new Reference(classBuilder.name)
+            ..body = new Code('return _${rc.camelCase};');
+
+          var dname = d.name.replaceAll('DOM', 'Dom');
+
+          if (_caps.hasMatch(dname)) {
+            b.name = dname.toLowerCase();
+          } else {
+            b.name = new ReCase(dname).camelCase;
+          }
+        }));
+
+        // Now, generate RPC functions.
+        var domain = d.unparsed;
+        if (domain.containsKey('commands')) {
+          for (Map command in domain['commands']) {
+            classBuilder.methods.add(new Method((b) {
+              // Add all parameters
+              if (command.containsKey('parameters')) {
+                for (Map parameter in command['parameters']) {
+                  // TODO: Add docs for each parameter
+                  b.optionalParameters.add(new Parameter((b) {
+                    b
+                      ..named = true
+                      ..name = parameter['name']
+                      ..type = mapToReference(parameter, d, ctx);
+                  }));
+                }
+              }
+
+              // Create the method body
+              TypeReference returnType;
+              String responseClassName;
+
+              if (command['returns'] is List) {
+                // TODO: Build response class
+                var rc = new ReCase(command['name']);
+                responseClassName = '${d.name}${rc.pascalCase}Response';
+
+                if (!ctx.createdClasses.contains(responseClassName)) {
+                  ctx.createdClasses.add(responseClassName);
+                  fileBuilder.body.add(new Class((b) {
+                    b..name = responseClassName;
+
+                    // Add all fields
+                    for (Map spec in command['returns']) {
+                      b.fields.add(new Field((b) {
+                        b
+                          ..name = spec['name']
+                          ..type = mapToReference(spec, d, ctx);
+                      }));
+                    }
+
+                    // Add constructor
+                    b.constructors.add(new Constructor((b) {
+                      b
+                        ..requiredParameters.add(
+                          new Parameter((b) {
+                            b
+                              ..name = 'map'
+                              ..type = new Reference('Map');
+                          }),
+                        )
+                      ..body = new Block((b) {
+                        // Apply all fields
+                        for (Map spec in command['returns']) {
+                          var name = spec['name'];
+                          // TODO: Check if the target type needs to be deserialized
+                          // TODO: Check if the target type is a List of deserializing-necessary objects
+                          b.statements.add(new Code("$name = map['$name'];"));
+                        }
+                      });
+                    }));
+                  }));
+                }
+
+                returnType = new TypeReference((b) {
+                  b
+                    ..symbol = 'dart_async.Future'
+                    ..types.add(new Reference(responseClassName));
+                });
+              }
+
+              b
+                ..name = command['name']
+                ..docs.add('/** ${command['description'] ?? ''} */')
+                ..returns = returnType ?? new Reference('dart_async.Future')
+                ..body = new Block((b) {
+                  var buf = new StringBuffer();
+                  buf
+                    ..write("return _devtools.client.sendRequest("
+                        "'${d.name}.${command['name']}', {");
+
+                  if (command.containsKey('parameters')) {
+                    int i = 0;
+
+                    for (Map parameter in command['parameters']) {
+                      var name = parameter['name'];
+
+                      if (i++ > 0) buf.write(', ');
+                      buf.write('"$name": $name');
+                    }
+                  }
+
+                  buf.write("})");
+
+                  if (responseClassName != null) {
+                    // We need to deserialize this
+                    buf.write('.then((response) => new $responseClassName(response))');
+                  }
+
+                  buf.write(";");
+                  b.statements.add(new Code(buf.toString()));
+                });
+            }));
+          }
+        }
+      }));
+    }
+
+    // Now, generate a constructor that links all of the dependencies.
+    mixinBuilder.constructors.add(new Constructor((builder) {
+      builder.body = new Block.of(assignments);
+    }));
+
+    // Add an abstract getter that returns `json_rpc_2.Client`.
+    mixinBuilder.methods.add(new Method((b) {
+      b
+        ..type = MethodType.getter
+        ..name = 'client'
+        ..returns = new Reference('json_rpc_2.Client');
+    }));
+  });
+}
+
+Reference mapToReference(Map prop, Domain d, Ctx ctx) {
+  if (prop['\$ref'] is String)
+    return new Reference(ctx.resolveType(prop['\$ref'], d));
+  else if (prop['type'] is String && prop['type'] != 'object') {
+    var resolved = mapToType(prop, d, ctx, null);
+    return new Reference(resolved);
+  } else if (prop['type'] == 'object') {
+    // TODO: Figure out how to get these into Maps
+    return new Reference('Map');
+  }
+
+  throw new UnsupportedError(prop.toString());
+}
+
+Method generateFromJsonMethod(List<Map> props) {
+  // TODO: fromJson
+  return new Method((b) {
+    var buf = new StringBuffer('return {');
+
+    for (int i = 0; i < props.length; i++) {
+      if (i > 0) buf.write(', ');
+      var name = props[i]['name'];
+      buf.write('"$name": $name');
+    }
+
+    buf.write('};');
+
+    b
+      ..name = 'toJson'
+      ..returns = new Reference('Map<String, dynamic>')
+      ..body = new Code(buf.toString());
+  });
+}
+
+Method generateToJsonMethod(List<Map> props) {
+  return new Method((b) {
+    var buf = new StringBuffer('return {');
+
+    for (int i = 0; i < props.length; i++) {
+      if (i > 0) buf.write(', ');
+      var name = props[i]['name'];
+      buf.write('"$name": $name');
+    }
+
+    buf.write('};');
+
+    b
+      ..name = 'toJson'
+      ..returns = new Reference('Map<String, dynamic>')
+      ..body = new Code(buf.toString());
   });
 }
 
@@ -162,7 +402,7 @@ String mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
     ctx.createdClasses.add(className);
     var clazz = new Class((builder) {
       builder.name = className;
-      builder.docs.add('/** ${spec['description'] ?? ''} */\n');
+      builder.docs.add('/** ${spec['description'] ?? ''} */');
     });
     domain.classes.add(clazz);
     fileBuilder.body.add(clazz);
@@ -194,7 +434,8 @@ class Ctx {
     var split = name.split('.');
     var parent = split[0], child = split[1];
 
-    if (parent == 'Runtime') return 'Object';
+    // TODO: Resolve these
+    if (parent == 'Runtime' || parent == 'Debugger') return 'Object';
     //print('$parent.$child = ${domains[parent].types[child]}');
     //print('$parent.$child??? ${domains[parent].types}');
 

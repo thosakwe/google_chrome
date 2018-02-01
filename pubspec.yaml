@@ -4,4 +4,6 @@ dependencies:
 dev_dependencies:
   args: ^1.0.0
   code_builder: ^2.0.0
+  json_rpc_2: ^2.0.0
   recase: ^1.0.0
+  web_socket_channel: ^1.0.0
