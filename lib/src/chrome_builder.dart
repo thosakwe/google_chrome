@@ -21,6 +21,9 @@ class ChromeBuilder {
   /// Print `document.body.innerHTML` to stdout.
   ChromeBuilder dumpDom() => add('--dump-dom');
 
+  /// Enable kiosk mode.
+  ChromeBuilder kiosk() => add('--kiosk');
+
   /// Create a PDF of the page.
   ChromeBuilder printToPdf() => add('--print-to-pdf');
 

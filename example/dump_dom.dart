@@ -10,9 +10,4 @@ main() async {
       .spawn();
   await p.exitCode;
   await p.stdout.pipe(stdout);
-  /*
-  var chrome = new Chrome();
-  await chrome.start();
-  chrome..stdout.pipe(stdout)..stderr.pipe(stderr);
-  */
 }

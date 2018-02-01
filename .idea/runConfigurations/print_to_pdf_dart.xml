@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="print_to_pdf.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" singleton="true" nameIsGenerated="true">
-    <option name="filePath" value="$PROJECT_DIR$/bin/print_to_pdf.dart" />
+    <option name="filePath" value="$PROJECT_DIR$/example/print_to_pdf.dart" />
     <option name="workingDirectory" value="$PROJECT_DIR$" />
     <method />
   </configuration>
