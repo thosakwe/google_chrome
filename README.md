@@ -2,10 +2,18 @@
 Google Chrome automation API for Dart.
 The bulk of it is auto-generated.
 
+Built against
+[version 1.3](https://chromedevtools.github.io/devtools-protocol/1-3)
+of the
+[Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol).
+
 Possibilities include:
 * Server-side rendering
 * JavaScript sandbox with ES6 support (though it has high memory use)
 * Web scraping
+* Testing
+* Performance analysis
+* And more...
 
 ## Example
 ```dart
@@ -43,5 +51,10 @@ main() async {
     await chrome.kill();
   }
 }
-
 ```
+
+## Events
+
+## HTTP Querying
+
+## `ChromeBuilder`
