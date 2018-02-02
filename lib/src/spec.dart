@@ -181,7 +181,7 @@ class CallFrame {
     location =
         map.containsKey('location') ? new Location(map['location']) : null;
     url = map['url'];
-    scopeChain = map.containsKey('scopeChain')
+    scopeChain = map['scopeChain'] is Iterable
         ? map['scopeChain'].map((m) => new Scope(m)).toList()
         : null;
     $this = map.containsKey('$this') ? new RemoteObject(map['$this']) : null;
@@ -265,7 +265,7 @@ class SamplingHeapProfileNode {
     callFrame =
         map.containsKey('callFrame') ? new CallFrame(map['callFrame']) : null;
     selfSize = map['selfSize'];
-    children = map.containsKey('children')
+    children = map['children'] is Iterable
         ? map['children'].map((m) => new SamplingHeapProfileNode(m)).toList()
         : null;
   }
@@ -285,7 +285,7 @@ class ScriptTypeProfile {
   ScriptTypeProfile(Map map) {
     scriptId = map['scriptId'];
     url = map['url'];
-    entries = map.containsKey('entries')
+    entries = map['entries'] is Iterable
         ? map['entries'].map((m) => new TypeProfileEntry(m)).toList()
         : null;
   }
@@ -304,7 +304,7 @@ class ScriptTypeProfile {
 class TypeProfileEntry {
   TypeProfileEntry(Map map) {
     offset = map['offset'];
-    types = map.containsKey('types')
+    types = map['types'] is Iterable
         ? map['types'].map((m) => new TypeObject(m)).toList()
         : null;
   }
@@ -331,7 +331,7 @@ class ScriptCoverage {
   ScriptCoverage(Map map) {
     scriptId = map['scriptId'];
     url = map['url'];
-    functions = map.containsKey('functions')
+    functions = map['functions'] is Iterable
         ? map['functions'].map((m) => new FunctionCoverage(m)).toList()
         : null;
   }
@@ -350,7 +350,7 @@ class ScriptCoverage {
 class FunctionCoverage {
   FunctionCoverage(Map map) {
     functionName = map['functionName'];
-    ranges = map.containsKey('ranges')
+    ranges = map['ranges'] is Iterable
         ? map['ranges'].map((m) => new CoverageRange(m)).toList()
         : null;
     isBlockCoverage = map['isBlockCoverage'];
@@ -401,14 +401,13 @@ class PositionTickInfo {
 /** Profile. */
 class Profile {
   Profile(Map map) {
-    nodes = map.containsKey('nodes')
+    nodes = map['nodes'] is Iterable
         ? map['nodes'].map((m) => new ProfileNode(m)).toList()
         : null;
     startTime = map['startTime'];
     endTime = map['endTime'];
-    samples = map.containsKey('samples') ? new List(map['samples']) : null;
-    timeDeltas =
-        map.containsKey('timeDeltas') ? new List(map['timeDeltas']) : null;
+    samples = map['samples'];
+    timeDeltas = map['timeDeltas'];
   }
 
 /** The list of profile nodes. First item is the root node. */
@@ -435,9 +434,9 @@ class ProfileNode {
     callFrame =
         map.containsKey('callFrame') ? new CallFrame(map['callFrame']) : null;
     hitCount = map['hitCount'];
-    children = map.containsKey('children') ? new List(map['children']) : null;
+    children = map['children'];
     deoptReason = map['deoptReason'];
-    positionTicks = map.containsKey('positionTicks')
+    positionTicks = map['positionTicks'] is Iterable
         ? map['positionTicks'].map((m) => new PositionTickInfo(m)).toList()
         : null;
   }
@@ -481,7 +480,7 @@ class StackTraceId {
 class StackTrace {
   StackTrace(Map map) {
     description = map['description'];
-    callFrames = map.containsKey('callFrames')
+    callFrames = map['callFrames'] is Iterable
         ? map['callFrames'].map((m) => new CallFrame(m)).toList()
         : null;
     parent = map.containsKey('parent') ? new StackTrace(map['parent']) : null;
@@ -795,10 +794,10 @@ class ObjectPreview {
     subtype = map['subtype'];
     description = map['description'];
     overflow = map['overflow'];
-    properties = map.containsKey('properties')
+    properties = map['properties'] is Iterable
         ? map['properties'].map((m) => new PropertyPreview(m)).toList()
         : null;
-    entries = map.containsKey('entries')
+    entries = map['entries'] is Iterable
         ? map['entries'].map((m) => new EntryPreview(m)).toList()
         : null;
   }
@@ -963,7 +962,7 @@ class AXNode {
   AXNode(Map map) {
     nodeId = map['nodeId'];
     ignored = map['ignored'];
-    ignoredReasons = map.containsKey('ignoredReasons')
+    ignoredReasons = map['ignoredReasons'] is Iterable
         ? map['ignoredReasons'].map((m) => new AXProperty(m)).toList()
         : null;
     role = map.containsKey('role') ? new AXValue(map['role']) : null;
@@ -971,7 +970,7 @@ class AXNode {
     description =
         map.containsKey('description') ? new AXValue(map['description']) : null;
     value = map.containsKey('value') ? new AXValue(map['value']) : null;
-    properties = map.containsKey('properties')
+    properties = map['properties'] is Iterable
         ? map['properties'].map((m) => new AXProperty(m)).toList()
         : null;
     childIds = map['childIds'];
@@ -1014,10 +1013,10 @@ class AXValue {
   AXValue(Map map) {
     type = map['type'];
     value = map['value'];
-    relatedNodes = map.containsKey('relatedNodes')
+    relatedNodes = map['relatedNodes'] is Iterable
         ? map['relatedNodes'].map((m) => new AXRelatedNode(m)).toList()
         : null;
-    sources = map.containsKey('sources')
+    sources = map['sources'] is Iterable
         ? map['sources'].map((m) => new AXValueSource(m)).toList()
         : null;
   }
@@ -1131,7 +1130,7 @@ class KeyframeStyle {
 class KeyframesRule {
   KeyframesRule(Map map) {
     name = map['name'];
-    keyframes = map.containsKey('keyframes')
+    keyframes = map['keyframes'] is Iterable
         ? map['keyframes'].map((m) => new KeyframeStyle(m)).toList()
         : null;
   }
@@ -1273,7 +1272,7 @@ class ApplicationCache {
     size = map['size'];
     creationTime = map['creationTime'];
     updateTime = map['updateTime'];
-    resources = map.containsKey('resources')
+    resources = map['resources'] is Iterable
         ? map['resources'].map((m) => new ApplicationCacheResource(m)).toList()
         : null;
   }
@@ -1318,7 +1317,7 @@ class Histogram {
     name = map['name'];
     sum = map['sum'];
     count = map['count'];
-    buckets = map.containsKey('buckets')
+    buckets = map['buckets'] is Iterable
         ? map['buckets'].map((m) => new Bucket(m)).toList()
         : null;
   }
@@ -1427,7 +1426,7 @@ class CSSKeyframesRule {
     animationName = map.containsKey('animationName')
         ? new Value(map['animationName'])
         : null;
-    keyframes = map.containsKey('keyframes')
+    keyframes = map['keyframes'] is Iterable
         ? map['keyframes'].map((m) => new CSSKeyframeRule(m)).toList()
         : null;
   }
@@ -1488,7 +1487,7 @@ class MediaQueryExpression {
 /** Media query descriptor. */
 class MediaQuery {
   MediaQuery(Map map) {
-    expressions = map.containsKey('expressions')
+    expressions = map['expressions'] is Iterable
         ? map['expressions'].map((m) => new MediaQueryExpression(m)).toList()
         : null;
     active = map['active'];
@@ -1520,7 +1519,7 @@ class CSSMedia {
     sourceURL = map['sourceURL'];
     range = map.containsKey('range') ? new SourceRange(map['range']) : null;
     styleSheetId = map['styleSheetId'];
-    mediaList = map.containsKey('mediaList')
+    mediaList = map['mediaList'] is Iterable
         ? map['mediaList'].map((m) => new MediaQuery(m)).toList()
         : null;
   }
@@ -1590,10 +1589,10 @@ class CSSProperty {
 class CSSStyle {
   CSSStyle(Map map) {
     styleSheetId = map['styleSheetId'];
-    cssProperties = map.containsKey('cssProperties')
+    cssProperties = map['cssProperties'] is Iterable
         ? map['cssProperties'].map((m) => new CSSProperty(m)).toList()
         : null;
-    shorthandEntries = map.containsKey('shorthandEntries')
+    shorthandEntries = map['shorthandEntries'] is Iterable
         ? map['shorthandEntries'].map((m) => new ShorthandEntry(m)).toList()
         : null;
     cssText = map['cssText'];
@@ -1703,7 +1702,7 @@ class CSSRule {
         : null;
     origin = map['origin'];
     style = map.containsKey('style') ? new CSSStyle(map['style']) : null;
-    media = map.containsKey('media')
+    media = map['media'] is Iterable
         ? map['media'].map((m) => new CSSMedia(m)).toList()
         : null;
   }
@@ -1788,7 +1787,7 @@ document.written STYLE tags. */
 /** Selector list data. */
 class SelectorList {
   SelectorList(Map map) {
-    selectors = map.containsKey('selectors')
+    selectors = map['selectors'] is Iterable
         ? map['selectors'].map((m) => new Value(m)).toList()
         : null;
     text = map['text'];
@@ -1819,9 +1818,7 @@ class Value {
 class RuleMatch {
   RuleMatch(Map map) {
     rule = map.containsKey('rule') ? new CSSRule(map['rule']) : null;
-    matchingSelectors = map.containsKey('matchingSelectors')
-        ? new List(map['matchingSelectors'])
-        : null;
+    matchingSelectors = map['matchingSelectors'];
   }
 
 /** CSS rule in the match. */
@@ -1837,7 +1834,7 @@ class InheritedStyleEntry {
     inlineStyle = map.containsKey('inlineStyle')
         ? new CSSStyle(map['inlineStyle'])
         : null;
-    matchedCSSRules = map.containsKey('matchedCSSRules')
+    matchedCSSRules = map['matchedCSSRules'] is Iterable
         ? map['matchedCSSRules'].map((m) => new RuleMatch(m)).toList()
         : null;
   }
@@ -1853,7 +1850,7 @@ class InheritedStyleEntry {
 class PseudoElementMatches {
   PseudoElementMatches(Map map) {
     pseudoType = map['pseudoType'];
-    matches = map.containsKey('matches')
+    matches = map['matches'] is Iterable
         ? map['matches'].map((m) => new RuleMatch(m)).toList()
         : null;
   }
@@ -1912,13 +1909,13 @@ class DataEntry {
   DataEntry(Map map) {
     requestURL = map['requestURL'];
     requestMethod = map['requestMethod'];
-    requestHeaders = map.containsKey('requestHeaders')
+    requestHeaders = map['requestHeaders'] is Iterable
         ? map['requestHeaders'].map((m) => new Header(m)).toList()
         : null;
     responseTime = map['responseTime'];
     responseStatus = map['responseStatus'];
     responseStatusText = map['responseStatusText'];
-    responseHeaders = map.containsKey('responseHeaders')
+    responseHeaders = map['responseHeaders'] is Iterable
         ? map['responseHeaders'].map((m) => new Header(m)).toList()
         : null;
   }
@@ -1970,10 +1967,9 @@ class Rect {
 /** CSS Shape Outside details. */
 class ShapeOutsideInfo {
   ShapeOutsideInfo(Map map) {
-    bounds = map.containsKey('bounds') ? new List(map['bounds']) : null;
-    shape = map.containsKey('shape') ? new List(map['shape']) : null;
-    marginShape =
-        map.containsKey('marginShape') ? new List(map['marginShape']) : null;
+    bounds = map['bounds'];
+    shape = map['shape'];
+    marginShape = map['marginShape'];
   }
 
 /** Shape bounds */
@@ -1989,10 +1985,10 @@ class ShapeOutsideInfo {
 /** Box model. */
 class BoxModel {
   BoxModel(Map map) {
-    content = map.containsKey('content') ? new List(map['content']) : null;
-    padding = map.containsKey('padding') ? new List(map['padding']) : null;
-    border = map.containsKey('border') ? new List(map['border']) : null;
-    margin = map.containsKey('margin') ? new List(map['margin']) : null;
+    content = map['content'];
+    padding = map['padding'];
+    border = map['border'];
+    margin = map['margin'];
     width = map['width'];
     height = map['height'];
     shapeOutside = map.containsKey('shapeOutside')
@@ -2056,11 +2052,10 @@ class Node {
     localName = map['localName'];
     nodeValue = map['nodeValue'];
     childNodeCount = map['childNodeCount'];
-    children = map.containsKey('children')
+    children = map['children'] is Iterable
         ? map['children'].map((m) => new Node(m)).toList()
         : null;
-    attributes =
-        map.containsKey('attributes') ? new List(map['attributes']) : null;
+    attributes = map['attributes'];
     documentURL = map['documentURL'];
     baseURL = map['baseURL'];
     publicId = map['publicId'];
@@ -2075,19 +2070,19 @@ class Node {
     contentDocument = map.containsKey('contentDocument')
         ? new Node(map['contentDocument'])
         : null;
-    shadowRoots = map.containsKey('shadowRoots')
+    shadowRoots = map['shadowRoots'] is Iterable
         ? map['shadowRoots'].map((m) => new Node(m)).toList()
         : null;
     templateContent = map.containsKey('templateContent')
         ? new Node(map['templateContent'])
         : null;
-    pseudoElements = map.containsKey('pseudoElements')
+    pseudoElements = map['pseudoElements'] is Iterable
         ? map['pseudoElements'].map((m) => new Node(m)).toList()
         : null;
     importedDocument = map.containsKey('importedDocument')
         ? new Node(map['importedDocument'])
         : null;
-    distributedNodes = map.containsKey('distributedNodes')
+    distributedNodes = map['distributedNodes'] is Iterable
         ? map['distributedNodes'].map((m) => new BackendNode(m)).toList()
         : null;
     isSVG = map['isSVG'];
@@ -2264,7 +2259,7 @@ class NameValue {
 /** A subset of the full ComputedStyle as defined by the request whitelist. */
 class ComputedStyle {
   ComputedStyle(Map map) {
-    properties = map.containsKey('properties')
+    properties = map['properties'] is Iterable
         ? map['properties'].map((m) => new NameValue(m)).toList()
         : null;
   }
@@ -2280,7 +2275,7 @@ class LayoutTreeNode {
     boundingBox =
         map.containsKey('boundingBox') ? new Rect(map['boundingBox']) : null;
     layoutText = map['layoutText'];
-    inlineTextNodes = map.containsKey('inlineTextNodes')
+    inlineTextNodes = map['inlineTextNodes'] is Iterable
         ? map['inlineTextNodes'].map((m) => new InlineTextBox(m)).toList()
         : null;
     styleIndex = map['styleIndex'];
@@ -2333,15 +2328,11 @@ class DOMNode {
     inputChecked = map['inputChecked'];
     optionSelected = map['optionSelected'];
     backendNodeId = map['backendNodeId'];
-    childNodeIndexes = map.containsKey('childNodeIndexes')
-        ? new List(map['childNodeIndexes'])
-        : null;
-    attributes = map.containsKey('attributes')
+    childNodeIndexes = map['childNodeIndexes'];
+    attributes = map['attributes'] is Iterable
         ? map['attributes'].map((m) => new NameValue(m)).toList()
         : null;
-    pseudoElementIndexes = map.containsKey('pseudoElementIndexes')
-        ? new List(map['pseudoElementIndexes'])
-        : null;
+    pseudoElementIndexes = map['pseudoElementIndexes'];
     layoutNodeIndex = map['layoutNodeIndex'];
     documentURL = map['documentURL'];
     baseURL = map['baseURL'];
@@ -2355,7 +2346,7 @@ class DOMNode {
     templateContentIndex = map['templateContentIndex'];
     pseudoType = map['pseudoType'];
     isClickable = map['isClickable'];
-    eventListeners = map.containsKey('eventListeners')
+    eventListeners = map['eventListeners'] is Iterable
         ? map['eventListeners'].map((m) => new EventListener(m)).toList()
         : null;
     currentSourceURL = map['currentSourceURL'];
@@ -2558,7 +2549,7 @@ class KeyPath {
   KeyPath(Map map) {
     type = map['type'];
     string = map['string'];
-    array = map.containsKey('array') ? new List(map['array']) : null;
+    array = map['array'];
   }
 
 /** Key path type. */
@@ -2611,7 +2602,7 @@ class Key {
     number = map['number'];
     string = map['string'];
     date = map['date'];
-    array = map.containsKey('array')
+    array = map['array'] is Iterable
         ? map['array'].map((m) => new Key(m)).toList()
         : null;
   }
@@ -2660,7 +2651,7 @@ class ObjectStore {
     name = map['name'];
     keyPath = map.containsKey('keyPath') ? new KeyPath(map['keyPath']) : null;
     autoIncrement = map['autoIncrement'];
-    indexes = map.containsKey('indexes')
+    indexes = map['indexes'] is Iterable
         ? map['indexes'].map((m) => new ObjectStoreIndex(m)).toList()
         : null;
   }
@@ -2683,7 +2674,7 @@ class DatabaseWithObjectStores {
   DatabaseWithObjectStores(Map map) {
     name = map['name'];
     version = map['version'];
-    objectStores = map.containsKey('objectStores')
+    objectStores = map['objectStores'] is Iterable
         ? map['objectStores'].map((m) => new ObjectStore(m)).toList()
         : null;
   }
@@ -2743,15 +2734,14 @@ class Layer {
     offsetY = map['offsetY'];
     width = map['width'];
     height = map['height'];
-    transform =
-        map.containsKey('transform') ? new List(map['transform']) : null;
+    transform = map['transform'];
     anchorX = map['anchorX'];
     anchorY = map['anchorY'];
     anchorZ = map['anchorZ'];
     paintCount = map['paintCount'];
     drawsContent = map['drawsContent'];
     invisible = map['invisible'];
-    scrollRects = map.containsKey('scrollRects')
+    scrollRects = map['scrollRects'] is Iterable
         ? map['scrollRects'].map((m) => new ScrollRect(m)).toList()
         : null;
     stickyPositionConstraint = map.containsKey('stickyPositionConstraint')
@@ -2962,7 +2952,7 @@ class LogEntry {
         : null;
     networkRequestId = map['networkRequestId'];
     workerId = map['workerId'];
-    args = map.containsKey('args')
+    args = map['args'] is Iterable
         ? map['args'].map((m) => new RemoteObject(m)).toList()
         : null;
   }
@@ -3001,7 +2991,7 @@ class LogEntry {
 /** Array of heap profile samples. */
 class SamplingProfile {
   SamplingProfile(Map map) {
-    samples = map.containsKey('samples')
+    samples = map['samples'] is Iterable
         ? map['samples'].map((m) => new SamplingProfileNode(m)).toList()
         : null;
   }
@@ -3015,7 +3005,7 @@ class SamplingProfileNode {
   SamplingProfileNode(Map map) {
     size = map['size'];
     count = map['count'];
-    stack = map.containsKey('stack') ? new List(map['stack']) : null;
+    stack = map['stack'];
   }
 
 /** Size of the sampled allocation. */
@@ -3410,12 +3400,12 @@ class SecurityDetails {
     mac = map['mac'];
     certificateId = map['certificateId'];
     subjectName = map['subjectName'];
-    sanList = map.containsKey('sanList') ? new List(map['sanList']) : null;
+    sanList = map['sanList'];
     issuer = map['issuer'];
     validFrom = map['validFrom'];
     validTo = map['validTo'];
     signedCertificateTimestampList =
-        map.containsKey('signedCertificateTimestampList')
+        map['signedCertificateTimestampList'] is Iterable
             ? map['signedCertificateTimestampList']
                 .map((m) => new SignedCertificateTimestamp(m))
                 .toList()
@@ -3870,7 +3860,7 @@ class NavigationEntry {
 class FrameTree {
   FrameTree(Map map) {
     frame = map.containsKey('frame') ? new Frame(map['frame']) : null;
-    childFrames = map.containsKey('childFrames')
+    childFrames = map['childFrames'] is Iterable
         ? map['childFrames'].map((m) => new FrameTree(m)).toList()
         : null;
   }
@@ -3886,10 +3876,10 @@ class FrameTree {
 class FrameResourceTree {
   FrameResourceTree(Map map) {
     frame = map.containsKey('frame') ? new Frame(map['frame']) : null;
-    childFrames = map.containsKey('childFrames')
+    childFrames = map['childFrames'] is Iterable
         ? map['childFrames'].map((m) => new FrameResourceTree(m)).toList()
         : null;
-    resources = map.containsKey('resources')
+    resources = map['resources'] is Iterable
         ? map['resources'].map((m) => new FrameResource(m)).toList()
         : null;
   }
@@ -4034,8 +4024,7 @@ class SecurityStateExplanation {
     summary = map['summary'];
     description = map['description'];
     mixedContentType = map['mixedContentType'];
-    certificate =
-        map.containsKey('certificate') ? new List(map['certificate']) : null;
+    certificate = map['certificate'];
   }
 
 /** Security state representing the severity of the factor being explained. */
@@ -4165,14 +4154,12 @@ class UsageForType {
 /** Provides information about the GPU(s) on the system. */
 class GPUInfo {
   GPUInfo(Map map) {
-    devices = map.containsKey('devices')
+    devices = map['devices'] is Iterable
         ? map['devices'].map((m) => new GPUDevice(m)).toList()
         : null;
     auxAttributes = map['auxAttributes'];
     featureStatus = map['featureStatus'];
-    driverBugWorkarounds = map.containsKey('driverBugWorkarounds')
-        ? new List(map['driverBugWorkarounds'])
-        : null;
+    driverBugWorkarounds = map['driverBugWorkarounds'];
   }
 
 /** The graphics devices on the system. Element 0 is the primary GPU. */
@@ -4272,15 +4259,9 @@ class TraceConfig {
     enableSampling = map['enableSampling'];
     enableSystrace = map['enableSystrace'];
     enableArgumentFilter = map['enableArgumentFilter'];
-    includedCategories = map.containsKey('includedCategories')
-        ? new List(map['includedCategories'])
-        : null;
-    excludedCategories = map.containsKey('excludedCategories')
-        ? new List(map['excludedCategories'])
-        : null;
-    syntheticDelays = map.containsKey('syntheticDelays')
-        ? new List(map['syntheticDelays'])
-        : null;
+    includedCategories = map['includedCategories'];
+    excludedCategories = map['excludedCategories'];
+    syntheticDelays = map['syntheticDelays'];
     memoryDumpConfig = map.containsKey('memoryDumpConfig')
         ? new MemoryDumpConfig(map['memoryDumpConfig'])
         : null;
@@ -4391,7 +4372,7 @@ class DebuggerEvaluateOnCallFrameResponse {
 
 class DebuggerGetPossibleBreakpointsResponse {
   DebuggerGetPossibleBreakpointsResponse(Map map) {
-    locations = map.containsKey('locations')
+    locations = map['locations'] is Iterable
         ? map['locations'].map((m) => new BreakLocation(m)).toList()
         : null;
   }
@@ -4419,7 +4400,7 @@ class DebuggerGetStackTraceResponse {
 
 class DebuggerRestartFrameResponse {
   DebuggerRestartFrameResponse(Map map) {
-    callFrames = map.containsKey('callFrames')
+    callFrames = map['callFrames'] is Iterable
         ? map['callFrames'].map((m) => new CallFrame(m)).toList()
         : null;
     asyncStackTrace = map.containsKey('asyncStackTrace')
@@ -4439,7 +4420,7 @@ class DebuggerRestartFrameResponse {
 
 class DebuggerSearchInContentResponse {
   DebuggerSearchInContentResponse(Map map) {
-    result = map.containsKey('result')
+    result = map['result'] is Iterable
         ? map['result'].map((m) => new SearchMatch(m)).toList()
         : null;
   }
@@ -4463,7 +4444,7 @@ class DebuggerSetBreakpointResponse {
 class DebuggerSetBreakpointByUrlResponse {
   DebuggerSetBreakpointByUrlResponse(Map map) {
     breakpointId = map['breakpointId'];
-    locations = map.containsKey('locations')
+    locations = map['locations'] is Iterable
         ? map['locations'].map((m) => new Location(m)).toList()
         : null;
   }
@@ -4475,7 +4456,7 @@ class DebuggerSetBreakpointByUrlResponse {
 
 class DebuggerSetScriptSourceResponse {
   DebuggerSetScriptSourceResponse(Map map) {
-    callFrames = map.containsKey('callFrames')
+    callFrames = map['callFrames'] is Iterable
         ? map['callFrames'].map((m) => new CallFrame(m)).toList()
         : null;
     stackChanged = map['stackChanged'];
@@ -4519,14 +4500,12 @@ class DebuggerBreakpointResolvedEvent {
 /// Fired on `Debugger.paused`.
 class DebuggerPausedEvent {
   DebuggerPausedEvent(Map map) {
-    callFrames = map.containsKey('callFrames')
+    callFrames = map['callFrames'] is Iterable
         ? map['callFrames'].map((m) => new CallFrame(m)).toList()
         : null;
     reason = map['reason'];
     data = map['data'];
-    hitBreakpoints = map.containsKey('hitBreakpoints')
-        ? new List(map['hitBreakpoints'])
-        : null;
+    hitBreakpoints = map['hitBreakpoints'];
     asyncStackTrace = map.containsKey('asyncStackTrace')
         ? new StackTrace(map['asyncStackTrace'])
         : null;
@@ -5201,8 +5180,7 @@ class HeapProfilerAddHeapSnapshotChunkEvent {
 /// Fired on `HeapProfiler.heapStatsUpdate`.
 class HeapProfilerHeapStatsUpdateEvent {
   HeapProfilerHeapStatsUpdateEvent(Map map) {
-    statsUpdate =
-        map.containsKey('statsUpdate') ? new List(map['statsUpdate']) : null;
+    statsUpdate = map['statsUpdate'];
   }
 
 /** An array of triplets. Each triplet describes a fragment. The first integer is the fragment
@@ -5443,7 +5421,7 @@ then one or more heapStatsUpdate events will be sent before a new lastSeenObject
 
 class ProfilerGetBestEffortCoverageResponse {
   ProfilerGetBestEffortCoverageResponse(Map map) {
-    result = map.containsKey('result')
+    result = map['result'] is Iterable
         ? map['result'].map((m) => new ScriptCoverage(m)).toList()
         : null;
   }
@@ -5461,7 +5439,7 @@ class ProfilerStopResponse {
 
 class ProfilerTakePreciseCoverageResponse {
   ProfilerTakePreciseCoverageResponse(Map map) {
-    result = map.containsKey('result')
+    result = map['result'] is Iterable
         ? map['result'].map((m) => new ScriptCoverage(m)).toList()
         : null;
   }
@@ -5471,7 +5449,7 @@ class ProfilerTakePreciseCoverageResponse {
 
 class ProfilerTakeTypeProfileResponse {
   ProfilerTakeTypeProfileResponse(Map map) {
-    result = map.containsKey('result')
+    result = map['result'] is Iterable
         ? map['result'].map((m) => new ScriptTypeProfile(m)).toList()
         : null;
   }
@@ -5708,10 +5686,10 @@ class RuntimeEvaluateResponse {
 
 class RuntimeGetPropertiesResponse {
   RuntimeGetPropertiesResponse(Map map) {
-    result = map.containsKey('result')
+    result = map['result'] is Iterable
         ? map['result'].map((m) => new PropertyDescriptor(m)).toList()
         : null;
-    internalProperties = map.containsKey('internalProperties')
+    internalProperties = map['internalProperties'] is Iterable
         ? map['internalProperties']
             .map((m) => new InternalPropertyDescriptor(m))
             .toList()
@@ -5730,7 +5708,7 @@ class RuntimeGetPropertiesResponse {
 
 class RuntimeGlobalLexicalScopeNamesResponse {
   RuntimeGlobalLexicalScopeNamesResponse(Map map) {
-    names = map.containsKey('names') ? new List(map['names']) : null;
+    names = map['names'];
   }
 
   List names;
@@ -5762,7 +5740,7 @@ class RuntimeRunScriptResponse {
 class RuntimeConsoleAPICalledEvent {
   RuntimeConsoleAPICalledEvent(Map map) {
     type = map['type'];
-    args = map.containsKey('args')
+    args = map['args'] is Iterable
         ? map['args'].map((m) => new RemoteObject(m)).toList()
         : null;
     executionContextId = map['executionContextId'];
@@ -6270,7 +6248,7 @@ call). */
 
 class SchemaGetDomainsResponse {
   SchemaGetDomainsResponse(Map map) {
-    domains = map.containsKey('domains')
+    domains = map['domains'] is Iterable
         ? map['domains'].map((m) => new Domain(m)).toList()
         : null;
   }
@@ -6297,7 +6275,7 @@ class DevToolsSchema {
 
 class AccessibilityGetPartialAXTreeResponse {
   AccessibilityGetPartialAXTreeResponse(Map map) {
-    nodes = map.containsKey('nodes')
+    nodes = map['nodes'] is Iterable
         ? map['nodes'].map((m) => new AXNode(m)).toList()
         : null;
   }
@@ -6548,7 +6526,7 @@ class ApplicationCacheGetApplicationCacheForFrameResponse {
 
 class ApplicationCacheGetFramesWithManifestsResponse {
   ApplicationCacheGetFramesWithManifestsResponse(Map map) {
-    frameIds = map.containsKey('frameIds')
+    frameIds = map['frameIds'] is Iterable
         ? map['frameIds'].map((m) => new FrameWithManifest(m)).toList()
         : null;
   }
@@ -6742,7 +6720,7 @@ class BrowserGetVersionResponse {
 
 class BrowserGetHistogramsResponse {
   BrowserGetHistogramsResponse(Map map) {
-    histograms = map.containsKey('histograms')
+    histograms = map['histograms'] is Iterable
         ? map['histograms'].map((m) => new Histogram(m)).toList()
         : null;
   }
@@ -6873,8 +6851,7 @@ class CSSAddRuleResponse {
 
 class CSSCollectClassNamesResponse {
   CSSCollectClassNamesResponse(Map map) {
-    classNames =
-        map.containsKey('classNames') ? new List(map['classNames']) : null;
+    classNames = map['classNames'];
   }
 
   List classNames;
@@ -6890,9 +6867,7 @@ class CSSCreateStyleSheetResponse {
 
 class CSSGetBackgroundColorsResponse {
   CSSGetBackgroundColorsResponse(Map map) {
-    backgroundColors = map.containsKey('backgroundColors')
-        ? new List(map['backgroundColors'])
-        : null;
+    backgroundColors = map['backgroundColors'];
     computedFontSize = map['computedFontSize'];
     computedFontWeight = map['computedFontWeight'];
     computedBodyFontSize = map['computedBodyFontSize'];
@@ -6909,7 +6884,7 @@ class CSSGetBackgroundColorsResponse {
 
 class CSSGetComputedStyleForNodeResponse {
   CSSGetComputedStyleForNodeResponse(Map map) {
-    computedStyle = map.containsKey('computedStyle')
+    computedStyle = map['computedStyle'] is Iterable
         ? map['computedStyle']
             .map((m) => new CSSComputedStyleProperty(m))
             .toList()
@@ -6942,16 +6917,16 @@ class CSSGetMatchedStylesForNodeResponse {
     attributesStyle = map.containsKey('attributesStyle')
         ? new CSSStyle(map['attributesStyle'])
         : null;
-    matchedCSSRules = map.containsKey('matchedCSSRules')
+    matchedCSSRules = map['matchedCSSRules'] is Iterable
         ? map['matchedCSSRules'].map((m) => new RuleMatch(m)).toList()
         : null;
-    pseudoElements = map.containsKey('pseudoElements')
+    pseudoElements = map['pseudoElements'] is Iterable
         ? map['pseudoElements'].map((m) => new PseudoElementMatches(m)).toList()
         : null;
-    inherited = map.containsKey('inherited')
+    inherited = map['inherited'] is Iterable
         ? map['inherited'].map((m) => new InheritedStyleEntry(m)).toList()
         : null;
-    cssKeyframesRules = map.containsKey('cssKeyframesRules')
+    cssKeyframesRules = map['cssKeyframesRules'] is Iterable
         ? map['cssKeyframesRules'].map((m) => new CSSKeyframesRule(m)).toList()
         : null;
   }
@@ -6971,7 +6946,7 @@ class CSSGetMatchedStylesForNodeResponse {
 
 class CSSGetMediaQueriesResponse {
   CSSGetMediaQueriesResponse(Map map) {
-    medias = map.containsKey('medias')
+    medias = map['medias'] is Iterable
         ? map['medias'].map((m) => new CSSMedia(m)).toList()
         : null;
   }
@@ -6981,7 +6956,7 @@ class CSSGetMediaQueriesResponse {
 
 class CSSGetPlatformFontsForNodeResponse {
   CSSGetPlatformFontsForNodeResponse(Map map) {
-    fonts = map.containsKey('fonts')
+    fonts = map['fonts'] is Iterable
         ? map['fonts'].map((m) => new PlatformFontUsage(m)).toList()
         : null;
   }
@@ -7033,7 +7008,7 @@ class CSSSetStyleSheetTextResponse {
 
 class CSSSetStyleTextsResponse {
   CSSSetStyleTextsResponse(Map map) {
-    styles = map.containsKey('styles')
+    styles = map['styles'] is Iterable
         ? map['styles'].map((m) => new CSSStyle(m)).toList()
         : null;
   }
@@ -7043,7 +7018,7 @@ class CSSSetStyleTextsResponse {
 
 class CSSStopRuleUsageTrackingResponse {
   CSSStopRuleUsageTrackingResponse(Map map) {
-    ruleUsage = map.containsKey('ruleUsage')
+    ruleUsage = map['ruleUsage'] is Iterable
         ? map['ruleUsage'].map((m) => new RuleUsage(m)).toList()
         : null;
   }
@@ -7053,7 +7028,7 @@ class CSSStopRuleUsageTrackingResponse {
 
 class CSSTakeCoverageDeltaResponse {
   CSSTakeCoverageDeltaResponse(Map map) {
-    coverage = map.containsKey('coverage')
+    coverage = map['coverage'] is Iterable
         ? map['coverage'].map((m) => new RuleUsage(m)).toList()
         : null;
   }
@@ -7449,7 +7424,7 @@ resized.) The current implementation considers only viewport-dependent media fea
 
 class CacheStorageRequestCacheNamesResponse {
   CacheStorageRequestCacheNamesResponse(Map map) {
-    caches = map.containsKey('caches')
+    caches = map['caches'] is Iterable
         ? map['caches'].map((m) => new Cache(m)).toList()
         : null;
   }
@@ -7469,7 +7444,7 @@ class CacheStorageRequestCachedResponseResponse {
 
 class CacheStorageRequestEntriesResponse {
   CacheStorageRequestEntriesResponse(Map map) {
-    cacheDataEntries = map.containsKey('cacheDataEntries')
+    cacheDataEntries = map['cacheDataEntries'] is Iterable
         ? map['cacheDataEntries'].map((m) => new DataEntry(m)).toList()
         : null;
     hasMore = map['hasMore'];
@@ -7559,8 +7534,7 @@ class DevToolsCacheStorage {
 
 class DOMCollectClassNamesFromSubtreeResponse {
   DOMCollectClassNamesFromSubtreeResponse(Map map) {
-    classNames =
-        map.containsKey('classNames') ? new List(map['classNames']) : null;
+    classNames = map['classNames'];
   }
 
   List classNames;
@@ -7584,8 +7558,7 @@ class DOMDescribeNodeResponse {
 
 class DOMGetAttributesResponse {
   DOMGetAttributesResponse(Map map) {
-    attributes =
-        map.containsKey('attributes') ? new List(map['attributes']) : null;
+    attributes = map['attributes'];
   }
 
   List attributes;
@@ -7609,7 +7582,7 @@ class DOMGetDocumentResponse {
 
 class DOMGetFlattenedDocumentResponse {
   DOMGetFlattenedDocumentResponse(Map map) {
-    nodes = map.containsKey('nodes')
+    nodes = map['nodes'] is Iterable
         ? map['nodes'].map((m) => new Node(m)).toList()
         : null;
   }
@@ -7828,7 +7801,7 @@ class DOMChildNodeRemovedEvent {
 class DOMDistributedNodesUpdatedEvent {
   DOMDistributedNodesUpdatedEvent(Map map) {
     insertionPointId = map['insertionPointId'];
-    distributedNodes = map.containsKey('distributedNodes')
+    distributedNodes = map['distributedNodes'] is Iterable
         ? map['distributedNodes'].map((m) => new BackendNode(m)).toList()
         : null;
   }
@@ -7889,7 +7862,7 @@ class DOMPseudoElementRemovedEvent {
 class DOMSetChildNodesEvent {
   DOMSetChildNodesEvent(Map map) {
     parentId = map['parentId'];
-    nodes = map.containsKey('nodes')
+    nodes = map['nodes'] is Iterable
         ? map['nodes'].map((m) => new Node(m)).toList()
         : null;
   }
@@ -8652,7 +8625,7 @@ most of the calls requesting node ids. */
 
 class DOMDebuggerGetEventListenersResponse {
   DOMDebuggerGetEventListenersResponse(Map map) {
-    listeners = map.containsKey('listeners')
+    listeners = map['listeners'] is Iterable
         ? map['listeners'].map((m) => new EventListener(m)).toList()
         : null;
   }
@@ -8782,13 +8755,13 @@ EventTarget. */
 
 class DOMSnapshotGetSnapshotResponse {
   DOMSnapshotGetSnapshotResponse(Map map) {
-    domNodes = map.containsKey('domNodes')
+    domNodes = map['domNodes'] is Iterable
         ? map['domNodes'].map((m) => new DOMNode(m)).toList()
         : null;
-    layoutTreeNodes = map.containsKey('layoutTreeNodes')
+    layoutTreeNodes = map['layoutTreeNodes'] is Iterable
         ? map['layoutTreeNodes'].map((m) => new LayoutTreeNode(m)).toList()
         : null;
-    computedStyles = map.containsKey('computedStyles')
+    computedStyles = map['computedStyles'] is Iterable
         ? map['computedStyles'].map((m) => new ComputedStyle(m)).toList()
         : null;
   }
@@ -8831,9 +8804,7 @@ flattened. */
 
 class DOMStorageGetDOMStorageItemsResponse {
   DOMStorageGetDOMStorageItemsResponse(Map map) {
-    entries = map.containsKey('entries')
-        ? map['entries'].map((m) => new List(m)).toList()
-        : null;
+    entries = map['entries'];
   }
 
   List<List> entries;
@@ -9033,9 +9004,8 @@ class DevToolsDOMStorage {
 
 class DatabaseExecuteSQLResponse {
   DatabaseExecuteSQLResponse(Map map) {
-    columnNames =
-        map.containsKey('columnNames') ? new List(map['columnNames']) : null;
-    values = map.containsKey('values') ? new List(map['values']) : null;
+    columnNames = map['columnNames'];
+    values = map['values'];
     sqlError = map.containsKey('sqlError') ? new Error(map['sqlError']) : null;
   }
 
@@ -9048,8 +9018,7 @@ class DatabaseExecuteSQLResponse {
 
 class DatabaseGetDatabaseTableNamesResponse {
   DatabaseGetDatabaseTableNamesResponse(Map map) {
-    tableNames =
-        map.containsKey('tableNames') ? new List(map['tableNames']) : null;
+    tableNames = map['tableNames'];
   }
 
   List tableNames;
@@ -9686,7 +9655,7 @@ following the last read). */
 
 class IndexedDBRequestDataResponse {
   IndexedDBRequestDataResponse(Map map) {
-    objectStoreDataEntries = map.containsKey('objectStoreDataEntries')
+    objectStoreDataEntries = map['objectStoreDataEntries'] is Iterable
         ? map['objectStoreDataEntries'].map((m) => new DataEntry(m)).toList()
         : null;
     hasMore = map['hasMore'];
@@ -9709,9 +9678,7 @@ class IndexedDBRequestDatabaseResponse {
 
 class IndexedDBRequestDatabaseNamesResponse {
   IndexedDBRequestDatabaseNamesResponse(Map map) {
-    databaseNames = map.containsKey('databaseNames')
-        ? new List(map['databaseNames'])
-        : null;
+    databaseNames = map['databaseNames'];
   }
 
   List databaseNames;
@@ -10247,9 +10214,7 @@ class DevToolsInspector {
 
 class LayerTreeCompositingReasonsResponse {
   LayerTreeCompositingReasonsResponse(Map map) {
-    compositingReasons = map.containsKey('compositingReasons')
-        ? new List(map['compositingReasons'])
-        : null;
+    compositingReasons = map['compositingReasons'];
   }
 
   List compositingReasons;
@@ -10273,9 +10238,7 @@ class LayerTreeMakeSnapshotResponse {
 
 class LayerTreeProfileSnapshotResponse {
   LayerTreeProfileSnapshotResponse(Map map) {
-    timings = map.containsKey('timings')
-        ? map['timings'].map((m) => new List(m)).toList()
-        : null;
+    timings = map['timings'];
   }
 
   List<List> timings;
@@ -10291,8 +10254,7 @@ class LayerTreeReplaySnapshotResponse {
 
 class LayerTreeSnapshotCommandLogResponse {
   LayerTreeSnapshotCommandLogResponse(Map map) {
-    commandLog =
-        map.containsKey('commandLog') ? new List(map['commandLog']) : null;
+    commandLog = map['commandLog'];
   }
 
   List commandLog;
@@ -10315,7 +10277,7 @@ class LayerTreeLayerPaintedEvent {
 /// Fired on `LayerTree.layerTreeDidChange`.
 class LayerTreeLayerTreeDidChangeEvent {
   LayerTreeLayerTreeDidChangeEvent(Map map) {
-    layers = map.containsKey('layers')
+    layers = map['layers'] is Iterable
         ? map['layers'].map((m) => new Layer(m)).toList()
         : null;
   }
@@ -10677,7 +10639,7 @@ class NetworkCanEmulateNetworkConditionsResponse {
 
 class NetworkGetAllCookiesResponse {
   NetworkGetAllCookiesResponse(Map map) {
-    cookies = map.containsKey('cookies')
+    cookies = map['cookies'] is Iterable
         ? map['cookies'].map((m) => new Cookie(m)).toList()
         : null;
   }
@@ -10687,8 +10649,7 @@ class NetworkGetAllCookiesResponse {
 
 class NetworkGetCertificateResponse {
   NetworkGetCertificateResponse(Map map) {
-    tableNames =
-        map.containsKey('tableNames') ? new List(map['tableNames']) : null;
+    tableNames = map['tableNames'];
   }
 
   List tableNames;
@@ -10696,7 +10657,7 @@ class NetworkGetCertificateResponse {
 
 class NetworkGetCookiesResponse {
   NetworkGetCookiesResponse(Map map) {
-    cookies = map.containsKey('cookies')
+    cookies = map['cookies'] is Iterable
         ? map['cookies'].map((m) => new Cookie(m)).toList()
         : null;
   }
@@ -10736,7 +10697,7 @@ class NetworkGetResponseBodyForInterceptionResponse {
 
 class NetworkSearchInResponseBodyResponse {
   NetworkSearchInResponseBodyResponse(Map map) {
-    result = map.containsKey('result')
+    result = map['result'] is Iterable
         ? map['result'].map((m) => new SearchMatch(m)).toList()
         : null;
   }
@@ -12073,7 +12034,7 @@ class PageCreateIsolatedWorldResponse {
 class PageGetAppManifestResponse {
   PageGetAppManifestResponse(Map map) {
     url = map['url'];
-    errors = map.containsKey('errors')
+    errors = map['errors'] is Iterable
         ? map['errors'].map((m) => new AppManifestError(m)).toList()
         : null;
     data = map['data'];
@@ -12088,7 +12049,7 @@ class PageGetAppManifestResponse {
 
 class PageGetCookiesResponse {
   PageGetCookiesResponse(Map map) {
-    cookies = map.containsKey('cookies')
+    cookies = map['cookies'] is Iterable
         ? map['cookies'].map((m) => new Cookie(m)).toList()
         : null;
   }
@@ -12127,7 +12088,7 @@ class PageGetLayoutMetricsResponse {
 class PageGetNavigationHistoryResponse {
   PageGetNavigationHistoryResponse(Map map) {
     currentIndex = map['currentIndex'];
-    entries = map.containsKey('entries')
+    entries = map['entries'] is Iterable
         ? map['entries'].map((m) => new NavigationEntry(m)).toList()
         : null;
   }
@@ -12182,7 +12143,7 @@ class PagePrintToPDFResponse {
 
 class PageSearchInResourceResponse {
   PageSearchInResourceResponse(Map map) {
-    result = map.containsKey('result')
+    result = map['result'] is Iterable
         ? map['result'].map((m) => new SearchMatch(m)).toList()
         : null;
   }
@@ -12409,9 +12370,7 @@ class PageWindowOpenEvent {
   PageWindowOpenEvent(Map map) {
     url = map['url'];
     windowName = map['windowName'];
-    windowFeatures = map.containsKey('windowFeatures')
-        ? new List(map['windowFeatures'])
-        : null;
+    windowFeatures = map['windowFeatures'];
     userGesture = map['userGesture'];
   }
 
@@ -13241,7 +13200,7 @@ etc. */
 
 class PerformanceGetMetricsResponse {
   PerformanceGetMetricsResponse(Map map) {
-    metrics = map.containsKey('metrics')
+    metrics = map['metrics'] is Iterable
         ? map['metrics'].map((m) => new Metric(m)).toList()
         : null;
   }
@@ -13252,7 +13211,7 @@ class PerformanceGetMetricsResponse {
 /// Fired on `Performance.metrics`.
 class PerformanceMetricsEvent {
   PerformanceMetricsEvent(Map map) {
-    metrics = map.containsKey('metrics')
+    metrics = map['metrics'] is Iterable
         ? map['metrics'].map((m) => new Metric(m)).toList()
         : null;
     title = map['title'];
@@ -13329,7 +13288,7 @@ class SecuritySecurityStateChangedEvent {
   SecuritySecurityStateChangedEvent(Map map) {
     securityState = map['securityState'];
     schemeIsCryptographic = map['schemeIsCryptographic'];
-    explanations = map.containsKey('explanations')
+    explanations = map['explanations'] is Iterable
         ? map['explanations']
             .map((m) => new SecurityStateExplanation(m))
             .toList()
@@ -13456,7 +13415,7 @@ class ServiceWorkerWorkerErrorReportedEvent {
 /// Fired on `ServiceWorker.workerRegistrationUpdated`.
 class ServiceWorkerWorkerRegistrationUpdatedEvent {
   ServiceWorkerWorkerRegistrationUpdatedEvent(Map map) {
-    registrations = map.containsKey('registrations')
+    registrations = map['registrations'] is Iterable
         ? map['registrations']
             .map((m) => new ServiceWorkerRegistration(m))
             .toList()
@@ -13470,7 +13429,7 @@ class ServiceWorkerWorkerRegistrationUpdatedEvent {
 /// Fired on `ServiceWorker.workerVersionUpdated`.
 class ServiceWorkerWorkerVersionUpdatedEvent {
   ServiceWorkerWorkerVersionUpdatedEvent(Map map) {
-    versions = map.containsKey('versions')
+    versions = map['versions'] is Iterable
         ? map['versions'].map((m) => new ServiceWorkerVersion(m)).toList()
         : null;
   }
@@ -13654,7 +13613,7 @@ class StorageGetUsageAndQuotaResponse {
   StorageGetUsageAndQuotaResponse(Map map) {
     usage = map['usage'];
     quota = map['quota'];
-    usageBreakdown = map.containsKey('usageBreakdown')
+    usageBreakdown = map['usageBreakdown'] is Iterable
         ? map['usageBreakdown'].map((m) => new UsageForType(m)).toList()
         : null;
   }
@@ -13931,7 +13890,7 @@ class TargetGetTargetInfoResponse {
 
 class TargetGetTargetsResponse {
   TargetGetTargetsResponse(Map map) {
-    targetInfos = map.containsKey('targetInfos')
+    targetInfos = map['targetInfos'] is Iterable
         ? map['targetInfos'].map((m) => new TargetInfo(m)).toList()
         : null;
   }
@@ -14337,8 +14296,7 @@ class DevToolsTethering {
 
 class TracingGetCategoriesResponse {
   TracingGetCategoriesResponse(Map map) {
-    categories =
-        map.containsKey('categories') ? new List(map['categories']) : null;
+    categories = map['categories'];
   }
 
   List categories;
@@ -14378,7 +14336,7 @@ total size. */
 /// Fired on `Tracing.dataCollected`.
 class TracingDataCollectedEvent {
   TracingDataCollectedEvent(Map map) {
-    value = map.containsKey('value') ? new List(map['value']) : null;
+    value = map['value'];
   }
 
 /**  */

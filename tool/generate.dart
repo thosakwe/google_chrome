@@ -536,7 +536,7 @@ Reference deserializeFrom(
       var ref = deserializeFrom(name, refType, map, d, null, ctx);
 
       if (ref is TypeReference) {
-        b?.statements?.add(new Code("$name = $map.containsKey('$name')"
+        b?.statements?.add(new Code("$name = $map['$name'] is Iterable"
             " ? $map['$name'].map((m) => new ${ref.symbol}(m)).toList()"
             " : null;"));
       } else {
@@ -562,6 +562,7 @@ Reference deserializeFrom(
       'Null',
       'dynamic',
       'Object',
+      'List',
       'Map<String, dynamic>'
     ].contains(type.symbol)) {
       b?.statements?.add(new Code("$name = $map['$name'];"));
@@ -611,6 +612,8 @@ Method generateToJsonMethod(List<Map> props) {
   });
 }
 
+const List<String> restrictedNames = const ['List', 'Map', 'String', 'int', 'double', 'bool'];
+
 Reference mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
   switch (spec['type']) {
     case 'string':
@@ -641,7 +644,12 @@ Reference mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
       break;
   }
 
-  var rc = new ReCase(spec['id']);
+  var id = spec['id'];
+
+  if (restrictedNames.contains(id))
+    id = '\$$id';
+
+  var rc = new ReCase(id);
   var className = rc.pascalCase;
 
   if (!ctx.createdClasses.contains(className)) {
