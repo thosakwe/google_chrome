@@ -19,6 +19,9 @@ Possibilities include:
 * Performance analysis
 * And more...
 
+## Notes
+* Uses a temporary user profile by default, which is deleted after `close()`.
+
 ## Example
 ```dart
 import 'dart:convert';
