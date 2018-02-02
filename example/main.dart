@@ -29,6 +29,6 @@ main() async {
     await new File('screenshot.png').writeAsBytes(imgData);
     print('Saved to screenshot.png!');
   } finally {
-    await chrome.kill();
+    await chrome.close();
   }
 }

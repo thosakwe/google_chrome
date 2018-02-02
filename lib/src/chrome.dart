@@ -10,7 +10,6 @@ import 'client.dart';
 /// Represents a Google Chrome process.
 class Chrome extends ChromeDevToolsBaseClient {
   static final RegExp _rgxWs = new RegExp(r'ws://[^$]+');
-  final HttpClient _http = new HttpClient();
 
   @override
   final Logger logger = new Logger('chrome');
@@ -74,7 +73,7 @@ class Chrome extends ChromeDevToolsBaseClient {
         var browserDevUri = Uri.parse(match.group(0));
 
         // Fetch /json endpoint
-        var rq = await _http.openUrl(
+        var rq = await httpClient.openUrl(
             'GET', browserDevUri.replace(scheme: 'http', path: '/json'));
         var rs = await rq.close();
         var schema =
@@ -91,8 +90,9 @@ class Chrome extends ChromeDevToolsBaseClient {
     return await c.future;
   }
 
-  bool kill() {
-    _http.close(force: true);
-    return _process?.kill() ?? true;
+  @override
+  Future close() {
+    _process?.kill();
+    return super.close();
   }
 }

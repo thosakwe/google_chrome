@@ -8,7 +8,7 @@ import 'chrome_builder.dart';
 /// A simple wrapper over the headless Chrome REPL.
 class ChromeRepl extends Stream<String> {
   final ChromeBuilder builder;
-  StreamQueue _stdout, _stderr;
+  StreamQueue _stdout;
   Process _process;
 
   ChromeRepl({ChromeBuilder builder})

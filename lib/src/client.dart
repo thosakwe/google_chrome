@@ -4,11 +4,12 @@ import 'dart:io';
 import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc_2;
 import 'package:logging/logging.dart';
 import 'package:stream_channel/stream_channel.dart';
-import 'package:web_socket_channel/io.dart';
 import 'spec.dart';
 
 class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
   final Logger logger = new Logger('chrome_devtools_base_client');
+  final HttpClient httpClient = new HttpClient();
+  final Map<String, StreamController<json_rpc_2.Parameters>> _controllers = {};
   json_rpc_2.Peer _rpc;
   StreamChannelController _ctrl;
   StreamSubscription _sub;
@@ -33,6 +34,8 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
   }
 
   Future close() async {
+    httpClient.close(force: true);
+    await _sub.cancel();
     await _rpc.close();
     await _websocket.close();
   }
@@ -44,6 +47,15 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
       return m..['jsonrpc'] = '2.0';
     } else
       return m;
+  }
+
+  /// Listens for arbitrary RPC events fired from Chrome.
+  Stream<json_rpc_2.Parameters> on(String eventName) {
+    return _controllers.putIfAbsent(eventName, () {
+      var ctrl = new StreamController.broadcast();
+      _rpc.registerMethod(eventName, ctrl.add);
+      return ctrl;
+    }).stream;
   }
 
   void _listen() {
