@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 import 'package:args/args.dart';
@@ -19,20 +20,23 @@ main(List<String> args) async {
 
     if (!await specFile.exists()) {
       var tree = argResults['tree'];
-      var client = new io.HttpClient();
-      var url =
-          'https://github.com/ChromeDevTools/devtools-protocol/raw/$tree/json/browser_protocol.json';
-      var rq = await client.openUrl('GET', Uri.parse(url));
-      var rs = await rq.close();
-      await rs.pipe(specFile.openWrite());
-      await client.close();
+      var browser = await downloadSpec('browser', tree);
+      var js = await downloadSpec('js', tree);
+      browser['domains'].insertAll(0, js['domains']);
+      await specFile.writeAsString(JSON.encode(browser));
     }
 
     specContents = await specFile.readAsString();
     var spec = JSON.decode(specContents);
     var file = new File(generateFromSpec(spec));
     var emitter = new DartEmitter();
-    var dart = new DartFormatter().format(file.accept(emitter).toString());
+    var dart = file.accept(emitter).toString();
+
+    try {
+      dart = new DartFormatter().format(dart);
+    } on FormatterException catch (e) {
+      io.stderr..writeln('Formatting error:')..writeln(e.message(color: true));
+    }
     var dartFile =
         new io.File.fromUri(io.Platform.script.resolve('../lib/src/spec.dart'));
     await dartFile.create(recursive: true);
@@ -40,6 +44,16 @@ main(List<String> args) async {
   } on ArgParserException catch (e) {
     io.stderr..writeln(e.message)..writeln(argParser.usage);
   }
+}
+
+Future<Map> downloadSpec(String name, String tree) async {
+  var client = new io.HttpClient();
+  var url =
+      'https://github.com/ChromeDevTools/devtools-protocol/raw/$tree/json/${name}_protocol.json';
+  var rq = await client.openUrl('GET', Uri.parse(url));
+  var rs = await rq.close();
+  await client.close();
+  return (await rs.transform(UTF8.decoder).join().then(JSON.decode)) as Map;
 }
 
 void Function(FileBuilder) generateFromSpec(Map spec) {
@@ -95,7 +109,7 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
             for (Map prop in spec['properties']) {
               builder.fields.add(new Field((builder) {
                 builder
-                  ..name = prop['name']
+                  ..name = dartEscape(prop['name'])
                   ..docs.add('/** ${prop['description'] ?? ''} */')
                   ..type = mapToReference(prop, d, ctx);
               }));
@@ -117,13 +131,6 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
       }
     }
 
-    for (String domainName in ctx.domains.keys) {
-      var d = ctx.domains[domainName];
-      var domain = d.unparsed;
-
-      //builder.body.add(generateDomainClass(domain));
-    }
-
     builder.body.add(generateMixinClass(ctx, builder));
   };
 }
@@ -141,6 +148,35 @@ final RegExp _caps = new RegExp(r'^[A-Z]+$');
 Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
   return new Class((mixinBuilder) {
     List<Code> assignments = [];
+
+    // Add listen()
+    mixinBuilder.methods.add(new Method((b) {
+      b
+        ..name = 'listen'
+        ..returns = new Reference('void')
+        ..body = new Block((b) {
+          for (String domainName in ctx.domains.keys) {
+            var d = ctx.domains[domainName];
+            var rc = new ReCase('DevTools${d.name}');
+            b.statements.add(new Code('_${rc.camelCase}.listen(rpc);'));
+          }
+        });
+    }));
+
+    // Add close()
+    mixinBuilder.methods.add(new Method((b) {
+      b
+        ..name = 'close'
+        ..modifier = MethodModifier.async
+        ..returns = new Reference('dart_async.Future')
+        ..body = new Block((b) {
+          for (String domainName in ctx.domains.keys) {
+            var d = ctx.domains[domainName];
+            var rc = new ReCase('DevTools${d.name}');
+            b.statements.add(new Code('_${rc.camelCase}._close();'));
+          }
+        });
+    }));
 
     for (String domainName in ctx.domains.keys) {
       var d = ctx.domains[domainName];
@@ -298,6 +334,77 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
             }));
           }
         }
+
+        // Generate all events
+        List<String> eventControllers = [];
+
+        classBuilder.methods.add(new Method((b) {
+          b
+            ..name = 'listen'
+            ..returns = new Reference('void')
+            ..requiredParameters.add(
+              new Parameter((b) {
+                b
+                  ..name = 'rpc'
+                  ..type = new Reference('json_rpc_2.Peer');
+              }),
+            );
+
+          b.body = new Block((b) {
+            if (domain.containsKey('events')) {
+              for (Map event in domain['events']) {
+                // TODO: Create an event type
+                var rc = new ReCase(event['name']);
+                var name = 'on' + rc.pascalCase;
+
+                // Create a StreamController
+                classBuilder.fields.add(
+                  new Field((b) {
+                    b
+                      ..name = '_$name'
+                      ..type = new Reference('dart_async.StreamController')
+                      ..assignment =
+                          new Code('new dart_async.StreamController()');
+                  }),
+                );
+
+                // ... And the corresponding Stream getter
+                classBuilder.methods.add(
+                  new Method((b) {
+                    b
+                      ..name = name
+                      ..docs.add('/** ${event['description'] ?? ''} */')
+                      ..type = MethodType.getter
+                      ..returns = new Reference('dart_async.Stream')
+                      ..lambda = true
+                      ..body = new Code('_${name}.stream');
+                  }),
+                );
+
+                eventControllers.add('_$name');
+
+                var buf = new StringBuffer();
+                buf.writeln("rpc.registerMethod("
+                    "'${d
+                    .name}.${event['name']}', (json_rpc_2.Parameters params) {");
+                buf.writeln("});");
+                b.statements.add(new Code(buf.toString()));
+              }
+            }
+          });
+        }));
+
+        // Add _close()
+        classBuilder.methods.add(new Method((b) {
+          b
+            ..name = '_close'
+            ..returns = new Reference('void')
+            ..body = new Block((b) {
+              b.statements.addAll(eventControllers.map((name) {
+                return new Code('$name.close();');
+              }));
+            });
+        }));
       }));
     }
 
@@ -422,6 +529,21 @@ String commentify(String s) {
       .join('\n');
 }
 
+String dartEscape(String s) {
+  if (const [
+    'this',
+    'class',
+    'return',
+    'const',
+    'if',
+    'else',
+    'switch',
+    'case',
+    'default'
+  ].contains(s)) return '\$$s';
+  return s;
+}
+
 class Ctx {
   final Map<String, Domain> domains = {};
   final List<String> createdClasses = [];
@@ -434,8 +556,7 @@ class Ctx {
     var split = name.split('.');
     var parent = split[0], child = split[1];
 
-    // TODO: Resolve these
-    if (parent == 'Runtime' || parent == 'Debugger') return 'Object';
+    //if (parent == 'Runtime' || parent == 'Debugger') return 'Object';
     //print('$parent.$child = ${domains[parent].types[child]}');
     //print('$parent.$child??? ${domains[parent].types}');
 

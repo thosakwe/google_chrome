@@ -43,6 +43,7 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
     await _sub.cancel();
     await _rpc.close();
     await _websocket.close();
+    await super.close();
   }
 
   Future<List<ChromeTabInfo>> listTabs() async {
@@ -58,6 +59,7 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
     var json = await rs.transform(UTF8.decoder).transform(JSON.decoder).first;
     return new ChromeTabInfo(json);
   }
+
 
   Future waitMs(int ms) {
     return new Future.delayed(new Duration(milliseconds: ms));
@@ -97,9 +99,7 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
       _ctrl.local.sink.add(JSON.encode(valid));
     });
 
-    _rpc.registerMethod('error', (json_rpc_2.Parameters params) {
-      logger.severe(params.value);
-    });
+    listen();
 
     _rpc.listen();
   }

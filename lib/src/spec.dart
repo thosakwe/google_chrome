@@ -4,6 +4,719 @@ import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc_2;
 //
 // Chrome DevTools Protocol v1.3
 
+/** Console message. */
+class ConsoleMessage {
+  /** Message source. */
+  String source;
+
+/** Message severity. */
+  String level;
+
+/** Message text. */
+  String text;
+
+/** URL of the message origin. */
+  String url;
+
+/** Line number in the resource that generated this message (1-based). */
+  int line;
+
+/** Column number in the resource that generated this message (1-based). */
+  int column;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "source": source,
+      "level": level,
+      "text": text,
+      "url": url,
+      "line": line,
+      "column": column
+    };
+  }
+}
+
+/**  */
+class BreakLocation {
+  /** Script identifier as reported in the `Debugger.scriptParsed`. */
+  String scriptId;
+
+/** Line number in the script (0-based). */
+  int lineNumber;
+
+/** Column number in the script (0-based). */
+  int columnNumber;
+
+/**  */
+  String type;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "scriptId": scriptId,
+      "lineNumber": lineNumber,
+      "columnNumber": columnNumber,
+      "type": type
+    };
+  }
+}
+
+/** Search match for resource. */
+class SearchMatch {
+  /** Line number in resource content. */
+  num lineNumber;
+
+/** Line with match content. */
+  String lineContent;
+
+  Map<String, dynamic> toJson() {
+    return {"lineNumber": lineNumber, "lineContent": lineContent};
+  }
+}
+
+/** Scope description. */
+class Scope {
+  /** Scope type. */
+  String type;
+
+/** Object representing the scope. For `global` and `with` scopes it represents the actual
+object; for the rest of the scopes, it is artificial transient object enumerating scope
+variables as its properties. */
+  RemoteObject object;
+
+/**  */
+  String name;
+
+/** Location in the source code where scope starts */
+  Location startLocation;
+
+/** Location in the source code where scope ends */
+  Location endLocation;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "type": type,
+      "object": object,
+      "name": name,
+      "startLocation": startLocation,
+      "endLocation": endLocation
+    };
+  }
+}
+
+/** JavaScript call frame. Array of call frames form the call stack. */
+class CallFrame {
+  /** Call frame identifier. This identifier is only valid while the virtual machine is paused. */
+  String callFrameId;
+
+/** Name of the JavaScript function called on this call frame. */
+  String functionName;
+
+/** Location in the source code. */
+  Location functionLocation;
+
+/** Location in the source code. */
+  Location location;
+
+/** JavaScript script name or url. */
+  String url;
+
+/** Scope chain for this call frame. */
+  List<Scope> scopeChain;
+
+/** `this` object for this call frame. */
+  RemoteObject $this;
+
+/** The value being returned, if the function is at return point. */
+  RemoteObject returnValue;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "callFrameId": callFrameId,
+      "functionName": functionName,
+      "functionLocation": functionLocation,
+      "location": location,
+      "url": url,
+      "scopeChain": scopeChain,
+      "this": this,
+      "returnValue": returnValue
+    };
+  }
+}
+
+/** Location in the source code. */
+class ScriptPosition {
+  /**  */
+  int lineNumber;
+
+/**  */
+  int columnNumber;
+
+  Map<String, dynamic> toJson() {
+    return {"lineNumber": lineNumber, "columnNumber": columnNumber};
+  }
+}
+
+/** Location in the source code. */
+class Location {
+  /** Script identifier as reported in the `Debugger.scriptParsed`. */
+  String scriptId;
+
+/** Line number in the script (0-based). */
+  int lineNumber;
+
+/** Column number in the script (0-based). */
+  int columnNumber;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "scriptId": scriptId,
+      "lineNumber": lineNumber,
+      "columnNumber": columnNumber
+    };
+  }
+}
+
+/** Profile. */
+class SamplingHeapProfile {
+  /**  */
+  SamplingHeapProfileNode head;
+
+  Map<String, dynamic> toJson() {
+    return {"head": head};
+  }
+}
+
+/** Sampling Heap Profile node. Holds callsite information, allocation statistics and child nodes. */
+class SamplingHeapProfileNode {
+  /** Function location. */
+  CallFrame callFrame;
+
+/** Allocations size in bytes for the node excluding children. */
+  num selfSize;
+
+/** Child nodes. */
+  List<SamplingHeapProfileNode> children;
+
+  Map<String, dynamic> toJson() {
+    return {"callFrame": callFrame, "selfSize": selfSize, "children": children};
+  }
+}
+
+/** Type profile data collected during runtime for a JavaScript script. */
+class ScriptTypeProfile {
+  /** JavaScript script id. */
+  String scriptId;
+
+/** JavaScript script name or url. */
+  String url;
+
+/** Type profile entries for parameters and return values of the functions in the script. */
+  List<TypeProfileEntry> entries;
+
+  Map<String, dynamic> toJson() {
+    return {"scriptId": scriptId, "url": url, "entries": entries};
+  }
+}
+
+/** Source offset and types for a parameter or return value. */
+class TypeProfileEntry {
+  /** Source offset of the parameter or end of function for return values. */
+  int offset;
+
+/** The types for this parameter or return value. */
+  List<TypeObject> types;
+
+  Map<String, dynamic> toJson() {
+    return {"offset": offset, "types": types};
+  }
+}
+
+/** Describes a type collected during runtime. */
+class TypeObject {
+  /** Name of a type collected with type profiling. */
+  String name;
+
+  Map<String, dynamic> toJson() {
+    return {"name": name};
+  }
+}
+
+/** Coverage data for a JavaScript script. */
+class ScriptCoverage {
+  /** JavaScript script id. */
+  String scriptId;
+
+/** JavaScript script name or url. */
+  String url;
+
+/** Functions contained in the script that has coverage data. */
+  List<FunctionCoverage> functions;
+
+  Map<String, dynamic> toJson() {
+    return {"scriptId": scriptId, "url": url, "functions": functions};
+  }
+}
+
+/** Coverage data for a JavaScript function. */
+class FunctionCoverage {
+  /** JavaScript function name. */
+  String functionName;
+
+/** Source ranges inside the function with coverage data. */
+  List<CoverageRange> ranges;
+
+/** Whether coverage data for this function has block granularity. */
+  bool isBlockCoverage;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "functionName": functionName,
+      "ranges": ranges,
+      "isBlockCoverage": isBlockCoverage
+    };
+  }
+}
+
+/** Coverage data for a source range. */
+class CoverageRange {
+  /** JavaScript script source offset for the range start. */
+  int startOffset;
+
+/** JavaScript script source offset for the range end. */
+  int endOffset;
+
+/** Collected execution count of the source range. */
+  int count;
+
+  Map<String, dynamic> toJson() {
+    return {"startOffset": startOffset, "endOffset": endOffset, "count": count};
+  }
+}
+
+/** Specifies a number of samples attributed to a certain source position. */
+class PositionTickInfo {
+  /** Source line number (1-based). */
+  int line;
+
+/** Number of samples attributed to the source line. */
+  int ticks;
+
+  Map<String, dynamic> toJson() {
+    return {"line": line, "ticks": ticks};
+  }
+}
+
+/** Profile. */
+class Profile {
+  /** The list of profile nodes. First item is the root node. */
+  List<ProfileNode> nodes;
+
+/** Profiling start timestamp in microseconds. */
+  num startTime;
+
+/** Profiling end timestamp in microseconds. */
+  num endTime;
+
+/** Ids of samples top nodes. */
+  List samples;
+
+/** Time intervals between adjacent samples in microseconds. The first delta is relative to the
+profile startTime. */
+  List timeDeltas;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "nodes": nodes,
+      "startTime": startTime,
+      "endTime": endTime,
+      "samples": samples,
+      "timeDeltas": timeDeltas
+    };
+  }
+}
+
+/** Profile node. Holds callsite information, execution statistics and child nodes. */
+class ProfileNode {
+  /** Unique id of the node. */
+  int id;
+
+/** Function location. */
+  CallFrame callFrame;
+
+/** Number of samples where this node was on top of the call stack. */
+  int hitCount;
+
+/** Child node ids. */
+  List children;
+
+/** The reason of being not optimized. The function may be deoptimized or marked as don't
+optimize. */
+  String deoptReason;
+
+/** An array of source position ticks. */
+  List<PositionTickInfo> positionTicks;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "callFrame": callFrame,
+      "hitCount": hitCount,
+      "children": children,
+      "deoptReason": deoptReason,
+      "positionTicks": positionTicks
+    };
+  }
+}
+
+/** If `debuggerId` is set stack trace comes from another debugger and can be resolved there. This
+allows to track cross-debugger calls. See `Runtime.StackTrace` and `Debugger.paused` for usages. */
+class StackTraceId {
+  /**  */
+  String id;
+
+/**  */
+  String debuggerId;
+
+  Map<String, dynamic> toJson() {
+    return {"id": id, "debuggerId": debuggerId};
+  }
+}
+
+/** Call frames for assertions or error messages. */
+class StackTrace {
+  /** String label of this stack trace. For async traces this may be a name of the function that
+initiated the async call. */
+  String description;
+
+/** JavaScript function name. */
+  List<CallFrame> callFrames;
+
+/** Asynchronous JavaScript stack trace that preceded this stack, if available. */
+  StackTrace parent;
+
+/** Asynchronous JavaScript stack trace that preceded this stack, if available. */
+  StackTraceId parentId;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "description": description,
+      "callFrames": callFrames,
+      "parent": parent,
+      "parentId": parentId
+    };
+  }
+}
+
+/** Detailed information about exception (or error) that was thrown during script compilation or
+execution. */
+class ExceptionDetails {
+  /** Exception id. */
+  int exceptionId;
+
+/** Exception text, which should be used together with exception object when available. */
+  String text;
+
+/** Line number of the exception location (0-based). */
+  int lineNumber;
+
+/** Column number of the exception location (0-based). */
+  int columnNumber;
+
+/** Script ID of the exception location. */
+  String scriptId;
+
+/** URL of the exception location, to be used when the script was not reported. */
+  String url;
+
+/** JavaScript stack trace if available. */
+  StackTrace stackTrace;
+
+/** Exception object if available. */
+  RemoteObject exception;
+
+/** Identifier of the context where exception happened. */
+  int executionContextId;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "exceptionId": exceptionId,
+      "text": text,
+      "lineNumber": lineNumber,
+      "columnNumber": columnNumber,
+      "scriptId": scriptId,
+      "url": url,
+      "stackTrace": stackTrace,
+      "exception": exception,
+      "executionContextId": executionContextId
+    };
+  }
+}
+
+/** Description of an isolated world. */
+class ExecutionContextDescription {
+  /** Unique id of the execution context. It can be used to specify in which execution context
+script evaluation should be performed. */
+  int id;
+
+/** Execution context origin. */
+  String origin;
+
+/** Human readable name describing given context. */
+  String name;
+
+/** Embedder-specific auxiliary data. */
+  Map auxData;
+
+  Map<String, dynamic> toJson() {
+    return {"id": id, "origin": origin, "name": name, "auxData": auxData};
+  }
+}
+
+/** Represents function call argument. Either remote object id `objectId`, primitive `value`,
+unserializable primitive value or neither of (for undefined) them should be specified. */
+class CallArgument {
+  /** Primitive value or serializable javascript object. */
+  Object value;
+
+/** Primitive value which can not be JSON-stringified. */
+  String unserializableValue;
+
+/** Remote object handle. */
+  String objectId;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "value": value,
+      "unserializableValue": unserializableValue,
+      "objectId": objectId
+    };
+  }
+}
+
+/** Object internal property descriptor. This property isn't normally visible in JavaScript code. */
+class InternalPropertyDescriptor {
+  /** Conventional property name. */
+  String name;
+
+/** The value associated with the property. */
+  RemoteObject value;
+
+  Map<String, dynamic> toJson() {
+    return {"name": name, "value": value};
+  }
+}
+
+/** Object property descriptor. */
+class PropertyDescriptor {
+  /** Property name or symbol description. */
+  String name;
+
+/** The value associated with the property. */
+  RemoteObject value;
+
+/** True if the value associated with the property may be changed (data descriptors only). */
+  bool writable;
+
+/** A function which serves as a getter for the property, or `undefined` if there is no getter
+(accessor descriptors only). */
+  RemoteObject get;
+
+/** A function which serves as a setter for the property, or `undefined` if there is no setter
+(accessor descriptors only). */
+  RemoteObject set;
+
+/** True if the type of this property descriptor may be changed and if the property may be
+deleted from the corresponding object. */
+  bool configurable;
+
+/** True if this property shows up during enumeration of the properties on the corresponding
+object. */
+  bool enumerable;
+
+/** True if the result was thrown during the evaluation. */
+  bool wasThrown;
+
+/** True if the property is owned for the object. */
+  bool isOwn;
+
+/** Property symbol object, if the property is of the `symbol` type. */
+  RemoteObject symbol;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+      "value": value,
+      "writable": writable,
+      "get": get,
+      "set": set,
+      "configurable": configurable,
+      "enumerable": enumerable,
+      "wasThrown": wasThrown,
+      "isOwn": isOwn,
+      "symbol": symbol
+    };
+  }
+}
+
+/**  */
+class EntryPreview {
+  /** Preview of the key. Specified for map-like collection entries. */
+  ObjectPreview key;
+
+/** Preview of the value. */
+  ObjectPreview value;
+
+  Map<String, dynamic> toJson() {
+    return {"key": key, "value": value};
+  }
+}
+
+/**  */
+class PropertyPreview {
+  /** Property name. */
+  String name;
+
+/** Object type. Accessor means that the property itself is an accessor property. */
+  String type;
+
+/** User-friendly property value string. */
+  String value;
+
+/** Nested value preview. */
+  ObjectPreview valuePreview;
+
+/** Object subtype hint. Specified for `object` type values only. */
+  String subtype;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+      "type": type,
+      "value": value,
+      "valuePreview": valuePreview,
+      "subtype": subtype
+    };
+  }
+}
+
+/** Object containing abbreviated remote object value. */
+class ObjectPreview {
+  /** Object type. */
+  String type;
+
+/** Object subtype hint. Specified for `object` type values only. */
+  String subtype;
+
+/** String representation of the object. */
+  String description;
+
+/** True iff some of the properties or entries of the original object did not fit. */
+  bool overflow;
+
+/** List of the properties. */
+  List<PropertyPreview> properties;
+
+/** List of the entries. Specified for `map` and `set` subtype values only. */
+  List<EntryPreview> entries;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "type": type,
+      "subtype": subtype,
+      "description": description,
+      "overflow": overflow,
+      "properties": properties,
+      "entries": entries
+    };
+  }
+}
+
+/**  */
+class CustomPreview {
+  /**  */
+  String header;
+
+/**  */
+  bool hasBody;
+
+/**  */
+  String formatterObjectId;
+
+/**  */
+  String bindRemoteObjectFunctionId;
+
+/**  */
+  String configObjectId;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "header": header,
+      "hasBody": hasBody,
+      "formatterObjectId": formatterObjectId,
+      "bindRemoteObjectFunctionId": bindRemoteObjectFunctionId,
+      "configObjectId": configObjectId
+    };
+  }
+}
+
+/** Mirror object referencing original JavaScript object. */
+class RemoteObject {
+  /** Object type. */
+  String type;
+
+/** Object subtype hint. Specified for `object` type values only. */
+  String subtype;
+
+/** Object class (constructor) name. Specified for `object` type values only. */
+  String className;
+
+/** Remote object value in case of primitive values or JSON values (if it was requested). */
+  Object value;
+
+/** Primitive value which can not be JSON-stringified does not have `value`, but gets this
+property. */
+  String unserializableValue;
+
+/** String representation of the object. */
+  String description;
+
+/** Unique object identifier (for non-primitive values). */
+  String objectId;
+
+/** Preview containing abbreviated property values. Specified for `object` type values only. */
+  ObjectPreview preview;
+
+/**  */
+  CustomPreview customPreview;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "type": type,
+      "subtype": subtype,
+      "className": className,
+      "value": value,
+      "unserializableValue": unserializableValue,
+      "description": description,
+      "objectId": objectId,
+      "preview": preview,
+      "customPreview": customPreview
+    };
+  }
+}
+
+/** Description of the protocol domain. */
+class Domain {
+  /** Domain name. */
+  String name;
+
+/** Domain version. */
+  String version;
+
+  Map<String, dynamic> toJson() {
+    return {"name": name, "version": version};
+  }
+}
+
 /** A node in the accessibility tree. */
 class AXNode {
   /** Unique identifier for this node. */
@@ -1176,7 +1889,7 @@ class EventListener {
   bool once;
 
 /** Script id of the handler code. */
-  Object scriptId;
+  String scriptId;
 
 /** Line number in the script (0-based). */
   int lineNumber;
@@ -1185,10 +1898,10 @@ class EventListener {
   int columnNumber;
 
 /** Event handler function value. */
-  Object handler;
+  RemoteObject handler;
 
 /** Event original handler function value. */
-  Object originalHandler;
+  RemoteObject originalHandler;
 
 /** Node the listener is added to (if any). */
   int backendNodeId;
@@ -1792,7 +2505,7 @@ class LogEntry {
   String text;
 
 /** Timestamp when this entry was added. */
-  Object timestamp;
+  num timestamp;
 
 /** URL of the resource if known. */
   String url;
@@ -1801,7 +2514,7 @@ class LogEntry {
   int lineNumber;
 
 /** JavaScript stack trace. */
-  Object stackTrace;
+  StackTrace stackTrace;
 
 /** Identifier of the network request associated with this entry. */
   String networkRequestId;
@@ -1810,7 +2523,7 @@ class LogEntry {
   String workerId;
 
 /** Call arguments. */
-  List<Object> args;
+  List<RemoteObject> args;
 
   Map<String, dynamic> toJson() {
     return {
@@ -2018,7 +2731,7 @@ class Initiator {
   String type;
 
 /** Initiator JavaScript stack trace, set for Script only. */
-  Object stack;
+  StackTrace stack;
 
 /** Initiator URL, set for Parser type or for Script type (when script is importing module). */
   String url;
@@ -3078,6 +3791,1319 @@ class TraceConfig {
 /** Configuration for memory dump. Used only when "memory-infra" category is enabled. */
 class MemoryDumpConfig {}
 
+class DevToolsConsole {
+  DevToolsConsole(this._devtools);
+
+  final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onMessageAdded =
+      new dart_async.StreamController();
+
+/** Does nothing. */
+  dart_async.Future clearMessages() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Console.clearMessages', params);
+  }
+
+/** Disables console domain, prevents further console messages from being reported to the client. */
+  dart_async.Future disable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Console.disable', params);
+  }
+
+/** Enables console domain, sends the messages collected so far to the client by means of the
+`messageAdded` notification. */
+  dart_async.Future enable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Console.enable', params);
+  }
+
+/** Issued when new console message is added. */
+  dart_async.Stream get onMessageAdded => _onMessageAdded.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Console.messageAdded', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onMessageAdded.close();
+  }
+}
+
+class DebuggerEnableResponse {
+  DebuggerEnableResponse(Map map) {
+    debuggerId = map['debuggerId'];
+  }
+
+  String debuggerId;
+}
+
+class DebuggerEvaluateOnCallFrameResponse {
+  DebuggerEvaluateOnCallFrameResponse(Map map) {
+    result = map['result'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  RemoteObject result;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class DebuggerGetPossibleBreakpointsResponse {
+  DebuggerGetPossibleBreakpointsResponse(Map map) {
+    locations = map['locations'];
+  }
+
+  List<BreakLocation> locations;
+}
+
+class DebuggerGetScriptSourceResponse {
+  DebuggerGetScriptSourceResponse(Map map) {
+    scriptSource = map['scriptSource'];
+  }
+
+  String scriptSource;
+}
+
+class DebuggerGetStackTraceResponse {
+  DebuggerGetStackTraceResponse(Map map) {
+    stackTrace = map['stackTrace'];
+  }
+
+  StackTrace stackTrace;
+}
+
+class DebuggerRestartFrameResponse {
+  DebuggerRestartFrameResponse(Map map) {
+    callFrames = map['callFrames'];
+    asyncStackTrace = map['asyncStackTrace'];
+    asyncStackTraceId = map['asyncStackTraceId'];
+  }
+
+  List<CallFrame> callFrames;
+
+  StackTrace asyncStackTrace;
+
+  StackTraceId asyncStackTraceId;
+}
+
+class DebuggerSearchInContentResponse {
+  DebuggerSearchInContentResponse(Map map) {
+    result = map['result'];
+  }
+
+  List<SearchMatch> result;
+}
+
+class DebuggerSetBreakpointResponse {
+  DebuggerSetBreakpointResponse(Map map) {
+    breakpointId = map['breakpointId'];
+    actualLocation = map['actualLocation'];
+  }
+
+  String breakpointId;
+
+  Location actualLocation;
+}
+
+class DebuggerSetBreakpointByUrlResponse {
+  DebuggerSetBreakpointByUrlResponse(Map map) {
+    breakpointId = map['breakpointId'];
+    locations = map['locations'];
+  }
+
+  String breakpointId;
+
+  List<Location> locations;
+}
+
+class DebuggerSetScriptSourceResponse {
+  DebuggerSetScriptSourceResponse(Map map) {
+    callFrames = map['callFrames'];
+    stackChanged = map['stackChanged'];
+    asyncStackTrace = map['asyncStackTrace'];
+    asyncStackTraceId = map['asyncStackTraceId'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  List<CallFrame> callFrames;
+
+  bool stackChanged;
+
+  StackTrace asyncStackTrace;
+
+  StackTraceId asyncStackTraceId;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class DevToolsDebugger {
+  DevToolsDebugger(this._devtools);
+
+  final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onBreakpointResolved =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onPaused = new dart_async.StreamController();
+
+  dart_async.StreamController _onResumed = new dart_async.StreamController();
+
+  dart_async.StreamController _onScriptFailedToParse =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onScriptParsed =
+      new dart_async.StreamController();
+
+/** Continues execution until specific location is reached. */
+  dart_async.Future continueToLocation(
+      {Location location, String targetCallFrames}) {
+    var params = {};
+    if (location != null) params['location'] = location;
+
+    if (targetCallFrames != null) params['targetCallFrames'] = targetCallFrames;
+
+    return _devtools.rpc.sendRequest('Debugger.continueToLocation', params);
+  }
+
+/** Disables debugger for given page. */
+  dart_async.Future disable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Debugger.disable', params);
+  }
+
+/** Enables debugger for the given page. Clients should not assume that the debugging has been
+enabled until the result for this command is received. */
+  dart_async.Future<DebuggerEnableResponse> enable() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Debugger.enable', params)
+        .then((response) => new DebuggerEnableResponse(response));
+  }
+
+/** Evaluates expression on a given call frame. */
+  dart_async.Future<DebuggerEvaluateOnCallFrameResponse> evaluateOnCallFrame(
+      {String callFrameId,
+      String expression,
+      String objectGroup,
+      bool includeCommandLineAPI,
+      bool silent,
+      bool returnByValue,
+      bool generatePreview,
+      bool throwOnSideEffect}) {
+    var params = {};
+    if (callFrameId != null) params['callFrameId'] = callFrameId;
+
+    if (expression != null) params['expression'] = expression;
+
+    if (objectGroup != null) params['objectGroup'] = objectGroup;
+
+    if (includeCommandLineAPI != null)
+      params['includeCommandLineAPI'] = includeCommandLineAPI;
+
+    if (silent != null) params['silent'] = silent;
+
+    if (returnByValue != null) params['returnByValue'] = returnByValue;
+
+    if (generatePreview != null) params['generatePreview'] = generatePreview;
+
+    if (throwOnSideEffect != null)
+      params['throwOnSideEffect'] = throwOnSideEffect;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.evaluateOnCallFrame', params)
+        .then((response) => new DebuggerEvaluateOnCallFrameResponse(response));
+  }
+
+/** Returns possible locations for breakpoint. scriptId in start and end range locations should be
+the same. */
+  dart_async.Future<DebuggerGetPossibleBreakpointsResponse>
+      getPossibleBreakpoints(
+          {Location start, Location end, bool restrictToFunction}) {
+    var params = {};
+    if (start != null) params['start'] = start;
+
+    if (end != null) params['end'] = end;
+
+    if (restrictToFunction != null)
+      params['restrictToFunction'] = restrictToFunction;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.getPossibleBreakpoints', params)
+        .then(
+            (response) => new DebuggerGetPossibleBreakpointsResponse(response));
+  }
+
+/** Returns source for the script with given id. */
+  dart_async.Future<DebuggerGetScriptSourceResponse> getScriptSource(
+      {String scriptId}) {
+    var params = {};
+    if (scriptId != null) params['scriptId'] = scriptId;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.getScriptSource', params)
+        .then((response) => new DebuggerGetScriptSourceResponse(response));
+  }
+
+/** Returns stack trace with given `stackTraceId`. */
+  dart_async.Future<DebuggerGetStackTraceResponse> getStackTrace(
+      {StackTraceId stackTraceId}) {
+    var params = {};
+    if (stackTraceId != null) params['stackTraceId'] = stackTraceId;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.getStackTrace', params)
+        .then((response) => new DebuggerGetStackTraceResponse(response));
+  }
+
+/** Stops on the next JavaScript statement. */
+  dart_async.Future pause() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Debugger.pause', params);
+  }
+
+/**  */
+  dart_async.Future pauseOnAsyncCall({StackTraceId parentStackTraceId}) {
+    var params = {};
+    if (parentStackTraceId != null)
+      params['parentStackTraceId'] = parentStackTraceId;
+
+    return _devtools.rpc.sendRequest('Debugger.pauseOnAsyncCall', params);
+  }
+
+/** Removes JavaScript breakpoint. */
+  dart_async.Future removeBreakpoint({String breakpointId}) {
+    var params = {};
+    if (breakpointId != null) params['breakpointId'] = breakpointId;
+
+    return _devtools.rpc.sendRequest('Debugger.removeBreakpoint', params);
+  }
+
+/** Restarts particular call frame from the beginning. */
+  dart_async.Future<DebuggerRestartFrameResponse> restartFrame(
+      {String callFrameId}) {
+    var params = {};
+    if (callFrameId != null) params['callFrameId'] = callFrameId;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.restartFrame', params)
+        .then((response) => new DebuggerRestartFrameResponse(response));
+  }
+
+/** Resumes JavaScript execution. */
+  dart_async.Future resume() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Debugger.resume', params);
+  }
+
+/** This method is deprecated - use Debugger.stepInto with breakOnAsyncCall and
+Debugger.pauseOnAsyncTask instead. Steps into next scheduled async task if any is scheduled
+before next pause. Returns success when async task is actually scheduled, returns error if no
+task were scheduled or another scheduleStepIntoAsync was called. */
+  dart_async.Future scheduleStepIntoAsync() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Debugger.scheduleStepIntoAsync', params);
+  }
+
+/** Searches for given string in script content. */
+  dart_async.Future<DebuggerSearchInContentResponse> searchInContent(
+      {String scriptId, String query, bool caseSensitive, bool isRegex}) {
+    var params = {};
+    if (scriptId != null) params['scriptId'] = scriptId;
+
+    if (query != null) params['query'] = query;
+
+    if (caseSensitive != null) params['caseSensitive'] = caseSensitive;
+
+    if (isRegex != null) params['isRegex'] = isRegex;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.searchInContent', params)
+        .then((response) => new DebuggerSearchInContentResponse(response));
+  }
+
+/** Enables or disables async call stacks tracking. */
+  dart_async.Future setAsyncCallStackDepth({int maxDepth}) {
+    var params = {};
+    if (maxDepth != null) params['maxDepth'] = maxDepth;
+
+    return _devtools.rpc.sendRequest('Debugger.setAsyncCallStackDepth', params);
+  }
+
+/** Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in
+scripts with url matching one of the patterns. VM will try to leave blackboxed script by
+performing 'step in' several times, finally resorting to 'step out' if unsuccessful. */
+  dart_async.Future setBlackboxPatterns({List patterns}) {
+    var params = {};
+    if (patterns != null) params['patterns'] = patterns;
+
+    return _devtools.rpc.sendRequest('Debugger.setBlackboxPatterns', params);
+  }
+
+/** Makes backend skip steps in the script in blackboxed ranges. VM will try leave blacklisted
+scripts by performing 'step in' several times, finally resorting to 'step out' if unsuccessful.
+Positions array contains positions where blackbox state is changed. First interval isn't
+blackboxed. Array should be sorted. */
+  dart_async.Future setBlackboxedRanges(
+      {String scriptId, List<ScriptPosition> positions}) {
+    var params = {};
+    if (scriptId != null) params['scriptId'] = scriptId;
+
+    if (positions != null) params['positions'] = positions;
+
+    return _devtools.rpc.sendRequest('Debugger.setBlackboxedRanges', params);
+  }
+
+/** Sets JavaScript breakpoint at a given location. */
+  dart_async.Future<DebuggerSetBreakpointResponse> setBreakpoint(
+      {Location location, String condition}) {
+    var params = {};
+    if (location != null) params['location'] = location;
+
+    if (condition != null) params['condition'] = condition;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.setBreakpoint', params)
+        .then((response) => new DebuggerSetBreakpointResponse(response));
+  }
+
+/** Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this
+command is issued, all existing parsed scripts will have breakpoints resolved and returned in
+`locations` property. Further matching script parsing will result in subsequent
+`breakpointResolved` events issued. This logical breakpoint will survive page reloads. */
+  dart_async.Future<DebuggerSetBreakpointByUrlResponse> setBreakpointByUrl(
+      {int lineNumber,
+      String url,
+      String urlRegex,
+      String scriptHash,
+      int columnNumber,
+      String condition}) {
+    var params = {};
+    if (lineNumber != null) params['lineNumber'] = lineNumber;
+
+    if (url != null) params['url'] = url;
+
+    if (urlRegex != null) params['urlRegex'] = urlRegex;
+
+    if (scriptHash != null) params['scriptHash'] = scriptHash;
+
+    if (columnNumber != null) params['columnNumber'] = columnNumber;
+
+    if (condition != null) params['condition'] = condition;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.setBreakpointByUrl', params)
+        .then((response) => new DebuggerSetBreakpointByUrlResponse(response));
+  }
+
+/** Activates / deactivates all breakpoints on the page. */
+  dart_async.Future setBreakpointsActive({bool active}) {
+    var params = {};
+    if (active != null) params['active'] = active;
+
+    return _devtools.rpc.sendRequest('Debugger.setBreakpointsActive', params);
+  }
+
+/** Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions or
+no exceptions. Initial pause on exceptions state is `none`. */
+  dart_async.Future setPauseOnExceptions({String state}) {
+    var params = {};
+    if (state != null) params['state'] = state;
+
+    return _devtools.rpc.sendRequest('Debugger.setPauseOnExceptions', params);
+  }
+
+/** Changes return value in top frame. Available only at return break position. */
+  dart_async.Future setReturnValue({CallArgument newValue}) {
+    var params = {};
+    if (newValue != null) params['newValue'] = newValue;
+
+    return _devtools.rpc.sendRequest('Debugger.setReturnValue', params);
+  }
+
+/** Edits JavaScript source live. */
+  dart_async.Future<DebuggerSetScriptSourceResponse> setScriptSource(
+      {String scriptId, String scriptSource, bool dryRun}) {
+    var params = {};
+    if (scriptId != null) params['scriptId'] = scriptId;
+
+    if (scriptSource != null) params['scriptSource'] = scriptSource;
+
+    if (dryRun != null) params['dryRun'] = dryRun;
+
+    return _devtools.rpc
+        .sendRequest('Debugger.setScriptSource', params)
+        .then((response) => new DebuggerSetScriptSourceResponse(response));
+  }
+
+/** Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc). */
+  dart_async.Future setSkipAllPauses({bool skip}) {
+    var params = {};
+    if (skip != null) params['skip'] = skip;
+
+    return _devtools.rpc.sendRequest('Debugger.setSkipAllPauses', params);
+  }
+
+/** Changes value of variable in a callframe. Object-based scopes are not supported and must be
+mutated manually. */
+  dart_async.Future setVariableValue(
+      {int scopeNumber,
+      String variableName,
+      CallArgument newValue,
+      String callFrameId}) {
+    var params = {};
+    if (scopeNumber != null) params['scopeNumber'] = scopeNumber;
+
+    if (variableName != null) params['variableName'] = variableName;
+
+    if (newValue != null) params['newValue'] = newValue;
+
+    if (callFrameId != null) params['callFrameId'] = callFrameId;
+
+    return _devtools.rpc.sendRequest('Debugger.setVariableValue', params);
+  }
+
+/** Steps into the function call. */
+  dart_async.Future stepInto({bool breakOnAsyncCall}) {
+    var params = {};
+    if (breakOnAsyncCall != null) params['breakOnAsyncCall'] = breakOnAsyncCall;
+
+    return _devtools.rpc.sendRequest('Debugger.stepInto', params);
+  }
+
+/** Steps out of the function call. */
+  dart_async.Future stepOut() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Debugger.stepOut', params);
+  }
+
+/** Steps over the statement. */
+  dart_async.Future stepOver() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Debugger.stepOver', params);
+  }
+
+/** Fired when breakpoint is resolved to an actual script and location. */
+  dart_async.Stream get onBreakpointResolved => _onBreakpointResolved.stream;
+/** Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria. */
+  dart_async.Stream get onPaused => _onPaused.stream;
+/** Fired when the virtual machine resumed execution. */
+  dart_async.Stream get onResumed => _onResumed.stream;
+/** Fired when virtual machine fails to parse the script. */
+  dart_async.Stream get onScriptFailedToParse => _onScriptFailedToParse.stream;
+/** Fired when virtual machine parses script. This event is also fired for all known and uncollected
+scripts upon enabling debugger. */
+  dart_async.Stream get onScriptParsed => _onScriptParsed.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Debugger.breakpointResolved', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Debugger.paused', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Debugger.resumed', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Debugger.scriptFailedToParse', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Debugger.scriptParsed', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onBreakpointResolved.close();
+    _onPaused.close();
+    _onResumed.close();
+    _onScriptFailedToParse.close();
+    _onScriptParsed.close();
+  }
+}
+
+class HeapProfilerGetHeapObjectIdResponse {
+  HeapProfilerGetHeapObjectIdResponse(Map map) {
+    heapSnapshotObjectId = map['heapSnapshotObjectId'];
+  }
+
+  String heapSnapshotObjectId;
+}
+
+class HeapProfilerGetObjectByHeapObjectIdResponse {
+  HeapProfilerGetObjectByHeapObjectIdResponse(Map map) {
+    result = map['result'];
+  }
+
+  RemoteObject result;
+}
+
+class HeapProfilerGetSamplingProfileResponse {
+  HeapProfilerGetSamplingProfileResponse(Map map) {
+    profile = map['profile'];
+  }
+
+  SamplingHeapProfile profile;
+}
+
+class HeapProfilerStopSamplingResponse {
+  HeapProfilerStopSamplingResponse(Map map) {
+    profile = map['profile'];
+  }
+
+  SamplingHeapProfile profile;
+}
+
+class DevToolsHeapProfiler {
+  DevToolsHeapProfiler(this._devtools);
+
+  final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onAddHeapSnapshotChunk =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onHeapStatsUpdate =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onLastSeenObjectId =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onReportHeapSnapshotProgress =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onResetProfiles =
+      new dart_async.StreamController();
+
+/** Enables console to refer to the node with given id via $x (see Command Line API for more details
+$x functions). */
+  dart_async.Future addInspectedHeapObject({String heapObjectId}) {
+    var params = {};
+    if (heapObjectId != null) params['heapObjectId'] = heapObjectId;
+
+    return _devtools.rpc
+        .sendRequest('HeapProfiler.addInspectedHeapObject', params);
+  }
+
+/**  */
+  dart_async.Future collectGarbage() {
+    var params = {};
+    return _devtools.rpc.sendRequest('HeapProfiler.collectGarbage', params);
+  }
+
+/**  */
+  dart_async.Future disable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('HeapProfiler.disable', params);
+  }
+
+/**  */
+  dart_async.Future enable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('HeapProfiler.enable', params);
+  }
+
+/**  */
+  dart_async.Future<HeapProfilerGetHeapObjectIdResponse> getHeapObjectId(
+      {String objectId}) {
+    var params = {};
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc
+        .sendRequest('HeapProfiler.getHeapObjectId', params)
+        .then((response) => new HeapProfilerGetHeapObjectIdResponse(response));
+  }
+
+/**  */
+  dart_async.Future<HeapProfilerGetObjectByHeapObjectIdResponse>
+      getObjectByHeapObjectId({String objectId, String objectGroup}) {
+    var params = {};
+    if (objectId != null) params['objectId'] = objectId;
+
+    if (objectGroup != null) params['objectGroup'] = objectGroup;
+
+    return _devtools.rpc
+        .sendRequest('HeapProfiler.getObjectByHeapObjectId', params)
+        .then((response) =>
+            new HeapProfilerGetObjectByHeapObjectIdResponse(response));
+  }
+
+/**  */
+  dart_async.Future<HeapProfilerGetSamplingProfileResponse>
+      getSamplingProfile() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('HeapProfiler.getSamplingProfile', params)
+        .then(
+            (response) => new HeapProfilerGetSamplingProfileResponse(response));
+  }
+
+/**  */
+  dart_async.Future startSampling({num samplingInterval}) {
+    var params = {};
+    if (samplingInterval != null) params['samplingInterval'] = samplingInterval;
+
+    return _devtools.rpc.sendRequest('HeapProfiler.startSampling', params);
+  }
+
+/**  */
+  dart_async.Future startTrackingHeapObjects({bool trackAllocations}) {
+    var params = {};
+    if (trackAllocations != null) params['trackAllocations'] = trackAllocations;
+
+    return _devtools.rpc
+        .sendRequest('HeapProfiler.startTrackingHeapObjects', params);
+  }
+
+/**  */
+  dart_async.Future<HeapProfilerStopSamplingResponse> stopSampling() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('HeapProfiler.stopSampling', params)
+        .then((response) => new HeapProfilerStopSamplingResponse(response));
+  }
+
+/**  */
+  dart_async.Future stopTrackingHeapObjects({bool reportProgress}) {
+    var params = {};
+    if (reportProgress != null) params['reportProgress'] = reportProgress;
+
+    return _devtools.rpc
+        .sendRequest('HeapProfiler.stopTrackingHeapObjects', params);
+  }
+
+/**  */
+  dart_async.Future takeHeapSnapshot({bool reportProgress}) {
+    var params = {};
+    if (reportProgress != null) params['reportProgress'] = reportProgress;
+
+    return _devtools.rpc.sendRequest('HeapProfiler.takeHeapSnapshot', params);
+  }
+
+/**  */
+  dart_async.Stream get onAddHeapSnapshotChunk =>
+      _onAddHeapSnapshotChunk.stream;
+/** If heap objects tracking has been started then backend may send update for one or more fragments */
+  dart_async.Stream get onHeapStatsUpdate => _onHeapStatsUpdate.stream;
+/** If heap objects tracking has been started then backend regularly sends a current value for last
+seen object id and corresponding timestamp. If the were changes in the heap since last event
+then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event. */
+  dart_async.Stream get onLastSeenObjectId => _onLastSeenObjectId.stream;
+/**  */
+  dart_async.Stream get onReportHeapSnapshotProgress =>
+      _onReportHeapSnapshotProgress.stream;
+/**  */
+  dart_async.Stream get onResetProfiles => _onResetProfiles.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'HeapProfiler.addHeapSnapshotChunk', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'HeapProfiler.heapStatsUpdate', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'HeapProfiler.lastSeenObjectId', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('HeapProfiler.reportHeapSnapshotProgress',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'HeapProfiler.resetProfiles', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onAddHeapSnapshotChunk.close();
+    _onHeapStatsUpdate.close();
+    _onLastSeenObjectId.close();
+    _onReportHeapSnapshotProgress.close();
+    _onResetProfiles.close();
+  }
+}
+
+class ProfilerGetBestEffortCoverageResponse {
+  ProfilerGetBestEffortCoverageResponse(Map map) {
+    result = map['result'];
+  }
+
+  List<ScriptCoverage> result;
+}
+
+class ProfilerStopResponse {
+  ProfilerStopResponse(Map map) {
+    profile = map['profile'];
+  }
+
+  Profile profile;
+}
+
+class ProfilerTakePreciseCoverageResponse {
+  ProfilerTakePreciseCoverageResponse(Map map) {
+    result = map['result'];
+  }
+
+  List<ScriptCoverage> result;
+}
+
+class ProfilerTakeTypeProfileResponse {
+  ProfilerTakeTypeProfileResponse(Map map) {
+    result = map['result'];
+  }
+
+  List<ScriptTypeProfile> result;
+}
+
+class DevToolsProfiler {
+  DevToolsProfiler(this._devtools);
+
+  final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onConsoleProfileFinished =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onConsoleProfileStarted =
+      new dart_async.StreamController();
+
+/**  */
+  dart_async.Future disable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Profiler.disable', params);
+  }
+
+/**  */
+  dart_async.Future enable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Profiler.enable', params);
+  }
+
+/** Collect coverage data for the current isolate. The coverage data may be incomplete due to
+garbage collection. */
+  dart_async.Future<ProfilerGetBestEffortCoverageResponse>
+      getBestEffortCoverage() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Profiler.getBestEffortCoverage', params)
+        .then(
+            (response) => new ProfilerGetBestEffortCoverageResponse(response));
+  }
+
+/** Changes CPU profiler sampling interval. Must be called before CPU profiles recording started. */
+  dart_async.Future setSamplingInterval({int interval}) {
+    var params = {};
+    if (interval != null) params['interval'] = interval;
+
+    return _devtools.rpc.sendRequest('Profiler.setSamplingInterval', params);
+  }
+
+/**  */
+  dart_async.Future start() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Profiler.start', params);
+  }
+
+/** Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code
+coverage may be incomplete. Enabling prevents running optimized code and resets execution
+counters. */
+  dart_async.Future startPreciseCoverage({bool callCount, bool detailed}) {
+    var params = {};
+    if (callCount != null) params['callCount'] = callCount;
+
+    if (detailed != null) params['detailed'] = detailed;
+
+    return _devtools.rpc.sendRequest('Profiler.startPreciseCoverage', params);
+  }
+
+/** Enable type profile. */
+  dart_async.Future startTypeProfile() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Profiler.startTypeProfile', params);
+  }
+
+/**  */
+  dart_async.Future<ProfilerStopResponse> stop() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Profiler.stop', params)
+        .then((response) => new ProfilerStopResponse(response));
+  }
+
+/** Disable precise code coverage. Disabling releases unnecessary execution count records and allows
+executing optimized code. */
+  dart_async.Future stopPreciseCoverage() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Profiler.stopPreciseCoverage', params);
+  }
+
+/** Disable type profile. Disabling releases type profile data collected so far. */
+  dart_async.Future stopTypeProfile() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Profiler.stopTypeProfile', params);
+  }
+
+/** Collect coverage data for the current isolate, and resets execution counters. Precise code
+coverage needs to have started. */
+  dart_async.Future<ProfilerTakePreciseCoverageResponse> takePreciseCoverage() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Profiler.takePreciseCoverage', params)
+        .then((response) => new ProfilerTakePreciseCoverageResponse(response));
+  }
+
+/** Collect type profile. */
+  dart_async.Future<ProfilerTakeTypeProfileResponse> takeTypeProfile() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Profiler.takeTypeProfile', params)
+        .then((response) => new ProfilerTakeTypeProfileResponse(response));
+  }
+
+/**  */
+  dart_async.Stream get onConsoleProfileFinished =>
+      _onConsoleProfileFinished.stream;
+/** Sent when new profile recording is started using console.profile() call. */
+  dart_async.Stream get onConsoleProfileStarted =>
+      _onConsoleProfileStarted.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Profiler.consoleProfileFinished', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Profiler.consoleProfileStarted', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onConsoleProfileFinished.close();
+    _onConsoleProfileStarted.close();
+  }
+}
+
+class RuntimeAwaitPromiseResponse {
+  RuntimeAwaitPromiseResponse(Map map) {
+    result = map['result'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  RemoteObject result;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class RuntimeCallFunctionOnResponse {
+  RuntimeCallFunctionOnResponse(Map map) {
+    result = map['result'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  RemoteObject result;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class RuntimeCompileScriptResponse {
+  RuntimeCompileScriptResponse(Map map) {
+    scriptId = map['scriptId'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  String scriptId;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class RuntimeEvaluateResponse {
+  RuntimeEvaluateResponse(Map map) {
+    result = map['result'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  RemoteObject result;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class RuntimeGetPropertiesResponse {
+  RuntimeGetPropertiesResponse(Map map) {
+    result = map['result'];
+    internalProperties = map['internalProperties'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  List<PropertyDescriptor> result;
+
+  List<InternalPropertyDescriptor> internalProperties;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class RuntimeGlobalLexicalScopeNamesResponse {
+  RuntimeGlobalLexicalScopeNamesResponse(Map map) {
+    names = map['names'];
+  }
+
+  List names;
+}
+
+class RuntimeQueryObjectsResponse {
+  RuntimeQueryObjectsResponse(Map map) {
+    objects = map['objects'];
+  }
+
+  RemoteObject objects;
+}
+
+class RuntimeRunScriptResponse {
+  RuntimeRunScriptResponse(Map map) {
+    result = map['result'];
+    exceptionDetails = map['exceptionDetails'];
+  }
+
+  RemoteObject result;
+
+  ExceptionDetails exceptionDetails;
+}
+
+class DevToolsRuntime {
+  DevToolsRuntime(this._devtools);
+
+  final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onConsoleAPICalled =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onExceptionRevoked =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onExceptionThrown =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onExecutionContextCreated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onExecutionContextDestroyed =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onExecutionContextsCleared =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onInspectRequested =
+      new dart_async.StreamController();
+
+/** Add handler to promise with given promise object id. */
+  dart_async.Future<RuntimeAwaitPromiseResponse> awaitPromise(
+      {String promiseObjectId, bool returnByValue, bool generatePreview}) {
+    var params = {};
+    if (promiseObjectId != null) params['promiseObjectId'] = promiseObjectId;
+
+    if (returnByValue != null) params['returnByValue'] = returnByValue;
+
+    if (generatePreview != null) params['generatePreview'] = generatePreview;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.awaitPromise', params)
+        .then((response) => new RuntimeAwaitPromiseResponse(response));
+  }
+
+/** Calls function with given declaration on the given object. Object group of the result is
+inherited from the target object. */
+  dart_async.Future<RuntimeCallFunctionOnResponse> callFunctionOn(
+      {String functionDeclaration,
+      String objectId,
+      List<CallArgument> arguments,
+      bool silent,
+      bool returnByValue,
+      bool generatePreview,
+      bool userGesture,
+      bool awaitPromise,
+      int executionContextId,
+      String objectGroup}) {
+    var params = {};
+    if (functionDeclaration != null)
+      params['functionDeclaration'] = functionDeclaration;
+
+    if (objectId != null) params['objectId'] = objectId;
+
+    if (arguments != null) params['arguments'] = arguments;
+
+    if (silent != null) params['silent'] = silent;
+
+    if (returnByValue != null) params['returnByValue'] = returnByValue;
+
+    if (generatePreview != null) params['generatePreview'] = generatePreview;
+
+    if (userGesture != null) params['userGesture'] = userGesture;
+
+    if (awaitPromise != null) params['awaitPromise'] = awaitPromise;
+
+    if (executionContextId != null)
+      params['executionContextId'] = executionContextId;
+
+    if (objectGroup != null) params['objectGroup'] = objectGroup;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.callFunctionOn', params)
+        .then((response) => new RuntimeCallFunctionOnResponse(response));
+  }
+
+/** Compiles expression. */
+  dart_async.Future<RuntimeCompileScriptResponse> compileScript(
+      {String expression,
+      String sourceURL,
+      bool persistScript,
+      int executionContextId}) {
+    var params = {};
+    if (expression != null) params['expression'] = expression;
+
+    if (sourceURL != null) params['sourceURL'] = sourceURL;
+
+    if (persistScript != null) params['persistScript'] = persistScript;
+
+    if (executionContextId != null)
+      params['executionContextId'] = executionContextId;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.compileScript', params)
+        .then((response) => new RuntimeCompileScriptResponse(response));
+  }
+
+/** Disables reporting of execution contexts creation. */
+  dart_async.Future disable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Runtime.disable', params);
+  }
+
+/** Discards collected exceptions and console API calls. */
+  dart_async.Future discardConsoleEntries() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Runtime.discardConsoleEntries', params);
+  }
+
+/** Enables reporting of execution contexts creation by means of `executionContextCreated` event.
+When the reporting gets enabled the event will be sent immediately for each existing execution
+context. */
+  dart_async.Future enable() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Runtime.enable', params);
+  }
+
+/** Evaluates expression on global object. */
+  dart_async.Future<RuntimeEvaluateResponse> evaluate(
+      {String expression,
+      String objectGroup,
+      bool includeCommandLineAPI,
+      bool silent,
+      int contextId,
+      bool returnByValue,
+      bool generatePreview,
+      bool userGesture,
+      bool awaitPromise}) {
+    var params = {};
+    if (expression != null) params['expression'] = expression;
+
+    if (objectGroup != null) params['objectGroup'] = objectGroup;
+
+    if (includeCommandLineAPI != null)
+      params['includeCommandLineAPI'] = includeCommandLineAPI;
+
+    if (silent != null) params['silent'] = silent;
+
+    if (contextId != null) params['contextId'] = contextId;
+
+    if (returnByValue != null) params['returnByValue'] = returnByValue;
+
+    if (generatePreview != null) params['generatePreview'] = generatePreview;
+
+    if (userGesture != null) params['userGesture'] = userGesture;
+
+    if (awaitPromise != null) params['awaitPromise'] = awaitPromise;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.evaluate', params)
+        .then((response) => new RuntimeEvaluateResponse(response));
+  }
+
+/** Returns properties of a given object. Object group of the result is inherited from the target
+object. */
+  dart_async.Future<RuntimeGetPropertiesResponse> getProperties(
+      {String objectId,
+      bool ownProperties,
+      bool accessorPropertiesOnly,
+      bool generatePreview}) {
+    var params = {};
+    if (objectId != null) params['objectId'] = objectId;
+
+    if (ownProperties != null) params['ownProperties'] = ownProperties;
+
+    if (accessorPropertiesOnly != null)
+      params['accessorPropertiesOnly'] = accessorPropertiesOnly;
+
+    if (generatePreview != null) params['generatePreview'] = generatePreview;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.getProperties', params)
+        .then((response) => new RuntimeGetPropertiesResponse(response));
+  }
+
+/** Returns all let, const and class variables from global scope. */
+  dart_async.Future<RuntimeGlobalLexicalScopeNamesResponse>
+      globalLexicalScopeNames({int executionContextId}) {
+    var params = {};
+    if (executionContextId != null)
+      params['executionContextId'] = executionContextId;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.globalLexicalScopeNames', params)
+        .then(
+            (response) => new RuntimeGlobalLexicalScopeNamesResponse(response));
+  }
+
+/**  */
+  dart_async.Future<RuntimeQueryObjectsResponse> queryObjects(
+      {String prototypeObjectId}) {
+    var params = {};
+    if (prototypeObjectId != null)
+      params['prototypeObjectId'] = prototypeObjectId;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.queryObjects', params)
+        .then((response) => new RuntimeQueryObjectsResponse(response));
+  }
+
+/** Releases remote object with given id. */
+  dart_async.Future releaseObject({String objectId}) {
+    var params = {};
+    if (objectId != null) params['objectId'] = objectId;
+
+    return _devtools.rpc.sendRequest('Runtime.releaseObject', params);
+  }
+
+/** Releases all remote objects that belong to a given group. */
+  dart_async.Future releaseObjectGroup({String objectGroup}) {
+    var params = {};
+    if (objectGroup != null) params['objectGroup'] = objectGroup;
+
+    return _devtools.rpc.sendRequest('Runtime.releaseObjectGroup', params);
+  }
+
+/** Tells inspected instance to run if it was waiting for debugger to attach. */
+  dart_async.Future runIfWaitingForDebugger() {
+    var params = {};
+    return _devtools.rpc.sendRequest('Runtime.runIfWaitingForDebugger', params);
+  }
+
+/** Runs script with given id in a given context. */
+  dart_async.Future<RuntimeRunScriptResponse> runScript(
+      {String scriptId,
+      int executionContextId,
+      String objectGroup,
+      bool silent,
+      bool includeCommandLineAPI,
+      bool returnByValue,
+      bool generatePreview,
+      bool awaitPromise}) {
+    var params = {};
+    if (scriptId != null) params['scriptId'] = scriptId;
+
+    if (executionContextId != null)
+      params['executionContextId'] = executionContextId;
+
+    if (objectGroup != null) params['objectGroup'] = objectGroup;
+
+    if (silent != null) params['silent'] = silent;
+
+    if (includeCommandLineAPI != null)
+      params['includeCommandLineAPI'] = includeCommandLineAPI;
+
+    if (returnByValue != null) params['returnByValue'] = returnByValue;
+
+    if (generatePreview != null) params['generatePreview'] = generatePreview;
+
+    if (awaitPromise != null) params['awaitPromise'] = awaitPromise;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.runScript', params)
+        .then((response) => new RuntimeRunScriptResponse(response));
+  }
+
+/**  */
+  dart_async.Future setCustomObjectFormatterEnabled({bool enabled}) {
+    var params = {};
+    if (enabled != null) params['enabled'] = enabled;
+
+    return _devtools.rpc
+        .sendRequest('Runtime.setCustomObjectFormatterEnabled', params);
+  }
+
+/** Issued when console API was called. */
+  dart_async.Stream get onConsoleAPICalled => _onConsoleAPICalled.stream;
+/** Issued when unhandled exception was revoked. */
+  dart_async.Stream get onExceptionRevoked => _onExceptionRevoked.stream;
+/** Issued when exception was thrown and unhandled. */
+  dart_async.Stream get onExceptionThrown => _onExceptionThrown.stream;
+/** Issued when new execution context is created. */
+  dart_async.Stream get onExecutionContextCreated =>
+      _onExecutionContextCreated.stream;
+/** Issued when execution context is destroyed. */
+  dart_async.Stream get onExecutionContextDestroyed =>
+      _onExecutionContextDestroyed.stream;
+/** Issued when all executionContexts were cleared in browser */
+  dart_async.Stream get onExecutionContextsCleared =>
+      _onExecutionContextsCleared.stream;
+/** Issued when object should be inspected (for example, as a result of inspect() command line API
+call). */
+  dart_async.Stream get onInspectRequested => _onInspectRequested.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Runtime.consoleAPICalled', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Runtime.exceptionRevoked', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Runtime.exceptionThrown', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Runtime.executionContextCreated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Runtime.executionContextDestroyed', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Runtime.executionContextsCleared', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Runtime.inspectRequested', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onConsoleAPICalled.close();
+    _onExceptionRevoked.close();
+    _onExceptionThrown.close();
+    _onExecutionContextCreated.close();
+    _onExecutionContextDestroyed.close();
+    _onExecutionContextsCleared.close();
+    _onInspectRequested.close();
+  }
+}
+
+class SchemaGetDomainsResponse {
+  SchemaGetDomainsResponse(Map map) {
+    domains = map['domains'];
+  }
+
+  List<Domain> domains;
+}
+
+class DevToolsSchema {
+  DevToolsSchema(this._devtools);
+
+  final ChromeDevToolsBase _devtools;
+
+/** Returns supported domains. */
+  dart_async.Future<SchemaGetDomainsResponse> getDomains() {
+    var params = {};
+    return _devtools.rpc
+        .sendRequest('Schema.getDomains', params)
+        .then((response) => new SchemaGetDomainsResponse(response));
+  }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
+}
+
 class AccessibilityGetPartialAXTreeResponse {
   AccessibilityGetPartialAXTreeResponse(Map map) {
     nodes = map['nodes'];
@@ -3104,6 +5130,9 @@ class DevToolsAccessibility {
         .then(
             (response) => new AccessibilityGetPartialAXTreeResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class AnimationGetCurrentTimeResponse {
@@ -3127,13 +5156,22 @@ class AnimationResolveAnimationResponse {
     remoteObject = map['remoteObject'];
   }
 
-  Object remoteObject;
+  RemoteObject remoteObject;
 }
 
 class DevToolsAnimation {
   DevToolsAnimation(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onAnimationCanceled =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onAnimationCreated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onAnimationStarted =
+      new dart_async.StreamController();
 
 /** Disables animation domain notifications. */
   dart_async.Future disable() {
@@ -3224,6 +5262,29 @@ class DevToolsAnimation {
 
     return _devtools.rpc.sendRequest('Animation.setTiming', params);
   }
+
+/** Event for when an animation has been cancelled. */
+  dart_async.Stream get onAnimationCanceled => _onAnimationCanceled.stream;
+/** Event for each animation that has been created. */
+  dart_async.Stream get onAnimationCreated => _onAnimationCreated.stream;
+/** Event for animation that has been started. */
+  dart_async.Stream get onAnimationStarted => _onAnimationStarted.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Animation.animationCanceled', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Animation.animationCreated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Animation.animationStarted', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onAnimationCanceled.close();
+    _onAnimationCreated.close();
+    _onAnimationStarted.close();
+  }
 }
 
 class ApplicationCacheGetApplicationCacheForFrameResponse {
@@ -3254,6 +5315,12 @@ class DevToolsApplicationCache {
   DevToolsApplicationCache(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onApplicationCacheStatusUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onNetworkStateUpdated =
+      new dart_async.StreamController();
 
 /** Enables application cache domain notifications. */
   dart_async.Future enable() {
@@ -3295,6 +5362,24 @@ associated with some application cache. */
         .then((response) =>
             new ApplicationCacheGetManifestForFrameResponse(response));
   }
+
+/**  */
+  dart_async.Stream get onApplicationCacheStatusUpdated =>
+      _onApplicationCacheStatusUpdated.stream;
+/**  */
+  dart_async.Stream get onNetworkStateUpdated => _onNetworkStateUpdated.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod('ApplicationCache.applicationCacheStatusUpdated',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('ApplicationCache.networkStateUpdated',
+        (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onApplicationCacheStatusUpdated.close();
+    _onNetworkStateUpdated.close();
+  }
 }
 
 class AuditsGetEncodedResponseResponse {
@@ -3333,6 +5418,9 @@ applies to images. */
         .sendRequest('Audits.getEncodedResponse', params)
         .then((response) => new AuditsGetEncodedResponseResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class BrowserGetVersionResponse {
@@ -3461,6 +5549,9 @@ class DevToolsBrowser {
 
     return _devtools.rpc.sendRequest('Browser.setWindowBounds', params);
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class CSSAddRuleResponse {
@@ -3630,6 +5721,21 @@ class DevToolsCSS {
   DevToolsCSS(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onFontsUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onMediaQueryResultChanged =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onStyleSheetAdded =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onStyleSheetChanged =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onStyleSheetRemoved =
+      new dart_async.StreamController();
 
 /** Inserts a new rule with the given `ruleText` in a stylesheet with given `styleSheetId`, at the
 position specified by `location`. */
@@ -3877,6 +5983,42 @@ instrumentation) */
         .sendRequest('CSS.takeCoverageDelta', params)
         .then((response) => new CSSTakeCoverageDeltaResponse(response));
   }
+
+/** Fires whenever a web font gets loaded. */
+  dart_async.Stream get onFontsUpdated => _onFontsUpdated.stream;
+/** Fires whenever a MediaQuery result changes (for example, after a browser window has been
+resized.) The current implementation considers only viewport-dependent media features. */
+  dart_async.Stream get onMediaQueryResultChanged =>
+      _onMediaQueryResultChanged.stream;
+/** Fired whenever an active document stylesheet is added. */
+  dart_async.Stream get onStyleSheetAdded => _onStyleSheetAdded.stream;
+/** Fired whenever a stylesheet is changed as a result of the client operation. */
+  dart_async.Stream get onStyleSheetChanged => _onStyleSheetChanged.stream;
+/** Fired whenever an active document stylesheet is removed. */
+  dart_async.Stream get onStyleSheetRemoved => _onStyleSheetRemoved.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod('CSS.fontsUpdated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'CSS.mediaQueryResultChanged', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'CSS.styleSheetAdded', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'CSS.styleSheetChanged', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'CSS.styleSheetRemoved', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onFontsUpdated.close();
+    _onMediaQueryResultChanged.close();
+    _onStyleSheetAdded.close();
+    _onStyleSheetChanged.close();
+    _onStyleSheetRemoved.close();
+  }
 }
 
 class CacheStorageRequestCacheNamesResponse {
@@ -3969,6 +6111,9 @@ class DevToolsCacheStorage {
         .sendRequest('CacheStorage.requestEntries', params)
         .then((response) => new CacheStorageRequestEntriesResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class DOMCollectClassNamesFromSubtreeResponse {
@@ -4123,7 +6268,7 @@ class DOMResolveNodeResponse {
     object = map['object'];
   }
 
-  Object object;
+  RemoteObject object;
 }
 
 class DOMSetNodeNameResponse {
@@ -4146,6 +6291,48 @@ class DevToolsDOM {
   DevToolsDOM(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onAttributeModified =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onAttributeRemoved =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onCharacterDataModified =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onChildNodeCountUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onChildNodeInserted =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onChildNodeRemoved =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onDistributedNodesUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onDocumentUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onInlineStyleInvalidated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onPseudoElementAdded =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onPseudoElementRemoved =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onSetChildNodes =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onShadowRootPopped =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onShadowRootPushed =
+      new dart_async.StreamController();
 
 /** Collects class names for the node with given id and all of it's child nodes. */
   dart_async.Future<DOMCollectClassNamesFromSubtreeResponse>
@@ -4181,7 +6368,7 @@ objects, can be used for automation. */
   dart_async.Future<DOMDescribeNodeResponse> describeNode(
       {int nodeId,
       int backendNodeId,
-      Object objectId,
+      String objectId,
       int depth,
       bool pierce}) {
     var params = {};
@@ -4222,7 +6409,7 @@ be called for that search. */
   }
 
 /** Focuses the given element. */
-  dart_async.Future focus({int nodeId, int backendNodeId, Object objectId}) {
+  dart_async.Future focus({int nodeId, int backendNodeId, String objectId}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
 
@@ -4245,7 +6432,7 @@ be called for that search. */
 
 /** Returns boxes for the given node. */
   dart_async.Future<DOMGetBoxModelResponse> getBoxModel(
-      {int nodeId, int backendNodeId, Object objectId}) {
+      {int nodeId, int backendNodeId, String objectId}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
 
@@ -4302,7 +6489,7 @@ be called for that search. */
 
 /** Returns node's HTML markup. */
   dart_async.Future<DOMGetOuterHTMLResponse> getOuterHTML(
-      {int nodeId, int backendNodeId, Object objectId}) {
+      {int nodeId, int backendNodeId, String objectId}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
 
@@ -4487,7 +6674,7 @@ the specified depth. */
 /** Requests that the node is sent to the caller given the JavaScript node object reference. All
 nodes that form the path from the node to the root are also sent to the client as a series of
 `setChildNodes` notifications. */
-  dart_async.Future<DOMRequestNodeResponse> requestNode({Object objectId}) {
+  dart_async.Future<DOMRequestNodeResponse> requestNode({String objectId}) {
     var params = {};
     if (objectId != null) params['objectId'] = objectId;
 
@@ -4539,7 +6726,7 @@ attribute value and types in several attribute name/value pairs. */
 
 /** Sets files for the given file input element. */
   dart_async.Future setFileInputFiles(
-      {List files, int nodeId, int backendNodeId, Object objectId}) {
+      {List files, int nodeId, int backendNodeId, String objectId}) {
     var params = {};
     if (files != null) params['files'] = files;
 
@@ -4609,6 +6796,100 @@ $x functions). */
         .sendRequest('DOM.getFrameOwner', params)
         .then((response) => new DOMGetFrameOwnerResponse(response));
   }
+
+/** Fired when `Element`'s attribute is modified. */
+  dart_async.Stream get onAttributeModified => _onAttributeModified.stream;
+/** Fired when `Element`'s attribute is removed. */
+  dart_async.Stream get onAttributeRemoved => _onAttributeRemoved.stream;
+/** Mirrors `DOMCharacterDataModified` event. */
+  dart_async.Stream get onCharacterDataModified =>
+      _onCharacterDataModified.stream;
+/** Fired when `Container`'s child node count has changed. */
+  dart_async.Stream get onChildNodeCountUpdated =>
+      _onChildNodeCountUpdated.stream;
+/** Mirrors `DOMNodeInserted` event. */
+  dart_async.Stream get onChildNodeInserted => _onChildNodeInserted.stream;
+/** Mirrors `DOMNodeRemoved` event. */
+  dart_async.Stream get onChildNodeRemoved => _onChildNodeRemoved.stream;
+/** Called when distrubution is changed. */
+  dart_async.Stream get onDistributedNodesUpdated =>
+      _onDistributedNodesUpdated.stream;
+/** Fired when `Document` has been totally updated. Node ids are no longer valid. */
+  dart_async.Stream get onDocumentUpdated => _onDocumentUpdated.stream;
+/** Fired when `Element`'s inline style is modified via a CSS property modification. */
+  dart_async.Stream get onInlineStyleInvalidated =>
+      _onInlineStyleInvalidated.stream;
+/** Called when a pseudo element is added to an element. */
+  dart_async.Stream get onPseudoElementAdded => _onPseudoElementAdded.stream;
+/** Called when a pseudo element is removed from an element. */
+  dart_async.Stream get onPseudoElementRemoved =>
+      _onPseudoElementRemoved.stream;
+/** Fired when backend wants to provide client with the missing DOM structure. This happens upon
+most of the calls requesting node ids. */
+  dart_async.Stream get onSetChildNodes => _onSetChildNodes.stream;
+/** Called when shadow root is popped from the element. */
+  dart_async.Stream get onShadowRootPopped => _onShadowRootPopped.stream;
+/** Called when shadow root is pushed into the element. */
+  dart_async.Stream get onShadowRootPushed => _onShadowRootPushed.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'DOM.attributeModified', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.attributeRemoved', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.characterDataModified', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.childNodeCountUpdated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.childNodeInserted', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.childNodeRemoved', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.distributedNodesUpdated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.documentUpdated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.inlineStyleInvalidated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.pseudoElementAdded', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.pseudoElementRemoved', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('DOM.setChildNodes', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.shadowRootPopped', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOM.shadowRootPushed', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onAttributeModified.close();
+    _onAttributeRemoved.close();
+    _onCharacterDataModified.close();
+    _onChildNodeCountUpdated.close();
+    _onChildNodeInserted.close();
+    _onChildNodeRemoved.close();
+    _onDistributedNodesUpdated.close();
+    _onDocumentUpdated.close();
+    _onInlineStyleInvalidated.close();
+    _onPseudoElementAdded.close();
+    _onPseudoElementRemoved.close();
+    _onSetChildNodes.close();
+    _onShadowRootPopped.close();
+    _onShadowRootPushed.close();
+  }
 }
 
 class DOMDebuggerGetEventListenersResponse {
@@ -4626,7 +6907,7 @@ class DevToolsDOMDebugger {
 
 /** Returns event listeners of the given object. */
   dart_async.Future<DOMDebuggerGetEventListenersResponse> getEventListeners(
-      {Object objectId, int depth, bool pierce}) {
+      {String objectId, int depth, bool pierce}) {
     var params = {};
     if (objectId != null) params['objectId'] = objectId;
 
@@ -4716,6 +6997,9 @@ class DevToolsDOMDebugger {
 
     return _devtools.rpc.sendRequest('DOMDebugger.setXHRBreakpoint', params);
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class DOMSnapshotGetSnapshotResponse {
@@ -4754,6 +7038,9 @@ flattened. */
         .sendRequest('DOMSnapshot.getSnapshot', params)
         .then((response) => new DOMSnapshotGetSnapshotResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class DOMStorageGetDOMStorageItemsResponse {
@@ -4768,6 +7055,18 @@ class DevToolsDOMStorage {
   DevToolsDOMStorage(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onDomStorageItemAdded =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onDomStorageItemRemoved =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onDomStorageItemUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onDomStorageItemsCleared =
+      new dart_async.StreamController();
 
 /**  */
   dart_async.Future clear({StorageId storageId}) {
@@ -4822,6 +7121,38 @@ class DevToolsDOMStorage {
 
     return _devtools.rpc.sendRequest('DOMStorage.setDOMStorageItem', params);
   }
+
+/**  */
+  dart_async.Stream get onDomStorageItemAdded => _onDomStorageItemAdded.stream;
+/**  */
+  dart_async.Stream get onDomStorageItemRemoved =>
+      _onDomStorageItemRemoved.stream;
+/**  */
+  dart_async.Stream get onDomStorageItemUpdated =>
+      _onDomStorageItemUpdated.stream;
+/**  */
+  dart_async.Stream get onDomStorageItemsCleared =>
+      _onDomStorageItemsCleared.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'DOMStorage.domStorageItemAdded', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOMStorage.domStorageItemRemoved', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOMStorage.domStorageItemUpdated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'DOMStorage.domStorageItemsCleared', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onDomStorageItemAdded.close();
+    _onDomStorageItemRemoved.close();
+    _onDomStorageItemUpdated.close();
+    _onDomStorageItemsCleared.close();
+  }
 }
 
 class DatabaseExecuteSQLResponse {
@@ -4850,6 +7181,9 @@ class DevToolsDatabase {
   DevToolsDatabase(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onAddDatabase =
+      new dart_async.StreamController();
 
 /** Disables database tracking, prevents database events from being sent to the client. */
   dart_async.Future disable() {
@@ -4887,6 +7221,17 @@ class DevToolsDatabase {
         .then(
             (response) => new DatabaseGetDatabaseTableNamesResponse(response));
   }
+
+/**  */
+  dart_async.Stream get onAddDatabase => _onAddDatabase.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Database.addDatabase', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onAddDatabase.close();
+  }
 }
 
 class DevToolsDeviceOrientation {
@@ -4914,6 +7259,9 @@ class DevToolsDeviceOrientation {
     return _devtools.rpc
         .sendRequest('DeviceOrientation.setDeviceOrientationOverride', params);
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class EmulationCanEmulateResponse {
@@ -4929,13 +7277,22 @@ class EmulationSetVirtualTimePolicyResponse {
     virtualTimeBase = map['virtualTimeBase'];
   }
 
-  Object virtualTimeBase;
+  num virtualTimeBase;
 }
 
 class DevToolsEmulation {
   DevToolsEmulation(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onVirtualTimeAdvanced =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onVirtualTimeBudgetExpired =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onVirtualTimePaused =
+      new dart_async.StreamController();
 
 /** Tells whether emulation is supported. */
   dart_async.Future<EmulationCanEmulateResponse> canEmulate() {
@@ -5139,6 +7496,30 @@ on Android. */
 
     return _devtools.rpc.sendRequest('Emulation.setVisibleSize', params);
   }
+
+/** Notification sent after the virtual time has advanced. */
+  dart_async.Stream get onVirtualTimeAdvanced => _onVirtualTimeAdvanced.stream;
+/** Notification sent after the virtual time budget for the current VirtualTimePolicy has run out. */
+  dart_async.Stream get onVirtualTimeBudgetExpired =>
+      _onVirtualTimeBudgetExpired.stream;
+/** Notification sent after the virtual time has paused. */
+  dart_async.Stream get onVirtualTimePaused => _onVirtualTimePaused.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Emulation.virtualTimeAdvanced', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Emulation.virtualTimeBudgetExpired',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Emulation.virtualTimePaused', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onVirtualTimeAdvanced.close();
+    _onVirtualTimeBudgetExpired.close();
+    _onVirtualTimePaused.close();
+  }
 }
 
 class HeadlessExperimentalBeginFrameResponse {
@@ -5160,12 +7541,18 @@ class DevToolsHeadlessExperimental {
 
   final ChromeDevToolsBase _devtools;
 
+  dart_async.StreamController _onMainFrameReadyForScreenshots =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onNeedsBeginFramesChanged =
+      new dart_async.StreamController();
+
 /** Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a
 screenshot from the resulting frame. Requires that the target was created with enabled
 BeginFrameControl. */
   dart_async.Future<HeadlessExperimentalBeginFrameResponse> beginFrame(
-      {Object frameTime,
-      Object deadline,
+      {num frameTime,
+      num deadline,
       num interval,
       bool noDisplayUpdates,
       ScreenshotParams screenshot}) {
@@ -5196,6 +7583,26 @@ BeginFrameControl. */
   dart_async.Future enable() {
     var params = {};
     return _devtools.rpc.sendRequest('HeadlessExperimental.enable', params);
+  }
+
+/** Issued when the main frame has first submitted a frame to the browser. May only be fired while a
+BeginFrame is in flight. Before this event, screenshotting requests may fail. */
+  dart_async.Stream get onMainFrameReadyForScreenshots =>
+      _onMainFrameReadyForScreenshots.stream;
+/** Issued when the target starts or stops needing BeginFrames. */
+  dart_async.Stream get onNeedsBeginFramesChanged =>
+      _onNeedsBeginFramesChanged.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod('HeadlessExperimental.mainFrameReadyForScreenshots',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('HeadlessExperimental.needsBeginFramesChanged',
+        (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onMainFrameReadyForScreenshots.close();
+    _onNeedsBeginFramesChanged.close();
   }
 }
 
@@ -5250,7 +7657,7 @@ class DevToolsIO {
   }
 
 /** Return UUID of Blob object specified by a remote object id. */
-  dart_async.Future<IOResolveBlobResponse> resolveBlob({Object objectId}) {
+  dart_async.Future<IOResolveBlobResponse> resolveBlob({String objectId}) {
     var params = {};
     if (objectId != null) params['objectId'] = objectId;
 
@@ -5258,6 +7665,9 @@ class DevToolsIO {
         .sendRequest('IO.resolveBlob', params)
         .then((response) => new IOResolveBlobResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class IndexedDBRequestDataResponse {
@@ -5400,6 +7810,9 @@ class DevToolsIndexedDB {
         .then(
             (response) => new IndexedDBRequestDatabaseNamesResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class DevToolsInput {
@@ -5633,12 +8046,23 @@ class DevToolsInput {
 
     return _devtools.rpc.sendRequest('Input.synthesizeTapGesture', params);
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class DevToolsInspector {
   DevToolsInspector(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onDetached = new dart_async.StreamController();
+
+  dart_async.StreamController _onTargetCrashed =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onTargetReloadedAfterCrash =
+      new dart_async.StreamController();
 
 /** Disables inspector domain notifications. */
   dart_async.Future disable() {
@@ -5650,6 +8074,29 @@ class DevToolsInspector {
   dart_async.Future enable() {
     var params = {};
     return _devtools.rpc.sendRequest('Inspector.enable', params);
+  }
+
+/** Fired when remote debugging connection is about to be terminated. Contains detach reason. */
+  dart_async.Stream get onDetached => _onDetached.stream;
+/** Fired when debugging target has crashed */
+  dart_async.Stream get onTargetCrashed => _onTargetCrashed.stream;
+/** Fired when debugging target has reloaded after crash */
+  dart_async.Stream get onTargetReloadedAfterCrash =>
+      _onTargetReloadedAfterCrash.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod('Inspector.detached', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Inspector.targetCrashed', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Inspector.targetReloadedAfterCrash',
+        (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onDetached.close();
+    _onTargetCrashed.close();
+    _onTargetReloadedAfterCrash.close();
   }
 }
 
@@ -5705,6 +8152,12 @@ class DevToolsLayerTree {
   DevToolsLayerTree(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onLayerPainted =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onLayerTreeDidChange =
+      new dart_async.StreamController();
 
 /** Provides the reasons why the given layer was composited. */
   dart_async.Future<LayerTreeCompositingReasonsResponse> compositingReasons(
@@ -5803,12 +8256,31 @@ class DevToolsLayerTree {
         .sendRequest('LayerTree.snapshotCommandLog', params)
         .then((response) => new LayerTreeSnapshotCommandLogResponse(response));
   }
+
+/**  */
+  dart_async.Stream get onLayerPainted => _onLayerPainted.stream;
+/**  */
+  dart_async.Stream get onLayerTreeDidChange => _onLayerTreeDidChange.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'LayerTree.layerPainted', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'LayerTree.layerTreeDidChange', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onLayerPainted.close();
+    _onLayerTreeDidChange.close();
+  }
 }
 
 class DevToolsLog {
   DevToolsLog(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onEntryAdded = new dart_async.StreamController();
 
 /** Clears the log. */
   dart_async.Future clear() {
@@ -5841,6 +8313,16 @@ class DevToolsLog {
   dart_async.Future stopViolationsReport() {
     var params = {};
     return _devtools.rpc.sendRequest('Log.stopViolationsReport', params);
+  }
+
+/** Issued when new message was logged. */
+  dart_async.Stream get onEntryAdded => _onEntryAdded.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod('Log.entryAdded', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onEntryAdded.close();
   }
 }
 
@@ -5947,6 +8429,9 @@ class DevToolsMemory {
         .sendRequest('Memory.getSamplingProfile', params)
         .then((response) => new MemoryGetSamplingProfileResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class NetworkCanClearBrowserCacheResponse {
@@ -6032,7 +8517,7 @@ class NetworkSearchInResponseBodyResponse {
     result = map['result'];
   }
 
-  List<Object> result;
+  List<SearchMatch> result;
 }
 
 class NetworkSetCookieResponse {
@@ -6047,6 +8532,54 @@ class DevToolsNetwork {
   DevToolsNetwork(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onDataReceived =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onEventSourceMessageReceived =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onLoadingFailed =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onLoadingFinished =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onRequestIntercepted =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onRequestServedFromCache =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onRequestWillBeSent =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onResourceChangedPriority =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onResponseReceived =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWebSocketClosed =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWebSocketCreated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWebSocketFrameError =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWebSocketFrameReceived =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWebSocketFrameSent =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWebSocketHandshakeResponseReceived =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWebSocketWillSendHandshakeRequest =
+      new dart_async.StreamController();
 
 /** Tells whether clearing browser cache is supported. */
   dart_async.Future<NetworkCanClearBrowserCacheResponse>
@@ -6379,6 +8912,114 @@ attribute, user, password. */
 
     return _devtools.rpc.sendRequest('Network.setUserAgentOverride', params);
   }
+
+/** Fired when data chunk was received over the network. */
+  dart_async.Stream get onDataReceived => _onDataReceived.stream;
+/** Fired when EventSource message is received. */
+  dart_async.Stream get onEventSourceMessageReceived =>
+      _onEventSourceMessageReceived.stream;
+/** Fired when HTTP request has failed to load. */
+  dart_async.Stream get onLoadingFailed => _onLoadingFailed.stream;
+/** Fired when HTTP request has finished loading. */
+  dart_async.Stream get onLoadingFinished => _onLoadingFinished.stream;
+/** Details of an intercepted HTTP request, which must be either allowed, blocked, modified or
+mocked. */
+  dart_async.Stream get onRequestIntercepted => _onRequestIntercepted.stream;
+/** Fired if request ended up loading from cache. */
+  dart_async.Stream get onRequestServedFromCache =>
+      _onRequestServedFromCache.stream;
+/** Fired when page is about to send HTTP request. */
+  dart_async.Stream get onRequestWillBeSent => _onRequestWillBeSent.stream;
+/** Fired when resource loading priority is changed */
+  dart_async.Stream get onResourceChangedPriority =>
+      _onResourceChangedPriority.stream;
+/** Fired when HTTP response is available. */
+  dart_async.Stream get onResponseReceived => _onResponseReceived.stream;
+/** Fired when WebSocket is closed. */
+  dart_async.Stream get onWebSocketClosed => _onWebSocketClosed.stream;
+/** Fired upon WebSocket creation. */
+  dart_async.Stream get onWebSocketCreated => _onWebSocketCreated.stream;
+/** Fired when WebSocket frame error occurs. */
+  dart_async.Stream get onWebSocketFrameError => _onWebSocketFrameError.stream;
+/** Fired when WebSocket frame is received. */
+  dart_async.Stream get onWebSocketFrameReceived =>
+      _onWebSocketFrameReceived.stream;
+/** Fired when WebSocket frame is sent. */
+  dart_async.Stream get onWebSocketFrameSent => _onWebSocketFrameSent.stream;
+/** Fired when WebSocket handshake response becomes available. */
+  dart_async.Stream get onWebSocketHandshakeResponseReceived =>
+      _onWebSocketHandshakeResponseReceived.stream;
+/** Fired when WebSocket is about to initiate handshake. */
+  dart_async.Stream get onWebSocketWillSendHandshakeRequest =>
+      _onWebSocketWillSendHandshakeRequest.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Network.dataReceived', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Network.eventSourceMessageReceived',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.loadingFailed', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.loadingFinished', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.requestIntercepted', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.requestServedFromCache', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.requestWillBeSent', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.resourceChangedPriority', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.responseReceived', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.webSocketClosed', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.webSocketCreated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.webSocketFrameError', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.webSocketFrameReceived', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Network.webSocketFrameSent', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Network.webSocketHandshakeResponseReceived',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Network.webSocketWillSendHandshakeRequest',
+        (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onDataReceived.close();
+    _onEventSourceMessageReceived.close();
+    _onLoadingFailed.close();
+    _onLoadingFinished.close();
+    _onRequestIntercepted.close();
+    _onRequestServedFromCache.close();
+    _onRequestWillBeSent.close();
+    _onResourceChangedPriority.close();
+    _onResponseReceived.close();
+    _onWebSocketClosed.close();
+    _onWebSocketCreated.close();
+    _onWebSocketFrameError.close();
+    _onWebSocketFrameReceived.close();
+    _onWebSocketFrameSent.close();
+    _onWebSocketHandshakeResponseReceived.close();
+    _onWebSocketWillSendHandshakeRequest.close();
+  }
 }
 
 class OverlayGetHighlightObjectForTestResponse {
@@ -6393,6 +9034,15 @@ class DevToolsOverlay {
   DevToolsOverlay(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onInspectNodeRequested =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onNodeHighlightRequested =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onScreenshotRequested =
+      new dart_async.StreamController();
 
 /** Disables domain notifications. */
   dart_async.Future disable() {
@@ -6444,7 +9094,7 @@ objectId must be specified. */
       {HighlightConfig highlightConfig,
       int nodeId,
       int backendNodeId,
-      Object objectId}) {
+      String objectId}) {
     var params = {};
     if (highlightConfig != null) params['highlightConfig'] = highlightConfig;
 
@@ -6558,6 +9208,32 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
 
     return _devtools.rpc.sendRequest('Overlay.setSuspended', params);
   }
+
+/** Fired when the node should be inspected. This happens after call to `setInspectMode` or when
+user manually inspects an element. */
+  dart_async.Stream get onInspectNodeRequested =>
+      _onInspectNodeRequested.stream;
+/** Fired when the node should be highlighted. This happens after call to `setInspectMode`. */
+  dart_async.Stream get onNodeHighlightRequested =>
+      _onNodeHighlightRequested.stream;
+/** Fired when user asks to capture screenshot of some area on the page. */
+  dart_async.Stream get onScreenshotRequested => _onScreenshotRequested.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Overlay.inspectNodeRequested', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Overlay.nodeHighlightRequested', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Overlay.screenshotRequested', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onInspectNodeRequested.close();
+    _onNodeHighlightRequested.close();
+    _onScreenshotRequested.close();
+  }
 }
 
 class PageAddScriptToEvaluateOnLoadResponse {
@@ -6589,7 +9265,7 @@ class PageCreateIsolatedWorldResponse {
     executionContextId = map['executionContextId'];
   }
 
-  Object executionContextId;
+  int executionContextId;
 }
 
 class PageGetAppManifestResponse {
@@ -6693,13 +9369,66 @@ class PageSearchInResourceResponse {
     result = map['result'];
   }
 
-  List<Object> result;
+  List<SearchMatch> result;
 }
 
 class DevToolsPage {
   DevToolsPage(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onDomContentEventFired =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameAttached =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameClearedScheduledNavigation =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameDetached =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameNavigated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameResized =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameScheduledNavigation =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameStartedLoading =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onFrameStoppedLoading =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onInterstitialHidden =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onInterstitialShown =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onJavascriptDialogClosed =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onJavascriptDialogOpening =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onLifecycleEvent =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onLoadEventFired =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onScreencastFrame =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onScreencastVisibilityChanged =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWindowOpen = new dart_async.StreamController();
 
 /** Deprecated, please use addScriptToEvaluateOnNewDocument instead. */
   dart_async.Future<PageAddScriptToEvaluateOnLoadResponse>
@@ -7185,6 +9914,124 @@ unavailable. */
     var params = {};
     return _devtools.rpc.sendRequest('Page.stopScreencast', params);
   }
+
+/**  */
+  dart_async.Stream get onDomContentEventFired =>
+      _onDomContentEventFired.stream;
+/** Fired when frame has been attached to its parent. */
+  dart_async.Stream get onFrameAttached => _onFrameAttached.stream;
+/** Fired when frame no longer has a scheduled navigation. */
+  dart_async.Stream get onFrameClearedScheduledNavigation =>
+      _onFrameClearedScheduledNavigation.stream;
+/** Fired when frame has been detached from its parent. */
+  dart_async.Stream get onFrameDetached => _onFrameDetached.stream;
+/** Fired once navigation of the frame has completed. Frame is now associated with the new loader. */
+  dart_async.Stream get onFrameNavigated => _onFrameNavigated.stream;
+/**  */
+  dart_async.Stream get onFrameResized => _onFrameResized.stream;
+/** Fired when frame schedules a potential navigation. */
+  dart_async.Stream get onFrameScheduledNavigation =>
+      _onFrameScheduledNavigation.stream;
+/** Fired when frame has started loading. */
+  dart_async.Stream get onFrameStartedLoading => _onFrameStartedLoading.stream;
+/** Fired when frame has stopped loading. */
+  dart_async.Stream get onFrameStoppedLoading => _onFrameStoppedLoading.stream;
+/** Fired when interstitial page was hidden */
+  dart_async.Stream get onInterstitialHidden => _onInterstitialHidden.stream;
+/** Fired when interstitial page was shown */
+  dart_async.Stream get onInterstitialShown => _onInterstitialShown.stream;
+/** Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) has been
+closed. */
+  dart_async.Stream get onJavascriptDialogClosed =>
+      _onJavascriptDialogClosed.stream;
+/** Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) is about to
+open. */
+  dart_async.Stream get onJavascriptDialogOpening =>
+      _onJavascriptDialogOpening.stream;
+/** Fired for top level page lifecycle events such as navigation, load, paint, etc. */
+  dart_async.Stream get onLifecycleEvent => _onLifecycleEvent.stream;
+/**  */
+  dart_async.Stream get onLoadEventFired => _onLoadEventFired.stream;
+/** Compressed image data requested by the `startScreencast`. */
+  dart_async.Stream get onScreencastFrame => _onScreencastFrame.stream;
+/** Fired when the page with currently enabled screencast was shown or hidden `. */
+  dart_async.Stream get onScreencastVisibilityChanged =>
+      _onScreencastVisibilityChanged.stream;
+/** Fired when a new window is going to be opened, via window.open(), link click, form submission,
+etc. */
+  dart_async.Stream get onWindowOpen => _onWindowOpen.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Page.domContentEventFired', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Page.frameAttached', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Page.frameClearedScheduledNavigation',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Page.frameDetached', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.frameNavigated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Page.frameResized', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.frameScheduledNavigation', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.frameStartedLoading', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.frameStoppedLoading', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.interstitialHidden', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.interstitialShown', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.javascriptDialogClosed', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.javascriptDialogOpening', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.lifecycleEvent', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.loadEventFired', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.screencastFrame', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Page.screencastVisibilityChanged', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('Page.windowOpen', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onDomContentEventFired.close();
+    _onFrameAttached.close();
+    _onFrameClearedScheduledNavigation.close();
+    _onFrameDetached.close();
+    _onFrameNavigated.close();
+    _onFrameResized.close();
+    _onFrameScheduledNavigation.close();
+    _onFrameStartedLoading.close();
+    _onFrameStoppedLoading.close();
+    _onInterstitialHidden.close();
+    _onInterstitialShown.close();
+    _onJavascriptDialogClosed.close();
+    _onJavascriptDialogOpening.close();
+    _onLifecycleEvent.close();
+    _onLoadEventFired.close();
+    _onScreencastFrame.close();
+    _onScreencastVisibilityChanged.close();
+    _onWindowOpen.close();
+  }
 }
 
 class PerformanceGetMetricsResponse {
@@ -7199,6 +10046,8 @@ class DevToolsPerformance {
   DevToolsPerformance(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onMetrics = new dart_async.StreamController();
 
 /** Disable collecting and reporting metrics. */
   dart_async.Future disable() {
@@ -7219,12 +10068,29 @@ class DevToolsPerformance {
         .sendRequest('Performance.getMetrics', params)
         .then((response) => new PerformanceGetMetricsResponse(response));
   }
+
+/** Current values of the metrics. */
+  dart_async.Stream get onMetrics => _onMetrics.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Performance.metrics', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onMetrics.close();
+  }
 }
 
 class DevToolsSecurity {
   DevToolsSecurity(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onCertificateError =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onSecurityStateChanged =
+      new dart_async.StreamController();
 
 /** Disables tracking security state changes. */
   dart_async.Future disable() {
@@ -7266,12 +10132,42 @@ be handled by the DevTools client and should be answered with handleCertificateE
     return _devtools.rpc
         .sendRequest('Security.setOverrideCertificateErrors', params);
   }
+
+/** There is a certificate error. If overriding certificate errors is enabled, then it should be
+handled with the handleCertificateError command. Note: this event does not fire if the
+certificate error has been allowed internally. Only one client per target should override
+certificate errors at the same time. */
+  dart_async.Stream get onCertificateError => _onCertificateError.stream;
+/** The security state of the page changed. */
+  dart_async.Stream get onSecurityStateChanged =>
+      _onSecurityStateChanged.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Security.certificateError', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Security.securityStateChanged', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onCertificateError.close();
+    _onSecurityStateChanged.close();
+  }
 }
 
 class DevToolsServiceWorker {
   DevToolsServiceWorker(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onWorkerErrorReported =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWorkerRegistrationUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onWorkerVersionUpdated =
+      new dart_async.StreamController();
 
 /**  */
   dart_async.Future deliverPushMessage(
@@ -7378,6 +10274,31 @@ class DevToolsServiceWorker {
     return _devtools.rpc
         .sendRequest('ServiceWorker.updateRegistration', params);
   }
+
+/**  */
+  dart_async.Stream get onWorkerErrorReported => _onWorkerErrorReported.stream;
+/**  */
+  dart_async.Stream get onWorkerRegistrationUpdated =>
+      _onWorkerRegistrationUpdated.stream;
+/**  */
+  dart_async.Stream get onWorkerVersionUpdated =>
+      _onWorkerVersionUpdated.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'ServiceWorker.workerErrorReported', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('ServiceWorker.workerRegistrationUpdated',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod('ServiceWorker.workerVersionUpdated',
+        (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onWorkerErrorReported.close();
+    _onWorkerRegistrationUpdated.close();
+    _onWorkerVersionUpdated.close();
+  }
 }
 
 class StorageGetUsageAndQuotaResponse {
@@ -7398,6 +10319,18 @@ class DevToolsStorage {
   DevToolsStorage(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onCacheStorageContentUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onCacheStorageListUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onIndexedDBContentUpdated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onIndexedDBListUpdated =
+      new dart_async.StreamController();
 
 /** Clears storage for origin. */
   dart_async.Future clearDataForOrigin({String origin, String storageTypes}) {
@@ -7454,6 +10387,39 @@ class DevToolsStorage {
     return _devtools.rpc
         .sendRequest('Storage.untrackIndexedDBForOrigin', params);
   }
+
+/** A cache's contents have been modified. */
+  dart_async.Stream get onCacheStorageContentUpdated =>
+      _onCacheStorageContentUpdated.stream;
+/** A cache has been added/deleted. */
+  dart_async.Stream get onCacheStorageListUpdated =>
+      _onCacheStorageListUpdated.stream;
+/** The origin's IndexedDB object store has been modified. */
+  dart_async.Stream get onIndexedDBContentUpdated =>
+      _onIndexedDBContentUpdated.stream;
+/** The origin's IndexedDB database list has been modified. */
+  dart_async.Stream get onIndexedDBListUpdated =>
+      _onIndexedDBListUpdated.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod('Storage.cacheStorageContentUpdated',
+        (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Storage.cacheStorageListUpdated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Storage.indexedDBContentUpdated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Storage.indexedDBListUpdated', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onCacheStorageContentUpdated.close();
+    _onCacheStorageListUpdated.close();
+    _onIndexedDBContentUpdated.close();
+    _onIndexedDBListUpdated.close();
+  }
 }
 
 class SystemInfoGetInfoResponse {
@@ -7485,6 +10451,9 @@ class DevToolsSystemInfo {
         .sendRequest('SystemInfo.getInfo', params)
         .then((response) => new SystemInfoGetInfoResponse(response));
   }
+
+  void listen(json_rpc_2.Peer rpc) {}
+  void _close() {}
 }
 
 class TargetAttachToTargetResponse {
@@ -7547,6 +10516,24 @@ class DevToolsTarget {
   DevToolsTarget(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onAttachedToTarget =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onDetachedFromTarget =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onReceivedMessageFromTarget =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onTargetCreated =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onTargetDestroyed =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onTargetInfoChanged =
+      new dart_async.StreamController();
 
 /** Activates (focuses) the target. */
   dart_async.Future activateTarget({String targetId}) {
@@ -7694,12 +10681,59 @@ automatically detaches from all currently attached targets. */
 
     return _devtools.rpc.sendRequest('Target.setRemoteLocations', params);
   }
+
+/** Issued when attached to target because of auto-attach or `attachToTarget` command. */
+  dart_async.Stream get onAttachedToTarget => _onAttachedToTarget.stream;
+/** Issued when detached from target for any reason (including `detachFromTarget` command). Can be
+issued multiple times per target if multiple sessions have been attached to it. */
+  dart_async.Stream get onDetachedFromTarget => _onDetachedFromTarget.stream;
+/** Notifies about a new protocol message received from the session (as reported in
+`attachedToTarget` event). */
+  dart_async.Stream get onReceivedMessageFromTarget =>
+      _onReceivedMessageFromTarget.stream;
+/** Issued when a possible inspection target is created. */
+  dart_async.Stream get onTargetCreated => _onTargetCreated.stream;
+/** Issued when a target is destroyed. */
+  dart_async.Stream get onTargetDestroyed => _onTargetDestroyed.stream;
+/** Issued when some information about a target has changed. This only happens between
+`targetCreated` and `targetDestroyed`. */
+  dart_async.Stream get onTargetInfoChanged => _onTargetInfoChanged.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Target.attachedToTarget', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Target.detachedFromTarget', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Target.receivedMessageFromTarget', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Target.targetCreated', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Target.targetDestroyed', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Target.targetInfoChanged', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onAttachedToTarget.close();
+    _onDetachedFromTarget.close();
+    _onReceivedMessageFromTarget.close();
+    _onTargetCreated.close();
+    _onTargetDestroyed.close();
+    _onTargetInfoChanged.close();
+  }
 }
 
 class DevToolsTethering {
   DevToolsTethering(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onAccepted = new dart_async.StreamController();
 
 /** Request browser port binding. */
   dart_async.Future bind({int port}) {
@@ -7715,6 +10749,16 @@ class DevToolsTethering {
     if (port != null) params['port'] = port;
 
     return _devtools.rpc.sendRequest('Tethering.unbind', params);
+  }
+
+/** Informs that port was successfully bound and got a specified connection id. */
+  dart_async.Stream get onAccepted => _onAccepted.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod('Tethering.accepted', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onAccepted.close();
   }
 }
 
@@ -7741,6 +10785,15 @@ class DevToolsTracing {
   DevToolsTracing(this._devtools);
 
   final ChromeDevToolsBase _devtools;
+
+  dart_async.StreamController _onBufferUsage =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onDataCollected =
+      new dart_async.StreamController();
+
+  dart_async.StreamController _onTracingComplete =
+      new dart_async.StreamController();
 
 /** Stop trace events collection. */
   dart_async.Future end() {
@@ -7797,10 +10850,41 @@ class DevToolsTracing {
 
     return _devtools.rpc.sendRequest('Tracing.start', params);
   }
+
+/**  */
+  dart_async.Stream get onBufferUsage => _onBufferUsage.stream;
+/** Contains an bucket of collected trace events. When tracing is stopped collected events will be
+send as a sequence of dataCollected events followed by tracingComplete event. */
+  dart_async.Stream get onDataCollected => _onDataCollected.stream;
+/** Signals that tracing is stopped and there is no trace buffers pending flush, all data were
+delivered via dataCollected events. */
+  dart_async.Stream get onTracingComplete => _onTracingComplete.stream;
+  void listen(json_rpc_2.Peer rpc) {
+    rpc.registerMethod(
+        'Tracing.bufferUsage', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Tracing.dataCollected', (json_rpc_2.Parameters params) {});
+
+    rpc.registerMethod(
+        'Tracing.tracingComplete', (json_rpc_2.Parameters params) {});
+  }
+
+  void _close() {
+    _onBufferUsage.close();
+    _onDataCollected.close();
+    _onTracingComplete.close();
+  }
 }
 
 abstract class ChromeDevToolsBase {
   ChromeDevToolsBase() {
+    _devToolsConsole = new DevToolsConsole(this);
+    _devToolsDebugger = new DevToolsDebugger(this);
+    _devToolsHeapProfiler = new DevToolsHeapProfiler(this);
+    _devToolsProfiler = new DevToolsProfiler(this);
+    _devToolsRuntime = new DevToolsRuntime(this);
+    _devToolsSchema = new DevToolsSchema(this);
     _devToolsAccessibility = new DevToolsAccessibility(this);
     _devToolsAnimation = new DevToolsAnimation(this);
     _devToolsApplicationCache = new DevToolsApplicationCache(this);
@@ -7835,6 +10919,18 @@ abstract class ChromeDevToolsBase {
     _devToolsTethering = new DevToolsTethering(this);
     _devToolsTracing = new DevToolsTracing(this);
   }
+
+  DevToolsConsole _devToolsConsole;
+
+  DevToolsDebugger _devToolsDebugger;
+
+  DevToolsHeapProfiler _devToolsHeapProfiler;
+
+  DevToolsProfiler _devToolsProfiler;
+
+  DevToolsRuntime _devToolsRuntime;
+
+  DevToolsSchema _devToolsSchema;
 
   DevToolsAccessibility _devToolsAccessibility;
 
@@ -7901,6 +10997,114 @@ abstract class ChromeDevToolsBase {
   DevToolsTethering _devToolsTethering;
 
   DevToolsTracing _devToolsTracing;
+
+  void listen() {
+    _devToolsConsole.listen(rpc);
+    _devToolsDebugger.listen(rpc);
+    _devToolsHeapProfiler.listen(rpc);
+    _devToolsProfiler.listen(rpc);
+    _devToolsRuntime.listen(rpc);
+    _devToolsSchema.listen(rpc);
+    _devToolsAccessibility.listen(rpc);
+    _devToolsAnimation.listen(rpc);
+    _devToolsApplicationCache.listen(rpc);
+    _devToolsAudits.listen(rpc);
+    _devToolsBrowser.listen(rpc);
+    _devToolsCSS.listen(rpc);
+    _devToolsCacheStorage.listen(rpc);
+    _devToolsDOM.listen(rpc);
+    _devToolsDOMDebugger.listen(rpc);
+    _devToolsDOMSnapshot.listen(rpc);
+    _devToolsDOMStorage.listen(rpc);
+    _devToolsDatabase.listen(rpc);
+    _devToolsDeviceOrientation.listen(rpc);
+    _devToolsEmulation.listen(rpc);
+    _devToolsHeadlessExperimental.listen(rpc);
+    _devToolsIO.listen(rpc);
+    _devToolsIndexedDB.listen(rpc);
+    _devToolsInput.listen(rpc);
+    _devToolsInspector.listen(rpc);
+    _devToolsLayerTree.listen(rpc);
+    _devToolsLog.listen(rpc);
+    _devToolsMemory.listen(rpc);
+    _devToolsNetwork.listen(rpc);
+    _devToolsOverlay.listen(rpc);
+    _devToolsPage.listen(rpc);
+    _devToolsPerformance.listen(rpc);
+    _devToolsSecurity.listen(rpc);
+    _devToolsServiceWorker.listen(rpc);
+    _devToolsStorage.listen(rpc);
+    _devToolsSystemInfo.listen(rpc);
+    _devToolsTarget.listen(rpc);
+    _devToolsTethering.listen(rpc);
+    _devToolsTracing.listen(rpc);
+  }
+
+  dart_async.Future close() async {
+    _devToolsConsole._close();
+    _devToolsDebugger._close();
+    _devToolsHeapProfiler._close();
+    _devToolsProfiler._close();
+    _devToolsRuntime._close();
+    _devToolsSchema._close();
+    _devToolsAccessibility._close();
+    _devToolsAnimation._close();
+    _devToolsApplicationCache._close();
+    _devToolsAudits._close();
+    _devToolsBrowser._close();
+    _devToolsCSS._close();
+    _devToolsCacheStorage._close();
+    _devToolsDOM._close();
+    _devToolsDOMDebugger._close();
+    _devToolsDOMSnapshot._close();
+    _devToolsDOMStorage._close();
+    _devToolsDatabase._close();
+    _devToolsDeviceOrientation._close();
+    _devToolsEmulation._close();
+    _devToolsHeadlessExperimental._close();
+    _devToolsIO._close();
+    _devToolsIndexedDB._close();
+    _devToolsInput._close();
+    _devToolsInspector._close();
+    _devToolsLayerTree._close();
+    _devToolsLog._close();
+    _devToolsMemory._close();
+    _devToolsNetwork._close();
+    _devToolsOverlay._close();
+    _devToolsPage._close();
+    _devToolsPerformance._close();
+    _devToolsSecurity._close();
+    _devToolsServiceWorker._close();
+    _devToolsStorage._close();
+    _devToolsSystemInfo._close();
+    _devToolsTarget._close();
+    _devToolsTethering._close();
+    _devToolsTracing._close();
+  }
+
+  DevToolsConsole get console {
+    return _devToolsConsole;
+  }
+
+  DevToolsDebugger get debugger {
+    return _devToolsDebugger;
+  }
+
+  DevToolsHeapProfiler get heapProfiler {
+    return _devToolsHeapProfiler;
+  }
+
+  DevToolsProfiler get profiler {
+    return _devToolsProfiler;
+  }
+
+  DevToolsRuntime get runtime {
+    return _devToolsRuntime;
+  }
+
+  DevToolsSchema get schema {
+    return _devToolsSchema;
+  }
 
   DevToolsAccessibility get accessibility {
     return _devToolsAccessibility;
