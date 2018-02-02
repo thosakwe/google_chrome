@@ -26,10 +26,9 @@ class Chrome extends ChromeDevToolsBaseClient {
   Chrome.fromWebSocket(WebSocket websocket) : super.fromWebSocket(websocket);
 
   static Future<Process> spawn(List<String> args,
-      {String chromePath, bool runInShell}) {
+      {String chromePath, bool runInShell}) async {
     if (chromePath == null) {
       if (Platform.isMacOS) {
-        // TODO: Support custom path
         chromePath = p.join(
           '/Applications',
           'Google Chrome.app',
@@ -37,11 +36,56 @@ class Chrome extends ChromeDevToolsBaseClient {
           'MacOS',
           'Google Chrome',
         );
-      } else
-        throw new UnsupportedError('Can only start Chrome on MacOS currently');
+      } else if (Platform.isWindows) {
+        // Discern Windows version
+        // https://kingluddite.com/uncategorized/where-does-the-chrome-browser-install-itself-on-windows-7
+        var username = Platform.environment['USERNAME'];
+        var ver = await Process.run('ver', []);
+        String chromeDir;
+        String versionString = await ver.stdout.transform(UTF8.decoder).join();
+
+        if (versionString.contains('XP')) {
+          //  C:\Documents and Settings\UserName\Local Settings\ApplicationData\GoogleChrome
+          chromeDir = p.join(
+            'C:',
+            'Documents and Settings',
+            username,
+            'Local Settings',
+            'ApplicationData',
+            'GoogleChrome',
+          );
+        } else if (versionString.contains('Vista')) {
+          // C:\Users\UserName\AppData\Local\GoogleChrome
+          chromeDir = p.join(
+            'C:',
+            'Users',
+            username,
+            'AppData',
+            'Local',
+            'GoogleChrome',
+          );
+        } else {
+          // \Users\[you]\AppData\Local\Google\Chrome\Application
+          chromeDir = p.join(
+            'C:',
+            'Users',
+            username,
+            'AppData',
+            'Local',
+            'Google',
+            'Chrome',
+            'Application',
+          );
+        }
+
+        chromePath = p.join(chromeDir, 'chrome.exe');
+      } else {
+        chromePath = 'google-chrome';
+      }
     }
 
-    return Process.start(chromePath, args, runInShell: runInShell == true);
+    return await Process.start(chromePath, args,
+        runInShell: runInShell == true);
   }
 
   Future start({ChromeBuilder builder}) async {
