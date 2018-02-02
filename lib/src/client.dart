@@ -5,10 +5,12 @@ import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc_2;
 import 'package:logging/logging.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'spec.dart';
+import 'static_spec.dart';
 
 class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
   final Logger logger = new Logger('chrome_devtools_base_client');
   final HttpClient httpClient = new HttpClient();
+  Uri webSocketDebuggerUrl;
   final Map<String, StreamController<json_rpc_2.Parameters>> _controllers = {};
   json_rpc_2.Peer _rpc;
   StreamChannelController _ctrl;
@@ -23,11 +25,14 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
 
   bool get connected => _websocket != null && _rpc != null;
 
+  Uri get httpRoot => webSocketDebuggerUrl.replace(scheme: 'http', path: '/');
+
   @override
   json_rpc_2.Peer get rpc => _rpc;
 
   Future connect(Uri uri) async {
     assert(_websocket == null);
+    webSocketDebuggerUrl = uri;
     _websocket = await WebSocket.connect(uri.toString());
     _listen();
     logger.config('WebSocket connected: $uri');
@@ -38,6 +43,24 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
     await _sub.cancel();
     await _rpc.close();
     await _websocket.close();
+  }
+
+  Future<List<ChromeTabInfo>> listTabs() async {
+    var rq = await httpClient.openUrl('GET', httpRoot.resolve('json/list'));
+    var rs = await rq.close();
+    var json = await rs.transform(UTF8.decoder).transform(JSON.decoder).first as List;
+    return json.map((m) => new ChromeTabInfo(m)).toList();
+  }
+
+  Future<ChromeTabInfo> newTab() async {
+    var rq = await httpClient.openUrl('POST', httpRoot.resolve('json/new'));
+    var rs = await rq.close();
+    var json = await rs.transform(UTF8.decoder).transform(JSON.decoder).first;
+    return new ChromeTabInfo(json);
+  }
+
+  Future waitMs(int ms) {
+    return new Future.delayed(new Duration(milliseconds: ms));
   }
 
   _ensureJsonRpc(m) {
