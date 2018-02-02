@@ -14,6 +14,7 @@ class Chrome extends ChromeDevToolsBaseClient {
   @override
   final Logger logger = new Logger('chrome');
 
+  Directory _directory;
   Process _process;
   Stream<List<int>> _stderr;
 
@@ -68,14 +69,14 @@ class Chrome extends ChromeDevToolsBaseClient {
           );
         } else {
           */
-          // \pgx86\Google\Chrome\Application
-          chromeDir = p.join(
-            'C:',
-            'Program Files (x86)',
-            'Google',
-            'Chrome',
-            'Application',
-          );
+        // \pgx86\Google\Chrome\Application
+        chromeDir = p.join(
+          'C:',
+          'Program Files (x86)',
+          'Google',
+          'Chrome',
+          'Application',
+        );
         //}
 
         chromePath = p.join(chromeDir, 'chrome.exe');
@@ -90,13 +91,19 @@ class Chrome extends ChromeDevToolsBaseClient {
 
   Future start({ChromeBuilder builder}) async {
     // Get free port
-    var socket = await ServerSocket.bind('127.0.0.1', 0);
-    var port = socket.port;
-    await socket.close();
     var c = new Completer();
 
-    builder ??=
-        new ChromeBuilder().headless().disableGpu().remoteDebuggingPort(port);
+    if (builder == null) {
+      var socket = await ServerSocket.bind('127.0.0.1', 0);
+      var port = socket.port;
+      await socket.close();
+      _directory = await Directory.systemTemp.createTemp();
+      builder = new ChromeBuilder()
+          .headless()
+          .disableGpu()
+          .remoteDebuggingPort(port)
+          .userDataDir(_directory.absolute.path);
+    }
 
     _process = await builder.spawn();
 
@@ -135,8 +142,9 @@ class Chrome extends ChromeDevToolsBaseClient {
   }
 
   @override
-  Future close() {
+  Future close() async {
+    await _directory?.delete(recursive: true);
     _process?.kill();
-    return super.close();
+    return await super.close();
   }
 }

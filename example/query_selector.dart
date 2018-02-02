@@ -18,7 +18,7 @@ main() async {
     await chrome.dom.enable();
     await chrome.runtime.enable();
 
-    var onLoad = new StreamQueue(chrome.page.onLoadEventFired);
+    var onLoad = new StreamQueue(chrome.page.onDomContentEventFired);
 
     // Surf to a URL...
     await chrome.page.navigate(url: 'https://wren.io');
@@ -26,6 +26,10 @@ main() async {
 
     // Get a reference to window.document so that we can run querySelectorAll()
     var document = await chrome.dom.getDocument();
+
+    // Print the contents of the document
+    var contents = await chrome.dom.getOuterHTML(nodeId: document.root.nodeId);
+    print(contents.outerHTML);
 
     // We need to pass a reference to the target element to run a querySelectorAll.
     // In this case, we point to document.body

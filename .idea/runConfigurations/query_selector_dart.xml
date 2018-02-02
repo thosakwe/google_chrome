@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="query_selector.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" singleton="true" nameIsGenerated="true">
+  <configuration default="false" name="query_selector.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" singleton="true">
     <option name="filePath" value="$PROJECT_DIR$/example/query_selector.dart" />
     <option name="workingDirectory" value="$PROJECT_DIR$" />
     <method />
