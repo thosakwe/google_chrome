@@ -4,9 +4,56 @@ import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc_2;
 //
 // Chrome DevTools Protocol v1.3
 
+/// All possible values of Console.ConsoleMessage.source.
+abstract class ConsoleConsoleMessageSourceEnum {
+  static const xml = 'xml';
+
+  static const javascript = 'javascript';
+
+  static const network = 'network';
+
+  static const consoleApi = 'console-api';
+
+  static const storage = 'storage';
+
+  static const appcache = 'appcache';
+
+  static const rendering = 'rendering';
+
+  static const security = 'security';
+
+  static const other = 'other';
+
+  static const deprecation = 'deprecation';
+
+  static const worker = 'worker';
+}
+
+/// All possible values of Console.ConsoleMessage.level.
+abstract class ConsoleConsoleMessageLevelEnum {
+  static const log = 'log';
+
+  static const warning = 'warning';
+
+  static const error = 'error';
+
+  static const debug = 'debug';
+
+  static const info = 'info';
+}
+
 /** Console message. */
 class ConsoleMessage {
-  /** Message source. */
+  ConsoleMessage(Map map) {
+    source = map['source'];
+    level = map['level'];
+    text = map['text'];
+    url = map['url'];
+    line = map['line'];
+    column = map['column'];
+  }
+
+/** Message source. */
   String source;
 
 /** Message severity. */
@@ -23,22 +70,27 @@ class ConsoleMessage {
 
 /** Column number in the resource that generated this message (1-based). */
   int column;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "source": source,
-      "level": level,
-      "text": text,
-      "url": url,
-      "line": line,
-      "column": column
-    };
-  }
+/// All possible values of Debugger.BreakLocation.type.
+abstract class DebuggerBreakLocationTypeEnum {
+  static const debuggerStatement = 'debuggerStatement';
+
+  static const call = 'call';
+
+  static const $return = 'return';
 }
 
 /**  */
 class BreakLocation {
-  /** Script identifier as reported in the `Debugger.scriptParsed`. */
+  BreakLocation(Map map) {
+    scriptId = map['scriptId'];
+    lineNumber = map['lineNumber'];
+    columnNumber = map['columnNumber'];
+    type = map['type'];
+  }
+
+/** Script identifier as reported in the `Debugger.scriptParsed`. */
   String scriptId;
 
 /** Line number in the script (0-based). */
@@ -49,33 +101,58 @@ class BreakLocation {
 
 /**  */
   String type;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "scriptId": scriptId,
-      "lineNumber": lineNumber,
-      "columnNumber": columnNumber,
-      "type": type
-    };
-  }
 }
 
 /** Search match for resource. */
 class SearchMatch {
-  /** Line number in resource content. */
+  SearchMatch(Map map) {
+    lineNumber = map['lineNumber'];
+    lineContent = map['lineContent'];
+  }
+
+/** Line number in resource content. */
   num lineNumber;
 
 /** Line with match content. */
   String lineContent;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"lineNumber": lineNumber, "lineContent": lineContent};
-  }
+/// All possible values of Debugger.Scope.type.
+abstract class DebuggerScopeTypeEnum {
+  static const global = 'global';
+
+  static const local = 'local';
+
+  static const $with = 'with';
+
+  static const closure = 'closure';
+
+  static const $catch = 'catch';
+
+  static const block = 'block';
+
+  static const script = 'script';
+
+  static const eval = 'eval';
+
+  static const module = 'module';
 }
 
 /** Scope description. */
 class Scope {
-  /** Scope type. */
+  Scope(Map map) {
+    type = map['type'];
+    object = map.containsKey('object') ? new RemoteObject(map['object']) : null;
+    name = map['name'];
+    startLocation = map.containsKey('startLocation')
+        ? new Location(map['startLocation'])
+        : null;
+    endLocation = map.containsKey('endLocation')
+        ? new Location(map['endLocation'])
+        : null;
+  }
+
+/** Scope type. */
   String type;
 
 /** Object representing the scope. For `global` and `with` scopes it represents the actual
@@ -91,21 +168,29 @@ variables as its properties. */
 
 /** Location in the source code where scope ends */
   Location endLocation;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "object": object,
-      "name": name,
-      "startLocation": startLocation,
-      "endLocation": endLocation
-    };
-  }
 }
 
 /** JavaScript call frame. Array of call frames form the call stack. */
 class CallFrame {
-  /** Call frame identifier. This identifier is only valid while the virtual machine is paused. */
+  CallFrame(Map map) {
+    callFrameId = map['callFrameId'];
+    functionName = map['functionName'];
+    functionLocation = map.containsKey('functionLocation')
+        ? new Location(map['functionLocation'])
+        : null;
+    location =
+        map.containsKey('location') ? new Location(map['location']) : null;
+    url = map['url'];
+    scopeChain = map.containsKey('scopeChain')
+        ? map['scopeChain'].map((m) => new Scope(m)).toList()
+        : null;
+    $this = map.containsKey('$this') ? new RemoteObject(map['$this']) : null;
+    returnValue = map.containsKey('returnValue')
+        ? new RemoteObject(map['returnValue'])
+        : null;
+  }
+
+/** Call frame identifier. This identifier is only valid while the virtual machine is paused. */
   String callFrameId;
 
 /** Name of the JavaScript function called on this call frame. */
@@ -128,37 +213,31 @@ class CallFrame {
 
 /** The value being returned, if the function is at return point. */
   RemoteObject returnValue;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "callFrameId": callFrameId,
-      "functionName": functionName,
-      "functionLocation": functionLocation,
-      "location": location,
-      "url": url,
-      "scopeChain": scopeChain,
-      "this": this,
-      "returnValue": returnValue
-    };
-  }
 }
 
 /** Location in the source code. */
 class ScriptPosition {
-  /**  */
+  ScriptPosition(Map map) {
+    lineNumber = map['lineNumber'];
+    columnNumber = map['columnNumber'];
+  }
+
+/**  */
   int lineNumber;
 
 /**  */
   int columnNumber;
-
-  Map<String, dynamic> toJson() {
-    return {"lineNumber": lineNumber, "columnNumber": columnNumber};
-  }
 }
 
 /** Location in the source code. */
 class Location {
-  /** Script identifier as reported in the `Debugger.scriptParsed`. */
+  Location(Map map) {
+    scriptId = map['scriptId'];
+    lineNumber = map['lineNumber'];
+    columnNumber = map['columnNumber'];
+  }
+
+/** Script identifier as reported in the `Debugger.scriptParsed`. */
   String scriptId;
 
 /** Line number in the script (0-based). */
@@ -166,29 +245,32 @@ class Location {
 
 /** Column number in the script (0-based). */
   int columnNumber;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "scriptId": scriptId,
-      "lineNumber": lineNumber,
-      "columnNumber": columnNumber
-    };
-  }
 }
 
 /** Profile. */
 class SamplingHeapProfile {
-  /**  */
-  SamplingHeapProfileNode head;
-
-  Map<String, dynamic> toJson() {
-    return {"head": head};
+  SamplingHeapProfile(Map map) {
+    head = map.containsKey('head')
+        ? new SamplingHeapProfileNode(map['head'])
+        : null;
   }
+
+/**  */
+  SamplingHeapProfileNode head;
 }
 
 /** Sampling Heap Profile node. Holds callsite information, allocation statistics and child nodes. */
 class SamplingHeapProfileNode {
-  /** Function location. */
+  SamplingHeapProfileNode(Map map) {
+    callFrame =
+        map.containsKey('callFrame') ? new CallFrame(map['callFrame']) : null;
+    selfSize = map['selfSize'];
+    children = map.containsKey('children')
+        ? map['children'].map((m) => new SamplingHeapProfileNode(m)).toList()
+        : null;
+  }
+
+/** Function location. */
   CallFrame callFrame;
 
 /** Allocations size in bytes for the node excluding children. */
@@ -196,15 +278,19 @@ class SamplingHeapProfileNode {
 
 /** Child nodes. */
   List<SamplingHeapProfileNode> children;
-
-  Map<String, dynamic> toJson() {
-    return {"callFrame": callFrame, "selfSize": selfSize, "children": children};
-  }
 }
 
 /** Type profile data collected during runtime for a JavaScript script. */
 class ScriptTypeProfile {
-  /** JavaScript script id. */
+  ScriptTypeProfile(Map map) {
+    scriptId = map['scriptId'];
+    url = map['url'];
+    entries = map.containsKey('entries')
+        ? map['entries'].map((m) => new TypeProfileEntry(m)).toList()
+        : null;
+  }
+
+/** JavaScript script id. */
   String scriptId;
 
 /** JavaScript script name or url. */
@@ -212,38 +298,45 @@ class ScriptTypeProfile {
 
 /** Type profile entries for parameters and return values of the functions in the script. */
   List<TypeProfileEntry> entries;
-
-  Map<String, dynamic> toJson() {
-    return {"scriptId": scriptId, "url": url, "entries": entries};
-  }
 }
 
 /** Source offset and types for a parameter or return value. */
 class TypeProfileEntry {
-  /** Source offset of the parameter or end of function for return values. */
+  TypeProfileEntry(Map map) {
+    offset = map['offset'];
+    types = map.containsKey('types')
+        ? map['types'].map((m) => new TypeObject(m)).toList()
+        : null;
+  }
+
+/** Source offset of the parameter or end of function for return values. */
   int offset;
 
 /** The types for this parameter or return value. */
   List<TypeObject> types;
-
-  Map<String, dynamic> toJson() {
-    return {"offset": offset, "types": types};
-  }
 }
 
 /** Describes a type collected during runtime. */
 class TypeObject {
-  /** Name of a type collected with type profiling. */
-  String name;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name};
+  TypeObject(Map map) {
+    name = map['name'];
   }
+
+/** Name of a type collected with type profiling. */
+  String name;
 }
 
 /** Coverage data for a JavaScript script. */
 class ScriptCoverage {
-  /** JavaScript script id. */
+  ScriptCoverage(Map map) {
+    scriptId = map['scriptId'];
+    url = map['url'];
+    functions = map.containsKey('functions')
+        ? map['functions'].map((m) => new FunctionCoverage(m)).toList()
+        : null;
+  }
+
+/** JavaScript script id. */
   String scriptId;
 
 /** JavaScript script name or url. */
@@ -251,15 +344,19 @@ class ScriptCoverage {
 
 /** Functions contained in the script that has coverage data. */
   List<FunctionCoverage> functions;
-
-  Map<String, dynamic> toJson() {
-    return {"scriptId": scriptId, "url": url, "functions": functions};
-  }
 }
 
 /** Coverage data for a JavaScript function. */
 class FunctionCoverage {
-  /** JavaScript function name. */
+  FunctionCoverage(Map map) {
+    functionName = map['functionName'];
+    ranges = map.containsKey('ranges')
+        ? map['ranges'].map((m) => new CoverageRange(m)).toList()
+        : null;
+    isBlockCoverage = map['isBlockCoverage'];
+  }
+
+/** JavaScript function name. */
   String functionName;
 
 /** Source ranges inside the function with coverage data. */
@@ -267,19 +364,17 @@ class FunctionCoverage {
 
 /** Whether coverage data for this function has block granularity. */
   bool isBlockCoverage;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "functionName": functionName,
-      "ranges": ranges,
-      "isBlockCoverage": isBlockCoverage
-    };
-  }
 }
 
 /** Coverage data for a source range. */
 class CoverageRange {
-  /** JavaScript script source offset for the range start. */
+  CoverageRange(Map map) {
+    startOffset = map['startOffset'];
+    endOffset = map['endOffset'];
+    count = map['count'];
+  }
+
+/** JavaScript script source offset for the range start. */
   int startOffset;
 
 /** JavaScript script source offset for the range end. */
@@ -287,28 +382,36 @@ class CoverageRange {
 
 /** Collected execution count of the source range. */
   int count;
-
-  Map<String, dynamic> toJson() {
-    return {"startOffset": startOffset, "endOffset": endOffset, "count": count};
-  }
 }
 
 /** Specifies a number of samples attributed to a certain source position. */
 class PositionTickInfo {
-  /** Source line number (1-based). */
+  PositionTickInfo(Map map) {
+    line = map['line'];
+    ticks = map['ticks'];
+  }
+
+/** Source line number (1-based). */
   int line;
 
 /** Number of samples attributed to the source line. */
   int ticks;
-
-  Map<String, dynamic> toJson() {
-    return {"line": line, "ticks": ticks};
-  }
 }
 
 /** Profile. */
 class Profile {
-  /** The list of profile nodes. First item is the root node. */
+  Profile(Map map) {
+    nodes = map.containsKey('nodes')
+        ? map['nodes'].map((m) => new ProfileNode(m)).toList()
+        : null;
+    startTime = map['startTime'];
+    endTime = map['endTime'];
+    samples = map.containsKey('samples') ? new List(map['samples']) : null;
+    timeDeltas =
+        map.containsKey('timeDeltas') ? new List(map['timeDeltas']) : null;
+  }
+
+/** The list of profile nodes. First item is the root node. */
   List<ProfileNode> nodes;
 
 /** Profiling start timestamp in microseconds. */
@@ -323,21 +426,23 @@ class Profile {
 /** Time intervals between adjacent samples in microseconds. The first delta is relative to the
 profile startTime. */
   List timeDeltas;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "nodes": nodes,
-      "startTime": startTime,
-      "endTime": endTime,
-      "samples": samples,
-      "timeDeltas": timeDeltas
-    };
-  }
 }
 
 /** Profile node. Holds callsite information, execution statistics and child nodes. */
 class ProfileNode {
-  /** Unique id of the node. */
+  ProfileNode(Map map) {
+    id = map['id'];
+    callFrame =
+        map.containsKey('callFrame') ? new CallFrame(map['callFrame']) : null;
+    hitCount = map['hitCount'];
+    children = map.containsKey('children') ? new List(map['children']) : null;
+    deoptReason = map['deoptReason'];
+    positionTicks = map.containsKey('positionTicks')
+        ? map['positionTicks'].map((m) => new PositionTickInfo(m)).toList()
+        : null;
+  }
+
+/** Unique id of the node. */
   int id;
 
 /** Function location. */
@@ -355,36 +460,36 @@ optimize. */
 
 /** An array of source position ticks. */
   List<PositionTickInfo> positionTicks;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "callFrame": callFrame,
-      "hitCount": hitCount,
-      "children": children,
-      "deoptReason": deoptReason,
-      "positionTicks": positionTicks
-    };
-  }
 }
 
 /** If `debuggerId` is set stack trace comes from another debugger and can be resolved there. This
 allows to track cross-debugger calls. See `Runtime.StackTrace` and `Debugger.paused` for usages. */
 class StackTraceId {
-  /**  */
+  StackTraceId(Map map) {
+    id = map['id'];
+    debuggerId = map['debuggerId'];
+  }
+
+/**  */
   String id;
 
 /**  */
   String debuggerId;
-
-  Map<String, dynamic> toJson() {
-    return {"id": id, "debuggerId": debuggerId};
-  }
 }
 
 /** Call frames for assertions or error messages. */
 class StackTrace {
-  /** String label of this stack trace. For async traces this may be a name of the function that
+  StackTrace(Map map) {
+    description = map['description'];
+    callFrames = map.containsKey('callFrames')
+        ? map['callFrames'].map((m) => new CallFrame(m)).toList()
+        : null;
+    parent = map.containsKey('parent') ? new StackTrace(map['parent']) : null;
+    parentId =
+        map.containsKey('parentId') ? new StackTraceId(map['parentId']) : null;
+  }
+
+/** String label of this stack trace. For async traces this may be a name of the function that
 initiated the async call. */
   String description;
 
@@ -396,21 +501,28 @@ initiated the async call. */
 
 /** Asynchronous JavaScript stack trace that preceded this stack, if available. */
   StackTraceId parentId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "description": description,
-      "callFrames": callFrames,
-      "parent": parent,
-      "parentId": parentId
-    };
-  }
 }
 
 /** Detailed information about exception (or error) that was thrown during script compilation or
 execution. */
 class ExceptionDetails {
-  /** Exception id. */
+  ExceptionDetails(Map map) {
+    exceptionId = map['exceptionId'];
+    text = map['text'];
+    lineNumber = map['lineNumber'];
+    columnNumber = map['columnNumber'];
+    scriptId = map['scriptId'];
+    url = map['url'];
+    stackTrace = map.containsKey('stackTrace')
+        ? new StackTrace(map['stackTrace'])
+        : null;
+    exception = map.containsKey('exception')
+        ? new RemoteObject(map['exception'])
+        : null;
+    executionContextId = map['executionContextId'];
+  }
+
+/** Exception id. */
   int exceptionId;
 
 /** Exception text, which should be used together with exception object when available. */
@@ -436,25 +548,18 @@ class ExceptionDetails {
 
 /** Identifier of the context where exception happened. */
   int executionContextId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "exceptionId": exceptionId,
-      "text": text,
-      "lineNumber": lineNumber,
-      "columnNumber": columnNumber,
-      "scriptId": scriptId,
-      "url": url,
-      "stackTrace": stackTrace,
-      "exception": exception,
-      "executionContextId": executionContextId
-    };
-  }
 }
 
 /** Description of an isolated world. */
 class ExecutionContextDescription {
-  /** Unique id of the execution context. It can be used to specify in which execution context
+  ExecutionContextDescription(Map map) {
+    id = map['id'];
+    origin = map['origin'];
+    name = map['name'];
+    auxData = map['auxData'];
+  }
+
+/** Unique id of the execution context. It can be used to specify in which execution context
 script evaluation should be performed. */
   int id;
 
@@ -465,17 +570,19 @@ script evaluation should be performed. */
   String name;
 
 /** Embedder-specific auxiliary data. */
-  Map auxData;
-
-  Map<String, dynamic> toJson() {
-    return {"id": id, "origin": origin, "name": name, "auxData": auxData};
-  }
+  Map<String, dynamic> auxData;
 }
 
 /** Represents function call argument. Either remote object id `objectId`, primitive `value`,
 unserializable primitive value or neither of (for undefined) them should be specified. */
 class CallArgument {
-  /** Primitive value or serializable javascript object. */
+  CallArgument(Map map) {
+    value = map['value'];
+    unserializableValue = map['unserializableValue'];
+    objectId = map['objectId'];
+  }
+
+/** Primitive value or serializable javascript object. */
   Object value;
 
 /** Primitive value which can not be JSON-stringified. */
@@ -483,32 +590,38 @@ class CallArgument {
 
 /** Remote object handle. */
   String objectId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "value": value,
-      "unserializableValue": unserializableValue,
-      "objectId": objectId
-    };
-  }
 }
 
 /** Object internal property descriptor. This property isn't normally visible in JavaScript code. */
 class InternalPropertyDescriptor {
-  /** Conventional property name. */
+  InternalPropertyDescriptor(Map map) {
+    name = map['name'];
+    value = map.containsKey('value') ? new RemoteObject(map['value']) : null;
+  }
+
+/** Conventional property name. */
   String name;
 
 /** The value associated with the property. */
   RemoteObject value;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "value": value};
-  }
 }
 
 /** Object property descriptor. */
 class PropertyDescriptor {
-  /** Property name or symbol description. */
+  PropertyDescriptor(Map map) {
+    name = map['name'];
+    value = map.containsKey('value') ? new RemoteObject(map['value']) : null;
+    writable = map['writable'];
+    get = map.containsKey('get') ? new RemoteObject(map['get']) : null;
+    set = map.containsKey('set') ? new RemoteObject(map['set']) : null;
+    configurable = map['configurable'];
+    enumerable = map['enumerable'];
+    wasThrown = map['wasThrown'];
+    isOwn = map['isOwn'];
+    symbol = map.containsKey('symbol') ? new RemoteObject(map['symbol']) : null;
+  }
+
+/** Property name or symbol description. */
   String name;
 
 /** The value associated with the property. */
@@ -541,39 +654,81 @@ object. */
 
 /** Property symbol object, if the property is of the `symbol` type. */
   RemoteObject symbol;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "name": name,
-      "value": value,
-      "writable": writable,
-      "get": get,
-      "set": set,
-      "configurable": configurable,
-      "enumerable": enumerable,
-      "wasThrown": wasThrown,
-      "isOwn": isOwn,
-      "symbol": symbol
-    };
-  }
 }
 
 /**  */
 class EntryPreview {
-  /** Preview of the key. Specified for map-like collection entries. */
+  EntryPreview(Map map) {
+    key = map.containsKey('key') ? new ObjectPreview(map['key']) : null;
+    value = map.containsKey('value') ? new ObjectPreview(map['value']) : null;
+  }
+
+/** Preview of the key. Specified for map-like collection entries. */
   ObjectPreview key;
 
 /** Preview of the value. */
   ObjectPreview value;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"key": key, "value": value};
-  }
+/// All possible values of Runtime.PropertyPreview.type.
+abstract class RuntimePropertyPreviewTypeEnum {
+  static const object = 'object';
+
+  static const function = 'function';
+
+  static const undefined = 'undefined';
+
+  static const string = 'string';
+
+  static const number = 'number';
+
+  static const boolean = 'boolean';
+
+  static const symbol = 'symbol';
+
+  static const accessor = 'accessor';
+}
+
+/// All possible values of Runtime.PropertyPreview.subtype.
+abstract class RuntimePropertyPreviewSubtypeEnum {
+  static const array = 'array';
+
+  static const $null = 'null';
+
+  static const node = 'node';
+
+  static const regexp = 'regexp';
+
+  static const date = 'date';
+
+  static const map = 'map';
+
+  static const set = 'set';
+
+  static const weakmap = 'weakmap';
+
+  static const weakset = 'weakset';
+
+  static const iterator = 'iterator';
+
+  static const generator = 'generator';
+
+  static const error = 'error';
 }
 
 /**  */
 class PropertyPreview {
-  /** Property name. */
+  PropertyPreview(Map map) {
+    name = map['name'];
+    type = map['type'];
+    value = map['value'];
+    valuePreview = map.containsKey('valuePreview')
+        ? new ObjectPreview(map['valuePreview'])
+        : null;
+    subtype = map['subtype'];
+  }
+
+/** Property name. */
   String name;
 
 /** Object type. Accessor means that the property itself is an accessor property. */
@@ -587,21 +742,68 @@ class PropertyPreview {
 
 /** Object subtype hint. Specified for `object` type values only. */
   String subtype;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "name": name,
-      "type": type,
-      "value": value,
-      "valuePreview": valuePreview,
-      "subtype": subtype
-    };
-  }
+/// All possible values of Runtime.ObjectPreview.type.
+abstract class RuntimeObjectPreviewTypeEnum {
+  static const object = 'object';
+
+  static const function = 'function';
+
+  static const undefined = 'undefined';
+
+  static const string = 'string';
+
+  static const number = 'number';
+
+  static const boolean = 'boolean';
+
+  static const symbol = 'symbol';
+}
+
+/// All possible values of Runtime.ObjectPreview.subtype.
+abstract class RuntimeObjectPreviewSubtypeEnum {
+  static const array = 'array';
+
+  static const $null = 'null';
+
+  static const node = 'node';
+
+  static const regexp = 'regexp';
+
+  static const date = 'date';
+
+  static const map = 'map';
+
+  static const set = 'set';
+
+  static const weakmap = 'weakmap';
+
+  static const weakset = 'weakset';
+
+  static const iterator = 'iterator';
+
+  static const generator = 'generator';
+
+  static const error = 'error';
 }
 
 /** Object containing abbreviated remote object value. */
 class ObjectPreview {
-  /** Object type. */
+  ObjectPreview(Map map) {
+    type = map['type'];
+    subtype = map['subtype'];
+    description = map['description'];
+    overflow = map['overflow'];
+    properties = map.containsKey('properties')
+        ? map['properties'].map((m) => new PropertyPreview(m)).toList()
+        : null;
+    entries = map.containsKey('entries')
+        ? map['entries'].map((m) => new EntryPreview(m)).toList()
+        : null;
+  }
+
+/** Object type. */
   String type;
 
 /** Object subtype hint. Specified for `object` type values only. */
@@ -618,22 +820,19 @@ class ObjectPreview {
 
 /** List of the entries. Specified for `map` and `set` subtype values only. */
   List<EntryPreview> entries;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "subtype": subtype,
-      "description": description,
-      "overflow": overflow,
-      "properties": properties,
-      "entries": entries
-    };
-  }
 }
 
 /**  */
 class CustomPreview {
-  /**  */
+  CustomPreview(Map map) {
+    header = map['header'];
+    hasBody = map['hasBody'];
+    formatterObjectId = map['formatterObjectId'];
+    bindRemoteObjectFunctionId = map['bindRemoteObjectFunctionId'];
+    configObjectId = map['configObjectId'];
+  }
+
+/**  */
   String header;
 
 /**  */
@@ -647,21 +846,76 @@ class CustomPreview {
 
 /**  */
   String configObjectId;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "header": header,
-      "hasBody": hasBody,
-      "formatterObjectId": formatterObjectId,
-      "bindRemoteObjectFunctionId": bindRemoteObjectFunctionId,
-      "configObjectId": configObjectId
-    };
-  }
+/// All possible values of Runtime.RemoteObject.type.
+abstract class RuntimeRemoteObjectTypeEnum {
+  static const object = 'object';
+
+  static const function = 'function';
+
+  static const undefined = 'undefined';
+
+  static const string = 'string';
+
+  static const number = 'number';
+
+  static const boolean = 'boolean';
+
+  static const symbol = 'symbol';
+}
+
+/// All possible values of Runtime.RemoteObject.subtype.
+abstract class RuntimeRemoteObjectSubtypeEnum {
+  static const array = 'array';
+
+  static const $null = 'null';
+
+  static const node = 'node';
+
+  static const regexp = 'regexp';
+
+  static const date = 'date';
+
+  static const map = 'map';
+
+  static const set = 'set';
+
+  static const weakmap = 'weakmap';
+
+  static const weakset = 'weakset';
+
+  static const iterator = 'iterator';
+
+  static const generator = 'generator';
+
+  static const error = 'error';
+
+  static const proxy = 'proxy';
+
+  static const promise = 'promise';
+
+  static const typedarray = 'typedarray';
 }
 
 /** Mirror object referencing original JavaScript object. */
 class RemoteObject {
-  /** Object type. */
+  RemoteObject(Map map) {
+    type = map['type'];
+    subtype = map['subtype'];
+    className = map['className'];
+    value = map['value'];
+    unserializableValue = map['unserializableValue'];
+    description = map['description'];
+    objectId = map['objectId'];
+    preview =
+        map.containsKey('preview') ? new ObjectPreview(map['preview']) : null;
+    customPreview = map.containsKey('customPreview')
+        ? new CustomPreview(map['customPreview'])
+        : null;
+  }
+
+/** Object type. */
   String type;
 
 /** Object subtype hint. Specified for `object` type values only. */
@@ -688,38 +942,43 @@ property. */
 
 /**  */
   CustomPreview customPreview;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "subtype": subtype,
-      "className": className,
-      "value": value,
-      "unserializableValue": unserializableValue,
-      "description": description,
-      "objectId": objectId,
-      "preview": preview,
-      "customPreview": customPreview
-    };
-  }
 }
 
 /** Description of the protocol domain. */
 class Domain {
-  /** Domain name. */
+  Domain(Map map) {
+    name = map['name'];
+    version = map['version'];
+  }
+
+/** Domain name. */
   String name;
 
 /** Domain version. */
   String version;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "version": version};
-  }
 }
 
 /** A node in the accessibility tree. */
 class AXNode {
-  /** Unique identifier for this node. */
+  AXNode(Map map) {
+    nodeId = map['nodeId'];
+    ignored = map['ignored'];
+    ignoredReasons = map.containsKey('ignoredReasons')
+        ? map['ignoredReasons'].map((m) => new AXProperty(m)).toList()
+        : null;
+    role = map.containsKey('role') ? new AXValue(map['role']) : null;
+    name = map.containsKey('name') ? new AXValue(map['name']) : null;
+    description =
+        map.containsKey('description') ? new AXValue(map['description']) : null;
+    value = map.containsKey('value') ? new AXValue(map['value']) : null;
+    properties = map.containsKey('properties')
+        ? map['properties'].map((m) => new AXProperty(m)).toList()
+        : null;
+    childIds = map['childIds'];
+    backendDOMNodeId = map['backendDOMNodeId'];
+  }
+
+/** Unique identifier for this node. */
   String nodeId;
 
 /** Whether this node is ignored for accessibility */
@@ -748,26 +1007,22 @@ class AXNode {
 
 /** The backend ID for the associated DOM node, if any. */
   int backendDOMNodeId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "nodeId": nodeId,
-      "ignored": ignored,
-      "ignoredReasons": ignoredReasons,
-      "role": role,
-      "name": name,
-      "description": description,
-      "value": value,
-      "properties": properties,
-      "childIds": childIds,
-      "backendDOMNodeId": backendDOMNodeId
-    };
-  }
 }
 
 /** A single computed AX property. */
 class AXValue {
-  /** The type of this value. */
+  AXValue(Map map) {
+    type = map['type'];
+    value = map['value'];
+    relatedNodes = map.containsKey('relatedNodes')
+        ? map['relatedNodes'].map((m) => new AXRelatedNode(m)).toList()
+        : null;
+    sources = map.containsKey('sources')
+        ? map['sources'].map((m) => new AXValueSource(m)).toList()
+        : null;
+  }
+
+/** The type of this value. */
   String type;
 
 /** The computed value of this property. */
@@ -778,33 +1033,31 @@ class AXValue {
 
 /** The sources which contributed to the computation of this property. */
   List<AXValueSource> sources;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "value": value,
-      "relatedNodes": relatedNodes,
-      "sources": sources
-    };
-  }
 }
 
 /**  */
 class AXProperty {
-  /** The name of this property. */
+  AXProperty(Map map) {
+    name = map['name'];
+    value = map.containsKey('value') ? new AXValue(map['value']) : null;
+  }
+
+/** The name of this property. */
   String name;
 
 /** The value of this property. */
   AXValue value;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "value": value};
-  }
 }
 
 /**  */
 class AXRelatedNode {
-  /** The BackendNodeId of the related DOM node. */
+  AXRelatedNode(Map map) {
+    backendDOMNodeId = map['backendDOMNodeId'];
+    idref = map['idref'];
+    text = map['text'];
+  }
+
+/** The BackendNodeId of the related DOM node. */
   int backendDOMNodeId;
 
 /** The IDRef value provided, if any. */
@@ -812,15 +1065,27 @@ class AXRelatedNode {
 
 /** The text alternative of this node in the current context. */
   String text;
-
-  Map<String, dynamic> toJson() {
-    return {"backendDOMNodeId": backendDOMNodeId, "idref": idref, "text": text};
-  }
 }
 
 /** A single source for a computed AX property. */
 class AXValueSource {
-  /** What type of source this is. */
+  AXValueSource(Map map) {
+    type = map['type'];
+    value = map.containsKey('value') ? new AXValue(map['value']) : null;
+    attribute = map['attribute'];
+    attributeValue = map.containsKey('attributeValue')
+        ? new AXValue(map['attributeValue'])
+        : null;
+    superseded = map['superseded'];
+    nativeSource = map['nativeSource'];
+    nativeSourceValue = map.containsKey('nativeSourceValue')
+        ? new AXValue(map['nativeSourceValue'])
+        : null;
+    invalid = map['invalid'];
+    invalidReason = map['invalidReason'];
+  }
+
+/** What type of source this is. */
   String type;
 
 /** The value of this property source. */
@@ -846,51 +1111,56 @@ class AXValueSource {
 
 /** Reason for the value being invalid, if it is. */
   String invalidReason;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "value": value,
-      "attribute": attribute,
-      "attributeValue": attributeValue,
-      "superseded": superseded,
-      "nativeSource": nativeSource,
-      "nativeSourceValue": nativeSourceValue,
-      "invalid": invalid,
-      "invalidReason": invalidReason
-    };
-  }
 }
 
 /** Keyframe Style */
 class KeyframeStyle {
-  /** Keyframe's time offset. */
+  KeyframeStyle(Map map) {
+    offset = map['offset'];
+    easing = map['easing'];
+  }
+
+/** Keyframe's time offset. */
   String offset;
 
 /** `AnimationEffect`'s timing function. */
   String easing;
-
-  Map<String, dynamic> toJson() {
-    return {"offset": offset, "easing": easing};
-  }
 }
 
 /** Keyframes Rule */
 class KeyframesRule {
-  /** CSS keyframed animation's name. */
+  KeyframesRule(Map map) {
+    name = map['name'];
+    keyframes = map.containsKey('keyframes')
+        ? map['keyframes'].map((m) => new KeyframeStyle(m)).toList()
+        : null;
+  }
+
+/** CSS keyframed animation's name. */
   String name;
 
 /** List of animation keyframes. */
   List<KeyframeStyle> keyframes;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "keyframes": keyframes};
-  }
 }
 
 /** AnimationEffect instance */
 class AnimationEffect {
-  /** `AnimationEffect`'s delay. */
+  AnimationEffect(Map map) {
+    delay = map['delay'];
+    endDelay = map['endDelay'];
+    iterationStart = map['iterationStart'];
+    iterations = map['iterations'];
+    duration = map['duration'];
+    direction = map['direction'];
+    fill = map['fill'];
+    backendNodeId = map['backendNodeId'];
+    keyframesRule = map.containsKey('keyframesRule')
+        ? new KeyframesRule(map['keyframesRule'])
+        : null;
+    easing = map['easing'];
+  }
+
+/** `AnimationEffect`'s delay. */
   num delay;
 
 /** `AnimationEffect`'s end delay. */
@@ -919,26 +1189,34 @@ class AnimationEffect {
 
 /** `AnimationEffect`'s timing function. */
   String easing;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "delay": delay,
-      "endDelay": endDelay,
-      "iterationStart": iterationStart,
-      "iterations": iterations,
-      "duration": duration,
-      "direction": direction,
-      "fill": fill,
-      "backendNodeId": backendNodeId,
-      "keyframesRule": keyframesRule,
-      "easing": easing
-    };
-  }
+/// All possible values of Animation.Animation.type.
+abstract class AnimationAnimationTypeEnum {
+  static const cSSTransition = 'CSSTransition';
+
+  static const cSSAnimation = 'CSSAnimation';
+
+  static const webAnimation = 'WebAnimation';
 }
 
 /** Animation instance. */
 class Animation {
-  /** `Animation`'s id. */
+  Animation(Map map) {
+    id = map['id'];
+    name = map['name'];
+    pausedState = map['pausedState'];
+    playState = map['playState'];
+    playbackRate = map['playbackRate'];
+    startTime = map['startTime'];
+    currentTime = map['currentTime'];
+    type = map['type'];
+    source =
+        map.containsKey('source') ? new AnimationEffect(map['source']) : null;
+    cssId = map['cssId'];
+  }
+
+/** `Animation`'s id. */
   String id;
 
 /** `Animation`'s name. */
@@ -968,26 +1246,17 @@ class Animation {
 /** A unique ID for `Animation` representing the sources that triggered this CSS
 animation/transition. */
   String cssId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "name": name,
-      "pausedState": pausedState,
-      "playState": playState,
-      "playbackRate": playbackRate,
-      "startTime": startTime,
-      "currentTime": currentTime,
-      "type": type,
-      "source": source,
-      "cssId": cssId
-    };
-  }
 }
 
 /** Frame identifier - manifest URL pair. */
 class FrameWithManifest {
-  /** Frame identifier. */
+  FrameWithManifest(Map map) {
+    frameId = map['frameId'];
+    manifestURL = map['manifestURL'];
+    status = map['status'];
+  }
+
+/** Frame identifier. */
   String frameId;
 
 /** Manifest URL. */
@@ -995,15 +1264,21 @@ class FrameWithManifest {
 
 /** Application cache status. */
   int status;
-
-  Map<String, dynamic> toJson() {
-    return {"frameId": frameId, "manifestURL": manifestURL, "status": status};
-  }
 }
 
 /** Detailed application cache information. */
 class ApplicationCache {
-  /** Manifest URL. */
+  ApplicationCache(Map map) {
+    manifestURL = map['manifestURL'];
+    size = map['size'];
+    creationTime = map['creationTime'];
+    updateTime = map['updateTime'];
+    resources = map.containsKey('resources')
+        ? map['resources'].map((m) => new ApplicationCacheResource(m)).toList()
+        : null;
+  }
+
+/** Manifest URL. */
   String manifestURL;
 
 /** Application cache size. */
@@ -1017,21 +1292,17 @@ class ApplicationCache {
 
 /** Application cache resources. */
   List<ApplicationCacheResource> resources;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "manifestURL": manifestURL,
-      "size": size,
-      "creationTime": creationTime,
-      "updateTime": updateTime,
-      "resources": resources
-    };
-  }
 }
 
 /** Detailed application cache resource information. */
 class ApplicationCacheResource {
-  /** Resource url. */
+  ApplicationCacheResource(Map map) {
+    url = map['url'];
+    size = map['size'];
+    type = map['type'];
+  }
+
+/** Resource url. */
   String url;
 
 /** Resource size. */
@@ -1039,15 +1310,20 @@ class ApplicationCacheResource {
 
 /** Resource type. */
   String type;
-
-  Map<String, dynamic> toJson() {
-    return {"url": url, "size": size, "type": type};
-  }
 }
 
 /** Chrome histogram. */
 class Histogram {
-  /** Name. */
+  Histogram(Map map) {
+    name = map['name'];
+    sum = map['sum'];
+    count = map['count'];
+    buckets = map.containsKey('buckets')
+        ? map['buckets'].map((m) => new Bucket(m)).toList()
+        : null;
+  }
+
+/** Name. */
   String name;
 
 /** Sum of sample values. */
@@ -1058,15 +1334,17 @@ class Histogram {
 
 /** Buckets. */
   List<Bucket> buckets;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "sum": sum, "count": count, "buckets": buckets};
-  }
 }
 
 /** Chrome histogram bucket. */
 class Bucket {
-  /** Minimum value (inclusive). */
+  Bucket(Map map) {
+    low = map['low'];
+    high = map['high'];
+    count = map['count'];
+  }
+
+/** Minimum value (inclusive). */
   int low;
 
 /** Maximum value (exclusive). */
@@ -1074,15 +1352,19 @@ class Bucket {
 
 /** Number of samples. */
   int count;
-
-  Map<String, dynamic> toJson() {
-    return {"low": low, "high": high, "count": count};
-  }
 }
 
 /** Browser window bounds information */
 class Bounds {
-  /** The offset from the left edge of the screen to the window in pixels. */
+  Bounds(Map map) {
+    left = map['left'];
+    top = map['top'];
+    width = map['width'];
+    height = map['height'];
+    windowState = map['windowState'];
+  }
+
+/** The offset from the left edge of the screen to the window in pixels. */
   int left;
 
 /** The offset from the top edge of the screen to the window in pixels. */
@@ -1096,21 +1378,17 @@ class Bounds {
 
 /** The window state. Default to normal. */
   String windowState;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "left": left,
-      "top": top,
-      "width": width,
-      "height": height,
-      "windowState": windowState
-    };
-  }
 }
 
 /** A descriptor of operation to mutate style declaration text. */
 class StyleDeclarationEdit {
-  /** The css style sheet identifier. */
+  StyleDeclarationEdit(Map map) {
+    styleSheetId = map['styleSheetId'];
+    range = map.containsKey('range') ? new SourceRange(map['range']) : null;
+    text = map['text'];
+  }
+
+/** The css style sheet identifier. */
   String styleSheetId;
 
 /** The range of the style text in the enclosing stylesheet. */
@@ -1118,15 +1396,18 @@ class StyleDeclarationEdit {
 
 /** New style text. */
   String text;
-
-  Map<String, dynamic> toJson() {
-    return {"styleSheetId": styleSheetId, "range": range, "text": text};
-  }
 }
 
 /** CSS keyframe rule representation. */
 class CSSKeyframeRule {
-  /** The css style sheet identifier (absent for user agent stylesheet and user-specified
+  CSSKeyframeRule(Map map) {
+    styleSheetId = map['styleSheetId'];
+    origin = map['origin'];
+    keyText = map.containsKey('keyText') ? new Value(map['keyText']) : null;
+    style = map.containsKey('style') ? new CSSStyle(map['style']) : null;
+  }
+
+/** The css style sheet identifier (absent for user agent stylesheet and user-specified
 stylesheet rules) this rule came from. */
   String styleSheetId;
 
@@ -1138,33 +1419,35 @@ stylesheet rules) this rule came from. */
 
 /** Associated style declaration. */
   CSSStyle style;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "styleSheetId": styleSheetId,
-      "origin": origin,
-      "keyText": keyText,
-      "style": style
-    };
-  }
 }
 
 /** CSS keyframes rule representation. */
 class CSSKeyframesRule {
-  /** Animation name. */
+  CSSKeyframesRule(Map map) {
+    animationName = map.containsKey('animationName')
+        ? new Value(map['animationName'])
+        : null;
+    keyframes = map.containsKey('keyframes')
+        ? map['keyframes'].map((m) => new CSSKeyframeRule(m)).toList()
+        : null;
+  }
+
+/** Animation name. */
   Value animationName;
 
 /** List of keyframes. */
   List<CSSKeyframeRule> keyframes;
-
-  Map<String, dynamic> toJson() {
-    return {"animationName": animationName, "keyframes": keyframes};
-  }
 }
 
 /** Information about amount of glyphs that were rendered with given font. */
 class PlatformFontUsage {
-  /** Font's family name reported by platform. */
+  PlatformFontUsage(Map map) {
+    familyName = map['familyName'];
+    isCustomFont = map['isCustomFont'];
+    glyphCount = map['glyphCount'];
+  }
+
+/** Font's family name reported by platform. */
   String familyName;
 
 /** Indicates if the font was downloaded or resolved locally. */
@@ -1172,19 +1455,21 @@ class PlatformFontUsage {
 
 /** Amount of glyphs that were rendered with this font. */
   num glyphCount;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "familyName": familyName,
-      "isCustomFont": isCustomFont,
-      "glyphCount": glyphCount
-    };
-  }
 }
 
 /** Media query expression descriptor. */
 class MediaQueryExpression {
-  /** Media query expression value. */
+  MediaQueryExpression(Map map) {
+    value = map['value'];
+    unit = map['unit'];
+    feature = map['feature'];
+    valueRange = map.containsKey('valueRange')
+        ? new SourceRange(map['valueRange'])
+        : null;
+    computedLength = map['computedLength'];
+  }
+
+/** Media query expression value. */
   num value;
 
 /** Media query expression units. */
@@ -1198,34 +1483,49 @@ class MediaQueryExpression {
 
 /** Computed length of media query expression (if applicable). */
   num computedLength;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "value": value,
-      "unit": unit,
-      "feature": feature,
-      "valueRange": valueRange,
-      "computedLength": computedLength
-    };
-  }
 }
 
 /** Media query descriptor. */
 class MediaQuery {
-  /** Array of media query expressions. */
+  MediaQuery(Map map) {
+    expressions = map.containsKey('expressions')
+        ? map['expressions'].map((m) => new MediaQueryExpression(m)).toList()
+        : null;
+    active = map['active'];
+  }
+
+/** Array of media query expressions. */
   List<MediaQueryExpression> expressions;
 
 /** Whether the media query condition is satisfied. */
   bool active;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"expressions": expressions, "active": active};
-  }
+/// All possible values of CSS.CSSMedia.source.
+abstract class CSSCSSMediaSourceEnum {
+  static const mediaRule = 'mediaRule';
+
+  static const importRule = 'importRule';
+
+  static const linkedSheet = 'linkedSheet';
+
+  static const inlineSheet = 'inlineSheet';
 }
 
 /** CSS media rule descriptor. */
 class CSSMedia {
-  /** Media query text. */
+  CSSMedia(Map map) {
+    text = map['text'];
+    source = map['source'];
+    sourceURL = map['sourceURL'];
+    range = map.containsKey('range') ? new SourceRange(map['range']) : null;
+    styleSheetId = map['styleSheetId'];
+    mediaList = map.containsKey('mediaList')
+        ? map['mediaList'].map((m) => new MediaQuery(m)).toList()
+        : null;
+  }
+
+/** Media query text. */
   String text;
 
 /** Source of the media query: "mediaRule" if specified by a @media rule, "importRule" if
@@ -1246,22 +1546,22 @@ available). */
 
 /** Array of media queries. */
   List<MediaQuery> mediaList;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "text": text,
-      "source": source,
-      "sourceURL": sourceURL,
-      "range": range,
-      "styleSheetId": styleSheetId,
-      "mediaList": mediaList
-    };
-  }
 }
 
 /** CSS property declaration data. */
 class CSSProperty {
-  /** The property name. */
+  CSSProperty(Map map) {
+    name = map['name'];
+    value = map['value'];
+    important = map['important'];
+    implicit = map['implicit'];
+    text = map['text'];
+    parsedOk = map['parsedOk'];
+    disabled = map['disabled'];
+    range = map.containsKey('range') ? new SourceRange(map['range']) : null;
+  }
+
+/** The property name. */
   String name;
 
 /** The property value. */
@@ -1284,24 +1584,23 @@ class CSSProperty {
 
 /** The entire property range in the enclosing style declaration (if available). */
   SourceRange range;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "name": name,
-      "value": value,
-      "important": important,
-      "implicit": implicit,
-      "text": text,
-      "parsedOk": parsedOk,
-      "disabled": disabled,
-      "range": range
-    };
-  }
 }
 
 /** CSS style representation. */
 class CSSStyle {
-  /** The css style sheet identifier (absent for user agent stylesheet and user-specified
+  CSSStyle(Map map) {
+    styleSheetId = map['styleSheetId'];
+    cssProperties = map.containsKey('cssProperties')
+        ? map['cssProperties'].map((m) => new CSSProperty(m)).toList()
+        : null;
+    shorthandEntries = map.containsKey('shorthandEntries')
+        ? map['shorthandEntries'].map((m) => new ShorthandEntry(m)).toList()
+        : null;
+    cssText = map['cssText'];
+    range = map.containsKey('range') ? new SourceRange(map['range']) : null;
+  }
+
+/** The css style sheet identifier (absent for user agent stylesheet and user-specified
 stylesheet rules) this rule came from. */
   String styleSheetId;
 
@@ -1316,34 +1615,31 @@ stylesheet rules) this rule came from. */
 
 /** Style declaration range in the enclosing stylesheet (if available). */
   SourceRange range;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "styleSheetId": styleSheetId,
-      "cssProperties": cssProperties,
-      "shorthandEntries": shorthandEntries,
-      "cssText": cssText,
-      "range": range
-    };
-  }
 }
 
 /**  */
 class CSSComputedStyleProperty {
-  /** Computed style property name. */
+  CSSComputedStyleProperty(Map map) {
+    name = map['name'];
+    value = map['value'];
+  }
+
+/** Computed style property name. */
   String name;
 
 /** Computed style property value. */
   String value;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "value": value};
-  }
 }
 
 /**  */
 class ShorthandEntry {
-  /** Shorthand name. */
+  ShorthandEntry(Map map) {
+    name = map['name'];
+    value = map['value'];
+    important = map['important'];
+  }
+
+/** Shorthand name. */
   String name;
 
 /** Shorthand value. */
@@ -1351,15 +1647,18 @@ class ShorthandEntry {
 
 /** Whether the property has "!important" annotation (implies `false` if absent). */
   bool important;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "value": value, "important": important};
-  }
 }
 
 /** Text range within a resource. All numbers are zero-based. */
 class SourceRange {
-  /** Start line of range. */
+  SourceRange(Map map) {
+    startLine = map['startLine'];
+    startColumn = map['startColumn'];
+    endLine = map['endLine'];
+    endColumn = map['endColumn'];
+  }
+
+/** Start line of range. */
   int startLine;
 
 /** Start column of range (inclusive). */
@@ -1370,20 +1669,18 @@ class SourceRange {
 
 /** End column of range (exclusive). */
   int endColumn;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "startLine": startLine,
-      "startColumn": startColumn,
-      "endLine": endLine,
-      "endColumn": endColumn
-    };
-  }
 }
 
 /** CSS coverage information. */
 class RuleUsage {
-  /** The css style sheet identifier (absent for user agent stylesheet and user-specified
+  RuleUsage(Map map) {
+    styleSheetId = map['styleSheetId'];
+    startOffset = map['startOffset'];
+    endOffset = map['endOffset'];
+    used = map['used'];
+  }
+
+/** The css style sheet identifier (absent for user agent stylesheet and user-specified
 stylesheet rules) this rule came from. */
   String styleSheetId;
 
@@ -1395,20 +1692,23 @@ stylesheet rules) this rule came from. */
 
 /** Indicates whether the rule was actually used by some element in the page. */
   bool used;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "styleSheetId": styleSheetId,
-      "startOffset": startOffset,
-      "endOffset": endOffset,
-      "used": used
-    };
-  }
 }
 
 /** CSS rule representation. */
 class CSSRule {
-  /** The css style sheet identifier (absent for user agent stylesheet and user-specified
+  CSSRule(Map map) {
+    styleSheetId = map['styleSheetId'];
+    selectorList = map.containsKey('selectorList')
+        ? new SelectorList(map['selectorList'])
+        : null;
+    origin = map['origin'];
+    style = map.containsKey('style') ? new CSSStyle(map['style']) : null;
+    media = map.containsKey('media')
+        ? map['media'].map((m) => new CSSMedia(m)).toList()
+        : null;
+  }
+
+/** The css style sheet identifier (absent for user agent stylesheet and user-specified
 stylesheet rules) this rule came from. */
   String styleSheetId;
 
@@ -1424,21 +1724,27 @@ stylesheet rules) this rule came from. */
 /** Media list array (for rules involving media queries). The array enumerates media queries
 starting with the innermost one, going outwards. */
   List<CSSMedia> media;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "styleSheetId": styleSheetId,
-      "selectorList": selectorList,
-      "origin": origin,
-      "style": style,
-      "media": media
-    };
-  }
 }
 
 /** CSS stylesheet metainformation. */
 class CSSStyleSheetHeader {
-  /** The stylesheet identifier. */
+  CSSStyleSheetHeader(Map map) {
+    styleSheetId = map['styleSheetId'];
+    frameId = map['frameId'];
+    sourceURL = map['sourceURL'];
+    sourceMapURL = map['sourceMapURL'];
+    origin = map['origin'];
+    title = map['title'];
+    ownerNode = map['ownerNode'];
+    disabled = map['disabled'];
+    hasSourceURL = map['hasSourceURL'];
+    isInline = map['isInline'];
+    startLine = map['startLine'];
+    startColumn = map['startColumn'];
+    length = map['length'];
+  }
+
+/** The stylesheet identifier. */
   String styleSheetId;
 
 /** Owner frame identifier. */
@@ -1477,117 +1783,121 @@ document.written STYLE tags. */
 
 /** Size of the content (in characters). */
   num length;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "styleSheetId": styleSheetId,
-      "frameId": frameId,
-      "sourceURL": sourceURL,
-      "sourceMapURL": sourceMapURL,
-      "origin": origin,
-      "title": title,
-      "ownerNode": ownerNode,
-      "disabled": disabled,
-      "hasSourceURL": hasSourceURL,
-      "isInline": isInline,
-      "startLine": startLine,
-      "startColumn": startColumn,
-      "length": length
-    };
-  }
 }
 
 /** Selector list data. */
 class SelectorList {
-  /** Selectors in the list. */
+  SelectorList(Map map) {
+    selectors = map.containsKey('selectors')
+        ? map['selectors'].map((m) => new Value(m)).toList()
+        : null;
+    text = map['text'];
+  }
+
+/** Selectors in the list. */
   List<Value> selectors;
 
 /** Rule selector text. */
   String text;
-
-  Map<String, dynamic> toJson() {
-    return {"selectors": selectors, "text": text};
-  }
 }
 
 /** Data for a simple selector (these are delimited by commas in a selector list). */
 class Value {
-  /** Value text. */
+  Value(Map map) {
+    text = map['text'];
+    range = map.containsKey('range') ? new SourceRange(map['range']) : null;
+  }
+
+/** Value text. */
   String text;
 
 /** Value range in the underlying resource (if available). */
   SourceRange range;
-
-  Map<String, dynamic> toJson() {
-    return {"text": text, "range": range};
-  }
 }
 
 /** Match data for a CSS rule. */
 class RuleMatch {
-  /** CSS rule in the match. */
+  RuleMatch(Map map) {
+    rule = map.containsKey('rule') ? new CSSRule(map['rule']) : null;
+    matchingSelectors = map.containsKey('matchingSelectors')
+        ? new List(map['matchingSelectors'])
+        : null;
+  }
+
+/** CSS rule in the match. */
   CSSRule rule;
 
 /** Matching selector indices in the rule's selectorList selectors (0-based). */
   List matchingSelectors;
-
-  Map<String, dynamic> toJson() {
-    return {"rule": rule, "matchingSelectors": matchingSelectors};
-  }
 }
 
 /** Inherited CSS rule collection from ancestor node. */
 class InheritedStyleEntry {
-  /** The ancestor node's inline style, if any, in the style inheritance chain. */
+  InheritedStyleEntry(Map map) {
+    inlineStyle = map.containsKey('inlineStyle')
+        ? new CSSStyle(map['inlineStyle'])
+        : null;
+    matchedCSSRules = map.containsKey('matchedCSSRules')
+        ? map['matchedCSSRules'].map((m) => new RuleMatch(m)).toList()
+        : null;
+  }
+
+/** The ancestor node's inline style, if any, in the style inheritance chain. */
   CSSStyle inlineStyle;
 
 /** Matches of CSS rules matching the ancestor node in the style inheritance chain. */
   List<RuleMatch> matchedCSSRules;
-
-  Map<String, dynamic> toJson() {
-    return {"inlineStyle": inlineStyle, "matchedCSSRules": matchedCSSRules};
-  }
 }
 
 /** CSS rule collection for a single pseudo style. */
 class PseudoElementMatches {
-  /** Pseudo element type. */
+  PseudoElementMatches(Map map) {
+    pseudoType = map['pseudoType'];
+    matches = map.containsKey('matches')
+        ? map['matches'].map((m) => new RuleMatch(m)).toList()
+        : null;
+  }
+
+/** Pseudo element type. */
   String pseudoType;
 
 /** Matches of CSS rules applicable to the pseudo style. */
   List<RuleMatch> matches;
-
-  Map<String, dynamic> toJson() {
-    return {"pseudoType": pseudoType, "matches": matches};
-  }
 }
 
 /** Cached response */
 class CachedResponse {
-  /** Entry content, base64-encoded. */
-  String body;
-
-  Map<String, dynamic> toJson() {
-    return {"body": body};
+  CachedResponse(Map map) {
+    body = map['body'];
   }
+
+/** Entry content, base64-encoded. */
+  String body;
 }
 
 /**  */
 class Header {
-  /**  */
+  Header(Map map) {
+    name = map['name'];
+    value = map['value'];
+  }
+
+/**  */
   String name;
 
 /**  */
   String value;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "value": value};
-  }
 }
 
 /** Cache identifier. */
 class Cache {
-  /** An opaque unique id of the cache. */
+  Cache(Map map) {
+    cacheId = map['cacheId'];
+    securityOrigin = map['securityOrigin'];
+    cacheName = map['cacheName'];
+  }
+
+/** An opaque unique id of the cache. */
   String cacheId;
 
 /** Security origin of the cache. */
@@ -1595,19 +1905,25 @@ class Cache {
 
 /** The name of the cache. */
   String cacheName;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "cacheId": cacheId,
-      "securityOrigin": securityOrigin,
-      "cacheName": cacheName
-    };
-  }
 }
 
 /** Data entry. */
 class DataEntry {
-  /** Request URL. */
+  DataEntry(Map map) {
+    requestURL = map['requestURL'];
+    requestMethod = map['requestMethod'];
+    requestHeaders = map.containsKey('requestHeaders')
+        ? map['requestHeaders'].map((m) => new Header(m)).toList()
+        : null;
+    responseTime = map['responseTime'];
+    responseStatus = map['responseStatus'];
+    responseStatusText = map['responseStatusText'];
+    responseHeaders = map.containsKey('responseHeaders')
+        ? map['responseHeaders'].map((m) => new Header(m)).toList()
+        : null;
+  }
+
+/** Request URL. */
   String requestURL;
 
 /** Request method. */
@@ -1627,23 +1943,18 @@ class DataEntry {
 
 /** Response headers */
   List<Header> responseHeaders;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "requestURL": requestURL,
-      "requestMethod": requestMethod,
-      "requestHeaders": requestHeaders,
-      "responseTime": responseTime,
-      "responseStatus": responseStatus,
-      "responseStatusText": responseStatusText,
-      "responseHeaders": responseHeaders
-    };
-  }
 }
 
 /** Rectangle. */
 class Rect {
-  /** X coordinate */
+  Rect(Map map) {
+    x = map['x'];
+    y = map['y'];
+    width = map['width'];
+    height = map['height'];
+  }
+
+/** X coordinate */
   num x;
 
 /** Y coordinate */
@@ -1654,15 +1965,18 @@ class Rect {
 
 /** Rectangle height */
   num height;
-
-  Map<String, dynamic> toJson() {
-    return {"x": x, "y": y, "width": width, "height": height};
-  }
 }
 
 /** CSS Shape Outside details. */
 class ShapeOutsideInfo {
-  /** Shape bounds */
+  ShapeOutsideInfo(Map map) {
+    bounds = map.containsKey('bounds') ? new List(map['bounds']) : null;
+    shape = map.containsKey('shape') ? new List(map['shape']) : null;
+    marginShape =
+        map.containsKey('marginShape') ? new List(map['marginShape']) : null;
+  }
+
+/** Shape bounds */
   List bounds;
 
 /** Shape coordinate details */
@@ -1670,15 +1984,23 @@ class ShapeOutsideInfo {
 
 /** Margin shape bounds */
   List marginShape;
-
-  Map<String, dynamic> toJson() {
-    return {"bounds": bounds, "shape": shape, "marginShape": marginShape};
-  }
 }
 
 /** Box model. */
 class BoxModel {
-  /** Content box */
+  BoxModel(Map map) {
+    content = map.containsKey('content') ? new List(map['content']) : null;
+    padding = map.containsKey('padding') ? new List(map['padding']) : null;
+    border = map.containsKey('border') ? new List(map['border']) : null;
+    margin = map.containsKey('margin') ? new List(map['margin']) : null;
+    width = map['width'];
+    height = map['height'];
+    shapeOutside = map.containsKey('shapeOutside')
+        ? new ShapeOutsideInfo(map['shapeOutside'])
+        : null;
+  }
+
+/** Content box */
   List content;
 
 /** Padding box */
@@ -1698,23 +2020,18 @@ class BoxModel {
 
 /** Shape outside coordinates */
   ShapeOutsideInfo shapeOutside;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "content": content,
-      "padding": padding,
-      "border": border,
-      "margin": margin,
-      "width": width,
-      "height": height,
-      "shapeOutside": shapeOutside
-    };
-  }
 }
 
 /** A structure holding an RGBA color. */
 class RGBA {
-  /** The red component, in the [0-255] range. */
+  RGBA(Map map) {
+    r = map['r'];
+    g = map['g'];
+    b = map['b'];
+    a = map['a'];
+  }
+
+/** The red component, in the [0-255] range. */
   int r;
 
 /** The green component, in the [0-255] range. */
@@ -1725,16 +2042,58 @@ class RGBA {
 
 /** The alpha component, in the [0-1] range (default: 1). */
   num a;
-
-  Map<String, dynamic> toJson() {
-    return {"r": r, "g": g, "b": b, "a": a};
-  }
 }
 
 /** DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes.
 DOMNode is a base node mirror type. */
 class Node {
-  /** Node identifier that is passed into the rest of the DOM messages as the `nodeId`. Backend
+  Node(Map map) {
+    nodeId = map['nodeId'];
+    parentId = map['parentId'];
+    backendNodeId = map['backendNodeId'];
+    nodeType = map['nodeType'];
+    nodeName = map['nodeName'];
+    localName = map['localName'];
+    nodeValue = map['nodeValue'];
+    childNodeCount = map['childNodeCount'];
+    children = map.containsKey('children')
+        ? map['children'].map((m) => new Node(m)).toList()
+        : null;
+    attributes =
+        map.containsKey('attributes') ? new List(map['attributes']) : null;
+    documentURL = map['documentURL'];
+    baseURL = map['baseURL'];
+    publicId = map['publicId'];
+    systemId = map['systemId'];
+    internalSubset = map['internalSubset'];
+    xmlVersion = map['xmlVersion'];
+    name = map['name'];
+    value = map['value'];
+    pseudoType = map['pseudoType'];
+    shadowRootType = map['shadowRootType'];
+    frameId = map['frameId'];
+    contentDocument = map.containsKey('contentDocument')
+        ? new Node(map['contentDocument'])
+        : null;
+    shadowRoots = map.containsKey('shadowRoots')
+        ? map['shadowRoots'].map((m) => new Node(m)).toList()
+        : null;
+    templateContent = map.containsKey('templateContent')
+        ? new Node(map['templateContent'])
+        : null;
+    pseudoElements = map.containsKey('pseudoElements')
+        ? map['pseudoElements'].map((m) => new Node(m)).toList()
+        : null;
+    importedDocument = map.containsKey('importedDocument')
+        ? new Node(map['importedDocument'])
+        : null;
+    distributedNodes = map.containsKey('distributedNodes')
+        ? map['distributedNodes'].map((m) => new BackendNode(m)).toList()
+        : null;
+    isSVG = map['isSVG'];
+  }
+
+/** Node identifier that is passed into the rest of the DOM messages as the `nodeId`. Backend
 will only push node with given `id` once. It is aware of all requested nodes and will only
 fire DOM events for nodes known to the client. */
   int nodeId;
@@ -1819,44 +2178,17 @@ fire DOM events for nodes known to the client. */
 
 /** Whether the node is SVG. */
   bool isSVG;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "nodeId": nodeId,
-      "parentId": parentId,
-      "backendNodeId": backendNodeId,
-      "nodeType": nodeType,
-      "nodeName": nodeName,
-      "localName": localName,
-      "nodeValue": nodeValue,
-      "childNodeCount": childNodeCount,
-      "children": children,
-      "attributes": attributes,
-      "documentURL": documentURL,
-      "baseURL": baseURL,
-      "publicId": publicId,
-      "systemId": systemId,
-      "internalSubset": internalSubset,
-      "xmlVersion": xmlVersion,
-      "name": name,
-      "value": value,
-      "pseudoType": pseudoType,
-      "shadowRootType": shadowRootType,
-      "frameId": frameId,
-      "contentDocument": contentDocument,
-      "shadowRoots": shadowRoots,
-      "templateContent": templateContent,
-      "pseudoElements": pseudoElements,
-      "importedDocument": importedDocument,
-      "distributedNodes": distributedNodes,
-      "isSVG": isSVG
-    };
-  }
 }
 
 /** Backend node with a friendly name. */
 class BackendNode {
-  /** `Node`'s nodeType. */
+  BackendNode(Map map) {
+    nodeType = map['nodeType'];
+    nodeName = map['nodeName'];
+    backendNodeId = map['backendNodeId'];
+  }
+
+/** `Node`'s nodeType. */
   int nodeType;
 
 /** `Node`'s nodeName. */
@@ -1864,19 +2196,27 @@ class BackendNode {
 
 /**  */
   int backendNodeId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "nodeType": nodeType,
-      "nodeName": nodeName,
-      "backendNodeId": backendNodeId
-    };
-  }
 }
 
 /** Object event listener. */
 class EventListener {
-  /** `EventListener`'s type. */
+  EventListener(Map map) {
+    type = map['type'];
+    useCapture = map['useCapture'];
+    passive = map['passive'];
+    once = map['once'];
+    scriptId = map['scriptId'];
+    lineNumber = map['lineNumber'];
+    columnNumber = map['columnNumber'];
+    handler =
+        map.containsKey('handler') ? new RemoteObject(map['handler']) : null;
+    originalHandler = map.containsKey('originalHandler')
+        ? new RemoteObject(map['originalHandler'])
+        : null;
+    backendNodeId = map['backendNodeId'];
+  }
+
+/** `EventListener`'s type. */
   String type;
 
 /** `EventListener`'s useCapture. */
@@ -1905,49 +2245,48 @@ class EventListener {
 
 /** Node the listener is added to (if any). */
   int backendNodeId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "useCapture": useCapture,
-      "passive": passive,
-      "once": once,
-      "scriptId": scriptId,
-      "lineNumber": lineNumber,
-      "columnNumber": columnNumber,
-      "handler": handler,
-      "originalHandler": originalHandler,
-      "backendNodeId": backendNodeId
-    };
-  }
 }
 
 /** A name/value pair. */
 class NameValue {
-  /** Attribute/property name. */
+  NameValue(Map map) {
+    name = map['name'];
+    value = map['value'];
+  }
+
+/** Attribute/property name. */
   String name;
 
 /** Attribute/property value. */
   String value;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "value": value};
-  }
 }
 
 /** A subset of the full ComputedStyle as defined by the request whitelist. */
 class ComputedStyle {
-  /** Name/value pairs of computed style properties. */
-  List<NameValue> properties;
-
-  Map<String, dynamic> toJson() {
-    return {"properties": properties};
+  ComputedStyle(Map map) {
+    properties = map.containsKey('properties')
+        ? map['properties'].map((m) => new NameValue(m)).toList()
+        : null;
   }
+
+/** Name/value pairs of computed style properties. */
+  List<NameValue> properties;
 }
 
 /** Details of an element in the DOM tree with a LayoutObject. */
 class LayoutTreeNode {
-  /** The index of the related DOM node in the `domNodes` array returned by `getSnapshot`. */
+  LayoutTreeNode(Map map) {
+    domNodeIndex = map['domNodeIndex'];
+    boundingBox =
+        map.containsKey('boundingBox') ? new Rect(map['boundingBox']) : null;
+    layoutText = map['layoutText'];
+    inlineTextNodes = map.containsKey('inlineTextNodes')
+        ? map['inlineTextNodes'].map((m) => new InlineTextBox(m)).toList()
+        : null;
+    styleIndex = map['styleIndex'];
+  }
+
+/** The index of the related DOM node in the `domNodes` array returned by `getSnapshot`. */
   int domNodeIndex;
 
 /** The absolute position bounding box. */
@@ -1961,22 +2300,19 @@ class LayoutTreeNode {
 
 /** Index into the `computedStyles` array returned by `getSnapshot`. */
   int styleIndex;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "domNodeIndex": domNodeIndex,
-      "boundingBox": boundingBox,
-      "layoutText": layoutText,
-      "inlineTextNodes": inlineTextNodes,
-      "styleIndex": styleIndex
-    };
-  }
 }
 
 /** Details of post layout rendered text positions. The exact layout should not be regarded as
 stable and may change between versions. */
 class InlineTextBox {
-  /** The absolute position bounding box. */
+  InlineTextBox(Map map) {
+    boundingBox =
+        map.containsKey('boundingBox') ? new Rect(map['boundingBox']) : null;
+    startCharacterIndex = map['startCharacterIndex'];
+    numCharacters = map['numCharacters'];
+  }
+
+/** The absolute position bounding box. */
   Rect boundingBox;
 
 /** The starting index in characters, for this post layout textbox substring. */
@@ -1984,19 +2320,48 @@ class InlineTextBox {
 
 /** The number of characters in this post layout textbox substring. */
   int numCharacters;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "boundingBox": boundingBox,
-      "startCharacterIndex": startCharacterIndex,
-      "numCharacters": numCharacters
-    };
-  }
 }
 
 /** A Node in the DOM tree. */
 class DOMNode {
-  /** `Node`'s nodeType. */
+  DOMNode(Map map) {
+    nodeType = map['nodeType'];
+    nodeName = map['nodeName'];
+    nodeValue = map['nodeValue'];
+    textValue = map['textValue'];
+    inputValue = map['inputValue'];
+    inputChecked = map['inputChecked'];
+    optionSelected = map['optionSelected'];
+    backendNodeId = map['backendNodeId'];
+    childNodeIndexes = map.containsKey('childNodeIndexes')
+        ? new List(map['childNodeIndexes'])
+        : null;
+    attributes = map.containsKey('attributes')
+        ? map['attributes'].map((m) => new NameValue(m)).toList()
+        : null;
+    pseudoElementIndexes = map.containsKey('pseudoElementIndexes')
+        ? new List(map['pseudoElementIndexes'])
+        : null;
+    layoutNodeIndex = map['layoutNodeIndex'];
+    documentURL = map['documentURL'];
+    baseURL = map['baseURL'];
+    contentLanguage = map['contentLanguage'];
+    documentEncoding = map['documentEncoding'];
+    publicId = map['publicId'];
+    systemId = map['systemId'];
+    frameId = map['frameId'];
+    contentDocumentIndex = map['contentDocumentIndex'];
+    importedDocumentIndex = map['importedDocumentIndex'];
+    templateContentIndex = map['templateContentIndex'];
+    pseudoType = map['pseudoType'];
+    isClickable = map['isClickable'];
+    eventListeners = map.containsKey('eventListeners')
+        ? map['eventListeners'].map((m) => new EventListener(m)).toList()
+        : null;
+    currentSourceURL = map['currentSourceURL'];
+  }
+
+/** `Node`'s nodeType. */
   int nodeType;
 
 /** `Node`'s nodeName. */
@@ -2081,68 +2446,46 @@ clicked. */
 
 /** The selected url for nodes with a srcset attribute. */
   String currentSourceURL;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "nodeType": nodeType,
-      "nodeName": nodeName,
-      "nodeValue": nodeValue,
-      "textValue": textValue,
-      "inputValue": inputValue,
-      "inputChecked": inputChecked,
-      "optionSelected": optionSelected,
-      "backendNodeId": backendNodeId,
-      "childNodeIndexes": childNodeIndexes,
-      "attributes": attributes,
-      "pseudoElementIndexes": pseudoElementIndexes,
-      "layoutNodeIndex": layoutNodeIndex,
-      "documentURL": documentURL,
-      "baseURL": baseURL,
-      "contentLanguage": contentLanguage,
-      "documentEncoding": documentEncoding,
-      "publicId": publicId,
-      "systemId": systemId,
-      "frameId": frameId,
-      "contentDocumentIndex": contentDocumentIndex,
-      "importedDocumentIndex": importedDocumentIndex,
-      "templateContentIndex": templateContentIndex,
-      "pseudoType": pseudoType,
-      "isClickable": isClickable,
-      "eventListeners": eventListeners,
-      "currentSourceURL": currentSourceURL
-    };
-  }
 }
 
 /** DOM Storage identifier. */
 class StorageId {
-  /** Security origin for the storage. */
+  StorageId(Map map) {
+    securityOrigin = map['securityOrigin'];
+    isLocalStorage = map['isLocalStorage'];
+  }
+
+/** Security origin for the storage. */
   String securityOrigin;
 
 /** Whether the storage is local storage (not session storage). */
   bool isLocalStorage;
-
-  Map<String, dynamic> toJson() {
-    return {"securityOrigin": securityOrigin, "isLocalStorage": isLocalStorage};
-  }
 }
 
 /** Database error. */
 class Error {
-  /** Error message. */
+  Error(Map map) {
+    message = map['message'];
+    code = map['code'];
+  }
+
+/** Error message. */
   String message;
 
 /** Error code. */
   int code;
-
-  Map<String, dynamic> toJson() {
-    return {"message": message, "code": code};
-  }
 }
 
 /** Database object. */
 class Database {
-  /** Database ID. */
+  Database(Map map) {
+    id = map['id'];
+    domain = map['domain'];
+    name = map['name'];
+    version = map['version'];
+  }
+
+/** Database ID. */
   String id;
 
 /** Database domain. */
@@ -2153,41 +2496,72 @@ class Database {
 
 /** Database version. */
   String version;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"id": id, "domain": domain, "name": name, "version": version};
-  }
+/// All possible values of Emulation.ScreenOrientation.type.
+abstract class EmulationScreenOrientationTypeEnum {
+  static const portraitPrimary = 'portraitPrimary';
+
+  static const portraitSecondary = 'portraitSecondary';
+
+  static const landscapePrimary = 'landscapePrimary';
+
+  static const landscapeSecondary = 'landscapeSecondary';
 }
 
 /** Screen orientation. */
 class ScreenOrientation {
-  /** Orientation type. */
+  ScreenOrientation(Map map) {
+    type = map['type'];
+    angle = map['angle'];
+  }
+
+/** Orientation type. */
   String type;
 
 /** Orientation angle. */
   int angle;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"type": type, "angle": angle};
-  }
+/// All possible values of HeadlessExperimental.ScreenshotParams.format.
+abstract class HeadlessExperimentalScreenshotParamsFormatEnum {
+  static const jpeg = 'jpeg';
+
+  static const png = 'png';
 }
 
 /** Encoding options for a screenshot. */
 class ScreenshotParams {
-  /** Image compression format (defaults to png). */
+  ScreenshotParams(Map map) {
+    format = map['format'];
+    quality = map['quality'];
+  }
+
+/** Image compression format (defaults to png). */
   String format;
 
 /** Compression quality from range [0..100] (jpeg only). */
   int quality;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"format": format, "quality": quality};
-  }
+/// All possible values of IndexedDB.KeyPath.type.
+abstract class IndexedDBKeyPathTypeEnum {
+  static const $null = 'null';
+
+  static const string = 'string';
+
+  static const array = 'array';
 }
 
 /** Key path. */
 class KeyPath {
-  /** Key path type. */
+  KeyPath(Map map) {
+    type = map['type'];
+    string = map['string'];
+    array = map.containsKey('array') ? new List(map['array']) : null;
+  }
+
+/** Key path type. */
   String type;
 
 /** String value. */
@@ -2195,15 +2569,18 @@ class KeyPath {
 
 /** Array value. */
   List array;
-
-  Map<String, dynamic> toJson() {
-    return {"type": type, "string": string, "array": array};
-  }
 }
 
 /** Key range. */
 class KeyRange {
-  /** Lower bound. */
+  KeyRange(Map map) {
+    lower = map.containsKey('lower') ? new Key(map['lower']) : null;
+    upper = map.containsKey('upper') ? new Key(map['upper']) : null;
+    lowerOpen = map['lowerOpen'];
+    upperOpen = map['upperOpen'];
+  }
+
+/** Lower bound. */
   Key lower;
 
 /** Upper bound. */
@@ -2214,20 +2591,32 @@ class KeyRange {
 
 /** If true upper bound is open. */
   bool upperOpen;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "lower": lower,
-      "upper": upper,
-      "lowerOpen": lowerOpen,
-      "upperOpen": upperOpen
-    };
-  }
+/// All possible values of IndexedDB.Key.type.
+abstract class IndexedDBKeyTypeEnum {
+  static const number = 'number';
+
+  static const string = 'string';
+
+  static const date = 'date';
+
+  static const array = 'array';
 }
 
 /** Key. */
 class Key {
-  /** Key type. */
+  Key(Map map) {
+    type = map['type'];
+    number = map['number'];
+    string = map['string'];
+    date = map['date'];
+    array = map.containsKey('array')
+        ? map['array'].map((m) => new Key(m)).toList()
+        : null;
+  }
+
+/** Key type. */
   String type;
 
 /** Number value. */
@@ -2241,21 +2630,18 @@ class Key {
 
 /** Array value. */
   List<Key> array;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "number": number,
-      "string": string,
-      "date": date,
-      "array": array
-    };
-  }
 }
 
 /** Object store index. */
 class ObjectStoreIndex {
-  /** Index name. */
+  ObjectStoreIndex(Map map) {
+    name = map['name'];
+    keyPath = map.containsKey('keyPath') ? new KeyPath(map['keyPath']) : null;
+    unique = map['unique'];
+    multiEntry = map['multiEntry'];
+  }
+
+/** Index name. */
   String name;
 
 /** Index key path. */
@@ -2266,20 +2652,20 @@ class ObjectStoreIndex {
 
 /** If true, index allows multiple entries for a key. */
   bool multiEntry;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "name": name,
-      "keyPath": keyPath,
-      "unique": unique,
-      "multiEntry": multiEntry
-    };
-  }
 }
 
 /** Object store. */
 class ObjectStore {
-  /** Object store name. */
+  ObjectStore(Map map) {
+    name = map['name'];
+    keyPath = map.containsKey('keyPath') ? new KeyPath(map['keyPath']) : null;
+    autoIncrement = map['autoIncrement'];
+    indexes = map.containsKey('indexes')
+        ? map['indexes'].map((m) => new ObjectStoreIndex(m)).toList()
+        : null;
+  }
+
+/** Object store name. */
   String name;
 
 /** Object store key path. */
@@ -2290,20 +2676,19 @@ class ObjectStore {
 
 /** Indexes in this object store. */
   List<ObjectStoreIndex> indexes;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "name": name,
-      "keyPath": keyPath,
-      "autoIncrement": autoIncrement,
-      "indexes": indexes
-    };
-  }
 }
 
 /** Database with an array of object stores. */
 class DatabaseWithObjectStores {
-  /** Database name. */
+  DatabaseWithObjectStores(Map map) {
+    name = map['name'];
+    version = map['version'];
+    objectStores = map.containsKey('objectStores')
+        ? map['objectStores'].map((m) => new ObjectStore(m)).toList()
+        : null;
+  }
+
+/** Database name. */
   String name;
 
 /** Database version. */
@@ -2311,15 +2696,21 @@ class DatabaseWithObjectStores {
 
 /** Object stores in this database. */
   List<ObjectStore> objectStores;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "version": version, "objectStores": objectStores};
-  }
 }
 
 /**  */
 class TouchPoint {
-  /** X coordinate of the event relative to the main frame's viewport in CSS pixels. */
+  TouchPoint(Map map) {
+    x = map['x'];
+    y = map['y'];
+    radiusX = map['radiusX'];
+    radiusY = map['radiusY'];
+    rotationAngle = map['rotationAngle'];
+    force = map['force'];
+    id = map['id'];
+  }
+
+/** X coordinate of the event relative to the main frame's viewport in CSS pixels. */
   num x;
 
 /** Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
@@ -2340,23 +2731,35 @@ the top of the viewport and Y increases as it proceeds towards the bottom of the
 
 /** Identifier used to track touch sources between events, must be unique within an event. */
   num id;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "x": x,
-      "y": y,
-      "radiusX": radiusX,
-      "radiusY": radiusY,
-      "rotationAngle": rotationAngle,
-      "force": force,
-      "id": id
-    };
-  }
 }
 
 /** Information about a compositing layer. */
 class Layer {
-  /** The unique id for this layer. */
+  Layer(Map map) {
+    layerId = map['layerId'];
+    parentLayerId = map['parentLayerId'];
+    backendNodeId = map['backendNodeId'];
+    offsetX = map['offsetX'];
+    offsetY = map['offsetY'];
+    width = map['width'];
+    height = map['height'];
+    transform =
+        map.containsKey('transform') ? new List(map['transform']) : null;
+    anchorX = map['anchorX'];
+    anchorY = map['anchorY'];
+    anchorZ = map['anchorZ'];
+    paintCount = map['paintCount'];
+    drawsContent = map['drawsContent'];
+    invisible = map['invisible'];
+    scrollRects = map.containsKey('scrollRects')
+        ? map['scrollRects'].map((m) => new ScrollRect(m)).toList()
+        : null;
+    stickyPositionConstraint = map.containsKey('stickyPositionConstraint')
+        ? new StickyPositionConstraint(map['stickyPositionConstraint'])
+        : null;
+  }
+
+/** The unique id for this layer. */
   String layerId;
 
 /** The id of parent (not present for root). */
@@ -2404,32 +2807,17 @@ transform/scrolling purposes only. */
 
 /** Sticky position constraint information */
   StickyPositionConstraint stickyPositionConstraint;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "layerId": layerId,
-      "parentLayerId": parentLayerId,
-      "backendNodeId": backendNodeId,
-      "offsetX": offsetX,
-      "offsetY": offsetY,
-      "width": width,
-      "height": height,
-      "transform": transform,
-      "anchorX": anchorX,
-      "anchorY": anchorY,
-      "anchorZ": anchorZ,
-      "paintCount": paintCount,
-      "drawsContent": drawsContent,
-      "invisible": invisible,
-      "scrollRects": scrollRects,
-      "stickyPositionConstraint": stickyPositionConstraint
-    };
-  }
 }
 
 /** Serialized fragment of layer picture along with its offset within the layer. */
 class PictureTile {
-  /** Offset from owning layer left boundary */
+  PictureTile(Map map) {
+    x = map['x'];
+    y = map['y'];
+    picture = map['picture'];
+  }
+
+/** Offset from owning layer left boundary */
   num x;
 
 /** Offset from owning layer top boundary */
@@ -2437,15 +2825,23 @@ class PictureTile {
 
 /** Base64-encoded snapshot data. */
   String picture;
-
-  Map<String, dynamic> toJson() {
-    return {"x": x, "y": y, "picture": picture};
-  }
 }
 
 /** Sticky position constraints. */
 class StickyPositionConstraint {
-  /** Layout rectangle of the sticky element before being shifted */
+  StickyPositionConstraint(Map map) {
+    stickyBoxRect = map.containsKey('stickyBoxRect')
+        ? new Rect(map['stickyBoxRect'])
+        : null;
+    containingBlockRect = map.containsKey('containingBlockRect')
+        ? new Rect(map['containingBlockRect'])
+        : null;
+    nearestLayerShiftingStickyBox = map['nearestLayerShiftingStickyBox'];
+    nearestLayerShiftingContainingBlock =
+        map['nearestLayerShiftingContainingBlock'];
+  }
+
+/** Layout rectangle of the sticky element before being shifted */
   Rect stickyBoxRect;
 
 /** Layout rectangle of the containing block of the sticky element */
@@ -2456,46 +2852,122 @@ class StickyPositionConstraint {
 
 /** The nearest sticky layer that shifts the containing block */
   String nearestLayerShiftingContainingBlock;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "stickyBoxRect": stickyBoxRect,
-      "containingBlockRect": containingBlockRect,
-      "nearestLayerShiftingStickyBox": nearestLayerShiftingStickyBox,
-      "nearestLayerShiftingContainingBlock": nearestLayerShiftingContainingBlock
-    };
-  }
+/// All possible values of LayerTree.ScrollRect.type.
+abstract class LayerTreeScrollRectTypeEnum {
+  static const repaintsOnScroll = 'RepaintsOnScroll';
+
+  static const touchEventHandler = 'TouchEventHandler';
+
+  static const wheelEventHandler = 'WheelEventHandler';
 }
 
 /** Rectangle where scrolling happens on the main thread. */
 class ScrollRect {
-  /** Rectangle itself. */
+  ScrollRect(Map map) {
+    rect = map.containsKey('rect') ? new Rect(map['rect']) : null;
+    type = map['type'];
+  }
+
+/** Rectangle itself. */
   Rect rect;
 
 /** Reason for rectangle to force scrolling on the main thread */
   String type;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"rect": rect, "type": type};
-  }
+/// All possible values of Log.ViolationSetting.name.
+abstract class LogViolationSettingNameEnum {
+  static const longTask = 'longTask';
+
+  static const longLayout = 'longLayout';
+
+  static const blockedEvent = 'blockedEvent';
+
+  static const blockedParser = 'blockedParser';
+
+  static const discouragedAPIUse = 'discouragedAPIUse';
+
+  static const handler = 'handler';
+
+  static const recurringHandler = 'recurringHandler';
 }
 
 /** Violation configuration setting. */
 class ViolationSetting {
-  /** Violation type. */
+  ViolationSetting(Map map) {
+    name = map['name'];
+    threshold = map['threshold'];
+  }
+
+/** Violation type. */
   String name;
 
 /** Time threshold to trigger upon. */
   num threshold;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"name": name, "threshold": threshold};
-  }
+/// All possible values of Log.LogEntry.source.
+abstract class LogLogEntrySourceEnum {
+  static const xml = 'xml';
+
+  static const javascript = 'javascript';
+
+  static const network = 'network';
+
+  static const storage = 'storage';
+
+  static const appcache = 'appcache';
+
+  static const rendering = 'rendering';
+
+  static const security = 'security';
+
+  static const deprecation = 'deprecation';
+
+  static const worker = 'worker';
+
+  static const violation = 'violation';
+
+  static const intervention = 'intervention';
+
+  static const recommendation = 'recommendation';
+
+  static const other = 'other';
+}
+
+/// All possible values of Log.LogEntry.level.
+abstract class LogLogEntryLevelEnum {
+  static const verbose = 'verbose';
+
+  static const info = 'info';
+
+  static const warning = 'warning';
+
+  static const error = 'error';
 }
 
 /** Log entry. */
 class LogEntry {
-  /** Log entry source. */
+  LogEntry(Map map) {
+    source = map['source'];
+    level = map['level'];
+    text = map['text'];
+    timestamp = map['timestamp'];
+    url = map['url'];
+    lineNumber = map['lineNumber'];
+    stackTrace = map.containsKey('stackTrace')
+        ? new StackTrace(map['stackTrace'])
+        : null;
+    networkRequestId = map['networkRequestId'];
+    workerId = map['workerId'];
+    args = map.containsKey('args')
+        ? map['args'].map((m) => new RemoteObject(m)).toList()
+        : null;
+  }
+
+/** Log entry source. */
   String source;
 
 /** Log entry severity. */
@@ -2524,36 +2996,29 @@ class LogEntry {
 
 /** Call arguments. */
   List<RemoteObject> args;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "source": source,
-      "level": level,
-      "text": text,
-      "timestamp": timestamp,
-      "url": url,
-      "lineNumber": lineNumber,
-      "stackTrace": stackTrace,
-      "networkRequestId": networkRequestId,
-      "workerId": workerId,
-      "args": args
-    };
-  }
 }
 
 /** Array of heap profile samples. */
 class SamplingProfile {
-  /**  */
-  List<SamplingProfileNode> samples;
-
-  Map<String, dynamic> toJson() {
-    return {"samples": samples};
+  SamplingProfile(Map map) {
+    samples = map.containsKey('samples')
+        ? map['samples'].map((m) => new SamplingProfileNode(m)).toList()
+        : null;
   }
+
+/**  */
+  List<SamplingProfileNode> samples;
 }
 
 /** Heap profile sample. */
 class SamplingProfileNode {
-  /** Size of the sampled allocation. */
+  SamplingProfileNode(Map map) {
+    size = map['size'];
+    count = map['count'];
+    stack = map.containsKey('stack') ? new List(map['stack']) : null;
+  }
+
+/** Size of the sampled allocation. */
   num size;
 
 /** Number of sampled allocations of that size. */
@@ -2561,15 +3026,17 @@ class SamplingProfileNode {
 
 /** Execution stack at the point of allocation. */
   List stack;
-
-  Map<String, dynamic> toJson() {
-    return {"size": size, "count": count, "stack": stack};
-  }
 }
 
 /** Request pattern for interception. */
 class RequestPattern {
-  /** Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is
+  RequestPattern(Map map) {
+    urlPattern = map['urlPattern'];
+    resourceType = map['resourceType'];
+    interceptionStage = map['interceptionStage'];
+  }
+
+/** Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is
 backslash. Omitting is equivalent to "*". */
   String urlPattern;
 
@@ -2578,19 +3045,26 @@ backslash. Omitting is equivalent to "*". */
 
 /** Stage at wich to begin intercepting requests. Default is Request. */
   String interceptionStage;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "urlPattern": urlPattern,
-      "resourceType": resourceType,
-      "interceptionStage": interceptionStage
-    };
-  }
+/// All possible values of Network.AuthChallengeResponse.response.
+abstract class NetworkAuthChallengeResponseResponseEnum {
+  static const $default = 'Default';
+
+  static const cancelAuth = 'CancelAuth';
+
+  static const provideCredentials = 'ProvideCredentials';
 }
 
 /** Response to an AuthChallenge. */
 class AuthChallengeResponse {
-  /** The decision on what to do in response to the authorization challenge.  Default means
+  AuthChallengeResponse(Map map) {
+    response = map['response'];
+    username = map['username'];
+    password = map['password'];
+  }
+
+/** The decision on what to do in response to the authorization challenge.  Default means
 deferring to the default behavior of the net stack, which will likely either the Cancel
 authentication or display a popup dialog box. */
   String response;
@@ -2602,15 +3076,25 @@ ProvideCredentials. */
 /** The password to provide, possibly empty. Should only be set if response is
 ProvideCredentials. */
   String password;
+}
 
-  Map<String, dynamic> toJson() {
-    return {"response": response, "username": username, "password": password};
-  }
+/// All possible values of Network.AuthChallenge.source.
+abstract class NetworkAuthChallengeSourceEnum {
+  static const server = 'Server';
+
+  static const proxy = 'Proxy';
 }
 
 /** Authorization challenge for HTTP status code 401 or 407. */
 class AuthChallenge {
-  /** Source of the authentication challenge. */
+  AuthChallenge(Map map) {
+    source = map['source'];
+    origin = map['origin'];
+    scheme = map['scheme'];
+    realm = map['realm'];
+  }
+
+/** Source of the authentication challenge. */
   String source;
 
 /** Origin of the challenger. */
@@ -2621,20 +3105,23 @@ class AuthChallenge {
 
 /** The realm of the challenge. May be empty. */
   String realm;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "source": source,
-      "origin": origin,
-      "scheme": scheme,
-      "realm": realm
-    };
-  }
 }
 
 /** Cookie parameter object */
 class CookieParam {
-  /** Cookie name. */
+  CookieParam(Map map) {
+    name = map['name'];
+    value = map['value'];
+    url = map['url'];
+    domain = map['domain'];
+    path = map['path'];
+    secure = map['secure'];
+    httpOnly = map['httpOnly'];
+    sameSite = map['sameSite'];
+    expires = map['expires'];
+  }
+
+/** Cookie name. */
   String name;
 
 /** Cookie value. */
@@ -2661,25 +3148,24 @@ default domain and path values of the created cookie. */
 
 /** Cookie expiration date, session cookie if not set */
   num expires;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "name": name,
-      "value": value,
-      "url": url,
-      "domain": domain,
-      "path": path,
-      "secure": secure,
-      "httpOnly": httpOnly,
-      "sameSite": sameSite,
-      "expires": expires
-    };
-  }
 }
 
 /** Cookie object */
 class Cookie {
-  /** Cookie name. */
+  Cookie(Map map) {
+    name = map['name'];
+    value = map['value'];
+    domain = map['domain'];
+    path = map['path'];
+    expires = map['expires'];
+    size = map['size'];
+    httpOnly = map['httpOnly'];
+    secure = map['secure'];
+    session = map['session'];
+    sameSite = map['sameSite'];
+  }
+
+/** Cookie name. */
   String name;
 
 /** Cookie value. */
@@ -2708,26 +3194,29 @@ class Cookie {
 
 /** Cookie SameSite type. */
   String sameSite;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "name": name,
-      "value": value,
-      "domain": domain,
-      "path": path,
-      "expires": expires,
-      "size": size,
-      "httpOnly": httpOnly,
-      "secure": secure,
-      "session": session,
-      "sameSite": sameSite
-    };
-  }
+/// All possible values of Network.Initiator.type.
+abstract class NetworkInitiatorTypeEnum {
+  static const parser = 'parser';
+
+  static const script = 'script';
+
+  static const preload = 'preload';
+
+  static const other = 'other';
 }
 
 /** Information about the request initiator. */
 class Initiator {
-  /** Type of this initiator. */
+  Initiator(Map map) {
+    type = map['type'];
+    stack = map.containsKey('stack') ? new StackTrace(map['stack']) : null;
+    url = map['url'];
+    lineNumber = map['lineNumber'];
+  }
+
+/** Type of this initiator. */
   String type;
 
 /** Initiator JavaScript stack trace, set for Script only. */
@@ -2739,15 +3228,19 @@ class Initiator {
 /** Initiator line number, set for Parser type or for Script type (when script is importing
 module) (0-based). */
   num lineNumber;
-
-  Map<String, dynamic> toJson() {
-    return {"type": type, "stack": stack, "url": url, "lineNumber": lineNumber};
-  }
 }
 
 /** Information about the cached resource. */
 class CachedResource {
-  /** Resource URL. This is the url of the original network request. */
+  CachedResource(Map map) {
+    url = map['url'];
+    type = map['type'];
+    response =
+        map.containsKey('response') ? new Response(map['response']) : null;
+    bodySize = map['bodySize'];
+  }
+
+/** Resource URL. This is the url of the original network request. */
   String url;
 
 /** Type of this resource. */
@@ -2758,20 +3251,17 @@ class CachedResource {
 
 /** Cached response body size. */
   num bodySize;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "url": url,
-      "type": type,
-      "response": response,
-      "bodySize": bodySize
-    };
-  }
 }
 
 /** WebSocket frame data. */
 class WebSocketFrame {
-  /** WebSocket frame opcode. */
+  WebSocketFrame(Map map) {
+    opcode = map['opcode'];
+    mask = map['mask'];
+    payloadData = map['payloadData'];
+  }
+
+/** WebSocket frame opcode. */
   num opcode;
 
 /** WebSocke frame mask. */
@@ -2779,15 +3269,22 @@ class WebSocketFrame {
 
 /** WebSocke frame payload data. */
   String payloadData;
-
-  Map<String, dynamic> toJson() {
-    return {"opcode": opcode, "mask": mask, "payloadData": payloadData};
-  }
 }
 
 /** WebSocket response data. */
 class WebSocketResponse {
-  /** HTTP response status code. */
+  WebSocketResponse(Map map) {
+    status = map['status'];
+    statusText = map['statusText'];
+    headers = map.containsKey('headers') ? new Headers(map['headers']) : null;
+    headersText = map['headersText'];
+    requestHeaders = map.containsKey('requestHeaders')
+        ? new Headers(map['requestHeaders'])
+        : null;
+    requestHeadersText = map['requestHeadersText'];
+  }
+
+/** HTTP response status code. */
   int status;
 
 /** HTTP response status text. */
@@ -2804,32 +3301,48 @@ class WebSocketResponse {
 
 /** HTTP request headers text. */
   String requestHeadersText;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "status": status,
-      "statusText": statusText,
-      "headers": headers,
-      "headersText": headersText,
-      "requestHeaders": requestHeaders,
-      "requestHeadersText": requestHeadersText
-    };
-  }
 }
 
 /** WebSocket request data. */
 class WebSocketRequest {
-  /** HTTP request headers. */
-  Headers headers;
-
-  Map<String, dynamic> toJson() {
-    return {"headers": headers};
+  WebSocketRequest(Map map) {
+    headers = map.containsKey('headers') ? new Headers(map['headers']) : null;
   }
+
+/** HTTP request headers. */
+  Headers headers;
 }
 
 /** HTTP response data. */
 class Response {
-  /** Response URL. This URL can be different from CachedResource.url in case of redirect. */
+  Response(Map map) {
+    url = map['url'];
+    status = map['status'];
+    statusText = map['statusText'];
+    headers = map.containsKey('headers') ? new Headers(map['headers']) : null;
+    headersText = map['headersText'];
+    mimeType = map['mimeType'];
+    requestHeaders = map.containsKey('requestHeaders')
+        ? new Headers(map['requestHeaders'])
+        : null;
+    requestHeadersText = map['requestHeadersText'];
+    connectionReused = map['connectionReused'];
+    connectionId = map['connectionId'];
+    remoteIPAddress = map['remoteIPAddress'];
+    remotePort = map['remotePort'];
+    fromDiskCache = map['fromDiskCache'];
+    fromServiceWorker = map['fromServiceWorker'];
+    encodedDataLength = map['encodedDataLength'];
+    timing =
+        map.containsKey('timing') ? new ResourceTiming(map['timing']) : null;
+    protocol = map['protocol'];
+    securityState = map['securityState'];
+    securityDetails = map.containsKey('securityDetails')
+        ? new SecurityDetails(map['securityDetails'])
+        : null;
+  }
+
+/** Response URL. This URL can be different from CachedResource.url in case of redirect. */
   String url;
 
 /** HTTP response status code. */
@@ -2885,35 +3398,31 @@ class Response {
 
 /** Security details for the request. */
   SecurityDetails securityDetails;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "url": url,
-      "status": status,
-      "statusText": statusText,
-      "headers": headers,
-      "headersText": headersText,
-      "mimeType": mimeType,
-      "requestHeaders": requestHeaders,
-      "requestHeadersText": requestHeadersText,
-      "connectionReused": connectionReused,
-      "connectionId": connectionId,
-      "remoteIPAddress": remoteIPAddress,
-      "remotePort": remotePort,
-      "fromDiskCache": fromDiskCache,
-      "fromServiceWorker": fromServiceWorker,
-      "encodedDataLength": encodedDataLength,
-      "timing": timing,
-      "protocol": protocol,
-      "securityState": securityState,
-      "securityDetails": securityDetails
-    };
-  }
 }
 
 /** Security details about a request. */
 class SecurityDetails {
-  /** Protocol name (e.g. "TLS 1.2" or "QUIC"). */
+  SecurityDetails(Map map) {
+    protocol = map['protocol'];
+    keyExchange = map['keyExchange'];
+    keyExchangeGroup = map['keyExchangeGroup'];
+    cipher = map['cipher'];
+    mac = map['mac'];
+    certificateId = map['certificateId'];
+    subjectName = map['subjectName'];
+    sanList = map.containsKey('sanList') ? new List(map['sanList']) : null;
+    issuer = map['issuer'];
+    validFrom = map['validFrom'];
+    validTo = map['validTo'];
+    signedCertificateTimestampList =
+        map.containsKey('signedCertificateTimestampList')
+            ? map['signedCertificateTimestampList']
+                .map((m) => new SignedCertificateTimestamp(m))
+                .toList()
+            : null;
+  }
+
+/** Protocol name (e.g. "TLS 1.2" or "QUIC"). */
   String protocol;
 
 /** Key Exchange used by the connection, or the empty string if not applicable. */
@@ -2948,28 +3457,22 @@ class SecurityDetails {
 
 /** List of signed certificate timestamps (SCTs). */
   List<SignedCertificateTimestamp> signedCertificateTimestampList;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "protocol": protocol,
-      "keyExchange": keyExchange,
-      "keyExchangeGroup": keyExchangeGroup,
-      "cipher": cipher,
-      "mac": mac,
-      "certificateId": certificateId,
-      "subjectName": subjectName,
-      "sanList": sanList,
-      "issuer": issuer,
-      "validFrom": validFrom,
-      "validTo": validTo,
-      "signedCertificateTimestampList": signedCertificateTimestampList
-    };
-  }
 }
 
 /** Details of a signed certificate timestamp (SCT). */
 class SignedCertificateTimestamp {
-  /** Validation status. */
+  SignedCertificateTimestamp(Map map) {
+    status = map['status'];
+    origin = map['origin'];
+    logDescription = map['logDescription'];
+    logId = map['logId'];
+    timestamp = map['timestamp'];
+    hashAlgorithm = map['hashAlgorithm'];
+    signatureAlgorithm = map['signatureAlgorithm'];
+    signatureData = map['signatureData'];
+  }
+
+/** Validation status. */
   String status;
 
 /** Origin. */
@@ -2992,24 +3495,42 @@ class SignedCertificateTimestamp {
 
 /** Signature data. */
   String signatureData;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "status": status,
-      "origin": origin,
-      "logDescription": logDescription,
-      "logId": logId,
-      "timestamp": timestamp,
-      "hashAlgorithm": hashAlgorithm,
-      "signatureAlgorithm": signatureAlgorithm,
-      "signatureData": signatureData
-    };
-  }
+/// All possible values of Network.Request.referrerPolicy.
+abstract class NetworkRequestReferrerPolicyEnum {
+  static const unsafeUrl = 'unsafe-url';
+
+  static const noReferrerWhenDowngrade = 'no-referrer-when-downgrade';
+
+  static const noReferrer = 'no-referrer';
+
+  static const origin = 'origin';
+
+  static const originWhenCrossOrigin = 'origin-when-cross-origin';
+
+  static const sameOrigin = 'same-origin';
+
+  static const strictOrigin = 'strict-origin';
+
+  static const strictOriginWhenCrossOrigin = 'strict-origin-when-cross-origin';
 }
 
 /** HTTP request data. */
 class Request {
-  /** Request URL. */
+  Request(Map map) {
+    url = map['url'];
+    method = map['method'];
+    headers = map.containsKey('headers') ? new Headers(map['headers']) : null;
+    postData = map['postData'];
+    hasPostData = map['hasPostData'];
+    mixedContentType = map['mixedContentType'];
+    initialPriority = map['initialPriority'];
+    referrerPolicy = map['referrerPolicy'];
+    isLinkPreload = map['isLinkPreload'];
+  }
+
+/** Request URL. */
   String url;
 
 /** HTTP request method. */
@@ -3035,25 +3556,30 @@ class Request {
 
 /** Whether is loaded via link preload. */
   bool isLinkPreload;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "url": url,
-      "method": method,
-      "headers": headers,
-      "postData": postData,
-      "hasPostData": hasPostData,
-      "mixedContentType": mixedContentType,
-      "initialPriority": initialPriority,
-      "referrerPolicy": referrerPolicy,
-      "isLinkPreload": isLinkPreload
-    };
-  }
 }
 
 /** Timing information for the request. */
 class ResourceTiming {
-  /** Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
+  ResourceTiming(Map map) {
+    requestTime = map['requestTime'];
+    proxyStart = map['proxyStart'];
+    proxyEnd = map['proxyEnd'];
+    dnsStart = map['dnsStart'];
+    dnsEnd = map['dnsEnd'];
+    connectStart = map['connectStart'];
+    connectEnd = map['connectEnd'];
+    sslStart = map['sslStart'];
+    sslEnd = map['sslEnd'];
+    workerStart = map['workerStart'];
+    workerReady = map['workerReady'];
+    sendStart = map['sendStart'];
+    sendEnd = map['sendEnd'];
+    pushStart = map['pushStart'];
+    pushEnd = map['pushEnd'];
+    receiveHeadersEnd = map['receiveHeadersEnd'];
+  }
+
+/** Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
 milliseconds relatively to this requestTime. */
   num requestTime;
 
@@ -3101,35 +3627,42 @@ milliseconds relatively to this requestTime. */
 
 /** Finished receiving response headers. */
   num receiveHeadersEnd;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "requestTime": requestTime,
-      "proxyStart": proxyStart,
-      "proxyEnd": proxyEnd,
-      "dnsStart": dnsStart,
-      "dnsEnd": dnsEnd,
-      "connectStart": connectStart,
-      "connectEnd": connectEnd,
-      "sslStart": sslStart,
-      "sslEnd": sslEnd,
-      "workerStart": workerStart,
-      "workerReady": workerReady,
-      "sendStart": sendStart,
-      "sendEnd": sendEnd,
-      "pushStart": pushStart,
-      "pushEnd": pushEnd,
-      "receiveHeadersEnd": receiveHeadersEnd
-    };
-  }
 }
 
 /** Request / response headers as keys / values of JSON object. */
-class Headers {}
+class Headers {
+  Headers(_);
+}
 
 /** Configuration data for the highlighting of page elements. */
 class HighlightConfig {
-  /** Whether the node info tooltip should be shown (default: false). */
+  HighlightConfig(Map map) {
+    showInfo = map['showInfo'];
+    showRulers = map['showRulers'];
+    showExtensionLines = map['showExtensionLines'];
+    displayAsMaterial = map['displayAsMaterial'];
+    contentColor =
+        map.containsKey('contentColor') ? new RGBA(map['contentColor']) : null;
+    paddingColor =
+        map.containsKey('paddingColor') ? new RGBA(map['paddingColor']) : null;
+    borderColor =
+        map.containsKey('borderColor') ? new RGBA(map['borderColor']) : null;
+    marginColor =
+        map.containsKey('marginColor') ? new RGBA(map['marginColor']) : null;
+    eventTargetColor = map.containsKey('eventTargetColor')
+        ? new RGBA(map['eventTargetColor'])
+        : null;
+    shapeColor =
+        map.containsKey('shapeColor') ? new RGBA(map['shapeColor']) : null;
+    shapeMarginColor = map.containsKey('shapeMarginColor')
+        ? new RGBA(map['shapeMarginColor'])
+        : null;
+    selectorList = map['selectorList'];
+    cssGridColor =
+        map.containsKey('cssGridColor') ? new RGBA(map['cssGridColor']) : null;
+  }
+
+/** Whether the node info tooltip should be shown (default: false). */
   bool showInfo;
 
 /** Whether the rulers should be shown (default: false). */
@@ -3167,29 +3700,19 @@ class HighlightConfig {
 
 /** The grid layout color (default: transparent). */
   RGBA cssGridColor;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "showInfo": showInfo,
-      "showRulers": showRulers,
-      "showExtensionLines": showExtensionLines,
-      "displayAsMaterial": displayAsMaterial,
-      "contentColor": contentColor,
-      "paddingColor": paddingColor,
-      "borderColor": borderColor,
-      "marginColor": marginColor,
-      "eventTargetColor": eventTargetColor,
-      "shapeColor": shapeColor,
-      "shapeMarginColor": shapeMarginColor,
-      "selectorList": selectorList,
-      "cssGridColor": cssGridColor
-    };
-  }
 }
 
 /** Viewport for capturing screenshot. */
 class Viewport {
-  /** X offset in CSS pixels. */
+  Viewport(Map map) {
+    x = map['x'];
+    y = map['y'];
+    width = map['width'];
+    height = map['height'];
+    scale = map['scale'];
+  }
+
+/** X offset in CSS pixels. */
   num x;
 
 /** Y offset in CSS pixels */
@@ -3203,15 +3726,21 @@ class Viewport {
 
 /** Page scale factor. */
   num scale;
-
-  Map<String, dynamic> toJson() {
-    return {"x": x, "y": y, "width": width, "height": height, "scale": scale};
-  }
 }
 
 /** Visual viewport position, dimensions, and scale. */
 class VisualViewport {
-  /** Horizontal offset relative to the layout viewport (CSS pixels). */
+  VisualViewport(Map map) {
+    offsetX = map['offsetX'];
+    offsetY = map['offsetY'];
+    pageX = map['pageX'];
+    pageY = map['pageY'];
+    clientWidth = map['clientWidth'];
+    clientHeight = map['clientHeight'];
+    scale = map['scale'];
+  }
+
+/** Horizontal offset relative to the layout viewport (CSS pixels). */
   num offsetX;
 
 /** Vertical offset relative to the layout viewport (CSS pixels). */
@@ -3231,23 +3760,18 @@ class VisualViewport {
 
 /** Scale relative to the ideal viewport (size at width=device-width). */
   num scale;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "offsetX": offsetX,
-      "offsetY": offsetY,
-      "pageX": pageX,
-      "pageY": pageY,
-      "clientWidth": clientWidth,
-      "clientHeight": clientHeight,
-      "scale": scale
-    };
-  }
 }
 
 /** Layout viewport position and dimensions. */
 class LayoutViewport {
-  /** Horizontal offset relative to the document (CSS pixels). */
+  LayoutViewport(Map map) {
+    pageX = map['pageX'];
+    pageY = map['pageY'];
+    clientWidth = map['clientWidth'];
+    clientHeight = map['clientHeight'];
+  }
+
+/** Horizontal offset relative to the document (CSS pixels). */
   int pageX;
 
 /** Vertical offset relative to the document (CSS pixels). */
@@ -3258,20 +3782,18 @@ class LayoutViewport {
 
 /** Height (CSS pixels), excludes scrollbar if present. */
   int clientHeight;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "pageX": pageX,
-      "pageY": pageY,
-      "clientWidth": clientWidth,
-      "clientHeight": clientHeight
-    };
-  }
 }
 
 /** Error while paring app manifest. */
 class AppManifestError {
-  /** Error message. */
+  AppManifestError(Map map) {
+    message = map['message'];
+    critical = map['critical'];
+    line = map['line'];
+    column = map['column'];
+  }
+
+/** Error message. */
   String message;
 
 /** If criticial, this is a non-recoverable parse error. */
@@ -3282,20 +3804,21 @@ class AppManifestError {
 
 /** Error column. */
   int column;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "message": message,
-      "critical": critical,
-      "line": line,
-      "column": column
-    };
-  }
 }
 
 /** Screencast frame metadata. */
 class ScreencastFrameMetadata {
-  /** Top offset in DIP. */
+  ScreencastFrameMetadata(Map map) {
+    offsetTop = map['offsetTop'];
+    pageScaleFactor = map['pageScaleFactor'];
+    deviceWidth = map['deviceWidth'];
+    deviceHeight = map['deviceHeight'];
+    scrollOffsetX = map['scrollOffsetX'];
+    scrollOffsetY = map['scrollOffsetY'];
+    timestamp = map['timestamp'];
+  }
+
+/** Top offset in DIP. */
   num offsetTop;
 
 /** Page scale factor. */
@@ -3315,23 +3838,19 @@ class ScreencastFrameMetadata {
 
 /** Frame swap timestamp. */
   num timestamp;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "offsetTop": offsetTop,
-      "pageScaleFactor": pageScaleFactor,
-      "deviceWidth": deviceWidth,
-      "deviceHeight": deviceHeight,
-      "scrollOffsetX": scrollOffsetX,
-      "scrollOffsetY": scrollOffsetY,
-      "timestamp": timestamp
-    };
-  }
 }
 
 /** Navigation history entry. */
 class NavigationEntry {
-  /** Unique id of the navigation history entry. */
+  NavigationEntry(Map map) {
+    id = map['id'];
+    url = map['url'];
+    userTypedURL = map['userTypedURL'];
+    title = map['title'];
+    transitionType = map['transitionType'];
+  }
+
+/** Unique id of the navigation history entry. */
   int id;
 
 /** URL of the navigation history entry. */
@@ -3345,34 +3864,37 @@ class NavigationEntry {
 
 /** Transition type. */
   String transitionType;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "url": url,
-      "userTypedURL": userTypedURL,
-      "title": title,
-      "transitionType": transitionType
-    };
-  }
 }
 
 /** Information about the Frame hierarchy. */
 class FrameTree {
-  /** Frame information for this tree item. */
+  FrameTree(Map map) {
+    frame = map.containsKey('frame') ? new Frame(map['frame']) : null;
+    childFrames = map.containsKey('childFrames')
+        ? map['childFrames'].map((m) => new FrameTree(m)).toList()
+        : null;
+  }
+
+/** Frame information for this tree item. */
   Frame frame;
 
 /** Child frames. */
   List<FrameTree> childFrames;
-
-  Map<String, dynamic> toJson() {
-    return {"frame": frame, "childFrames": childFrames};
-  }
 }
 
 /** Information about the Frame hierarchy along with their cached resources. */
 class FrameResourceTree {
-  /** Frame information for this tree item. */
+  FrameResourceTree(Map map) {
+    frame = map.containsKey('frame') ? new Frame(map['frame']) : null;
+    childFrames = map.containsKey('childFrames')
+        ? map['childFrames'].map((m) => new FrameResourceTree(m)).toList()
+        : null;
+    resources = map.containsKey('resources')
+        ? map['resources'].map((m) => new FrameResource(m)).toList()
+        : null;
+  }
+
+/** Frame information for this tree item. */
   Frame frame;
 
 /** Child frames. */
@@ -3380,15 +3902,21 @@ class FrameResourceTree {
 
 /** Information about frame resources. */
   List<FrameResource> resources;
-
-  Map<String, dynamic> toJson() {
-    return {"frame": frame, "childFrames": childFrames, "resources": resources};
-  }
 }
 
 /** Information about the Resource on the page. */
 class FrameResource {
-  /** Resource URL. */
+  FrameResource(Map map) {
+    url = map['url'];
+    type = map['type'];
+    mimeType = map['mimeType'];
+    lastModified = map['lastModified'];
+    contentSize = map['contentSize'];
+    failed = map['failed'];
+    canceled = map['canceled'];
+  }
+
+/** Resource URL. */
   String url;
 
 /** Type of this resource. */
@@ -3408,23 +3936,22 @@ class FrameResource {
 
 /** True if the resource was canceled during loading. */
   bool canceled;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "url": url,
-      "type": type,
-      "mimeType": mimeType,
-      "lastModified": lastModified,
-      "contentSize": contentSize,
-      "failed": failed,
-      "canceled": canceled
-    };
-  }
 }
 
 /** Information about the Frame on the page. */
 class Frame {
-  /** Frame unique identifier. */
+  Frame(Map map) {
+    id = map['id'];
+    parentId = map['parentId'];
+    loaderId = map['loaderId'];
+    name = map['name'];
+    url = map['url'];
+    securityOrigin = map['securityOrigin'];
+    mimeType = map['mimeType'];
+    unreachableUrl = map['unreachableUrl'];
+  }
+
+/** Frame unique identifier. */
   String id;
 
 /** Parent frame identifier. */
@@ -3447,37 +3974,35 @@ class Frame {
 
 /** If the frame failed to load, this contains the URL that could not be loaded. */
   String unreachableUrl;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "parentId": parentId,
-      "loaderId": loaderId,
-      "name": name,
-      "url": url,
-      "securityOrigin": securityOrigin,
-      "mimeType": mimeType,
-      "unreachableUrl": unreachableUrl
-    };
-  }
 }
 
 /** Run-time execution metric. */
 class Metric {
-  /** Metric name. */
+  Metric(Map map) {
+    name = map['name'];
+    value = map['value'];
+  }
+
+/** Metric name. */
   String name;
 
 /** Metric value. */
   num value;
-
-  Map<String, dynamic> toJson() {
-    return {"name": name, "value": value};
-  }
 }
 
 /** Information about insecure content on the page. */
 class InsecureContentStatus {
-  /** True if the page was loaded over HTTPS and ran mixed (HTTP) content such as scripts. */
+  InsecureContentStatus(Map map) {
+    ranMixedContent = map['ranMixedContent'];
+    displayedMixedContent = map['displayedMixedContent'];
+    containedMixedForm = map['containedMixedForm'];
+    ranContentWithCertErrors = map['ranContentWithCertErrors'];
+    displayedContentWithCertErrors = map['displayedContentWithCertErrors'];
+    ranInsecureContentStyle = map['ranInsecureContentStyle'];
+    displayedInsecureContentStyle = map['displayedInsecureContentStyle'];
+  }
+
+/** True if the page was loaded over HTTPS and ran mixed (HTTP) content such as scripts. */
   bool ranMixedContent;
 
 /** True if the page was loaded over HTTPS and displayed mixed (HTTP) content such as images. */
@@ -3499,23 +4024,21 @@ such as images that were loaded with certificate errors. */
 
 /** Security state representing a page that displayed insecure content. */
   String displayedInsecureContentStyle;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "ranMixedContent": ranMixedContent,
-      "displayedMixedContent": displayedMixedContent,
-      "containedMixedForm": containedMixedForm,
-      "ranContentWithCertErrors": ranContentWithCertErrors,
-      "displayedContentWithCertErrors": displayedContentWithCertErrors,
-      "ranInsecureContentStyle": ranInsecureContentStyle,
-      "displayedInsecureContentStyle": displayedInsecureContentStyle
-    };
-  }
 }
 
 /** An explanation of an factor contributing to the security state. */
 class SecurityStateExplanation {
-  /** Security state representing the severity of the factor being explained. */
+  SecurityStateExplanation(Map map) {
+    securityState = map['securityState'];
+    title = map['title'];
+    summary = map['summary'];
+    description = map['description'];
+    mixedContentType = map['mixedContentType'];
+    certificate =
+        map.containsKey('certificate') ? new List(map['certificate']) : null;
+  }
+
+/** Security state representing the severity of the factor being explained. */
   String securityState;
 
 /** Title describing the type of factor. */
@@ -3532,22 +4055,20 @@ class SecurityStateExplanation {
 
 /** Page certificate. */
   List certificate;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "securityState": securityState,
-      "title": title,
-      "summary": summary,
-      "description": description,
-      "mixedContentType": mixedContentType,
-      "certificate": certificate
-    };
-  }
 }
 
 /** ServiceWorker error message. */
 class ServiceWorkerErrorMessage {
-  /**  */
+  ServiceWorkerErrorMessage(Map map) {
+    errorMessage = map['errorMessage'];
+    registrationId = map['registrationId'];
+    versionId = map['versionId'];
+    sourceURL = map['sourceURL'];
+    lineNumber = map['lineNumber'];
+    columnNumber = map['columnNumber'];
+  }
+
+/**  */
   String errorMessage;
 
 /**  */
@@ -3564,22 +4085,23 @@ class ServiceWorkerErrorMessage {
 
 /**  */
   int columnNumber;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "errorMessage": errorMessage,
-      "registrationId": registrationId,
-      "versionId": versionId,
-      "sourceURL": sourceURL,
-      "lineNumber": lineNumber,
-      "columnNumber": columnNumber
-    };
-  }
 }
 
 /** ServiceWorker version. */
 class ServiceWorkerVersion {
-  /**  */
+  ServiceWorkerVersion(Map map) {
+    versionId = map['versionId'];
+    registrationId = map['registrationId'];
+    scriptURL = map['scriptURL'];
+    runningStatus = map['runningStatus'];
+    status = map['status'];
+    scriptLastModified = map['scriptLastModified'];
+    scriptResponseTime = map['scriptResponseTime'];
+    controlledClients = map['controlledClients'];
+    targetId = map['targetId'];
+  }
+
+/**  */
   String versionId;
 
 /**  */
@@ -3606,25 +4128,17 @@ For cached script it is the last time the cache entry was validated. */
 
 /**  */
   String targetId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "versionId": versionId,
-      "registrationId": registrationId,
-      "scriptURL": scriptURL,
-      "runningStatus": runningStatus,
-      "status": status,
-      "scriptLastModified": scriptLastModified,
-      "scriptResponseTime": scriptResponseTime,
-      "controlledClients": controlledClients,
-      "targetId": targetId
-    };
-  }
 }
 
 /** ServiceWorker registration. */
 class ServiceWorkerRegistration {
-  /**  */
+  ServiceWorkerRegistration(Map map) {
+    registrationId = map['registrationId'];
+    scopeURL = map['scopeURL'];
+    isDeleted = map['isDeleted'];
+  }
+
+/**  */
   String registrationId;
 
 /**  */
@@ -3632,56 +4146,58 @@ class ServiceWorkerRegistration {
 
 /**  */
   bool isDeleted;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "registrationId": registrationId,
-      "scopeURL": scopeURL,
-      "isDeleted": isDeleted
-    };
-  }
 }
 
 /** Usage for a storage type. */
 class UsageForType {
-  /** Name of storage type. */
+  UsageForType(Map map) {
+    storageType = map['storageType'];
+    usage = map['usage'];
+  }
+
+/** Name of storage type. */
   String storageType;
 
 /** Storage usage (bytes). */
   num usage;
-
-  Map<String, dynamic> toJson() {
-    return {"storageType": storageType, "usage": usage};
-  }
 }
 
 /** Provides information about the GPU(s) on the system. */
 class GPUInfo {
-  /** The graphics devices on the system. Element 0 is the primary GPU. */
+  GPUInfo(Map map) {
+    devices = map.containsKey('devices')
+        ? map['devices'].map((m) => new GPUDevice(m)).toList()
+        : null;
+    auxAttributes = map['auxAttributes'];
+    featureStatus = map['featureStatus'];
+    driverBugWorkarounds = map.containsKey('driverBugWorkarounds')
+        ? new List(map['driverBugWorkarounds'])
+        : null;
+  }
+
+/** The graphics devices on the system. Element 0 is the primary GPU. */
   List<GPUDevice> devices;
 
 /** An optional dictionary of additional GPU related attributes. */
-  Map auxAttributes;
+  Map<String, dynamic> auxAttributes;
 
 /** An optional dictionary of graphics features and their status. */
-  Map featureStatus;
+  Map<String, dynamic> featureStatus;
 
 /** An optional array of GPU driver bug workarounds. */
   List driverBugWorkarounds;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "devices": devices,
-      "auxAttributes": auxAttributes,
-      "featureStatus": featureStatus,
-      "driverBugWorkarounds": driverBugWorkarounds
-    };
-  }
 }
 
 /** Describes a single graphics processor (GPU). */
 class GPUDevice {
-  /** PCI ID of the GPU vendor, if available; 0 otherwise. */
+  GPUDevice(Map map) {
+    vendorId = map['vendorId'];
+    deviceId = map['deviceId'];
+    vendorString = map['vendorString'];
+    deviceString = map['deviceString'];
+  }
+
+/** PCI ID of the GPU vendor, if available; 0 otherwise. */
   num vendorId;
 
 /** PCI ID of the GPU device, if available; 0 otherwise. */
@@ -3692,33 +4208,34 @@ class GPUDevice {
 
 /** String description of the GPU device, if the PCI ID is not available. */
   String deviceString;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "vendorId": vendorId,
-      "deviceId": deviceId,
-      "vendorString": vendorString,
-      "deviceString": deviceString
-    };
-  }
 }
 
 /**  */
 class RemoteLocation {
-  /**  */
+  RemoteLocation(Map map) {
+    host = map['host'];
+    port = map['port'];
+  }
+
+/**  */
   String host;
 
 /**  */
   int port;
-
-  Map<String, dynamic> toJson() {
-    return {"host": host, "port": port};
-  }
 }
 
 /**  */
 class TargetInfo {
-  /**  */
+  TargetInfo(Map map) {
+    targetId = map['targetId'];
+    type = map['type'];
+    title = map['title'];
+    url = map['url'];
+    attached = map['attached'];
+    openerId = map['openerId'];
+  }
+
+/**  */
   String targetId;
 
 /**  */
@@ -3735,22 +4252,41 @@ class TargetInfo {
 
 /** Opener target Id */
   String openerId;
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      "targetId": targetId,
-      "type": type,
-      "title": title,
-      "url": url,
-      "attached": attached,
-      "openerId": openerId
-    };
-  }
+/// All possible values of Tracing.TraceConfig.recordMode.
+abstract class TracingTraceConfigRecordModeEnum {
+  static const recordUntilFull = 'recordUntilFull';
+
+  static const recordContinuously = 'recordContinuously';
+
+  static const recordAsMuchAsPossible = 'recordAsMuchAsPossible';
+
+  static const echoToConsole = 'echoToConsole';
 }
 
 /**  */
 class TraceConfig {
-  /** Controls how the trace buffer stores data. */
+  TraceConfig(Map map) {
+    recordMode = map['recordMode'];
+    enableSampling = map['enableSampling'];
+    enableSystrace = map['enableSystrace'];
+    enableArgumentFilter = map['enableArgumentFilter'];
+    includedCategories = map.containsKey('includedCategories')
+        ? new List(map['includedCategories'])
+        : null;
+    excludedCategories = map.containsKey('excludedCategories')
+        ? new List(map['excludedCategories'])
+        : null;
+    syntheticDelays = map.containsKey('syntheticDelays')
+        ? new List(map['syntheticDelays'])
+        : null;
+    memoryDumpConfig = map.containsKey('memoryDumpConfig')
+        ? new MemoryDumpConfig(map['memoryDumpConfig'])
+        : null;
+  }
+
+/** Controls how the trace buffer stores data. */
   String recordMode;
 
 /** Turns on JavaScript stack sampling. */
@@ -3773,31 +4309,31 @@ class TraceConfig {
 
 /** Configuration for memory dump triggers. Used only when "memory-infra" category is enabled. */
   MemoryDumpConfig memoryDumpConfig;
-
-  Map<String, dynamic> toJson() {
-    return {
-      "recordMode": recordMode,
-      "enableSampling": enableSampling,
-      "enableSystrace": enableSystrace,
-      "enableArgumentFilter": enableArgumentFilter,
-      "includedCategories": includedCategories,
-      "excludedCategories": excludedCategories,
-      "syntheticDelays": syntheticDelays,
-      "memoryDumpConfig": memoryDumpConfig
-    };
-  }
 }
 
 /** Configuration for memory dump. Used only when "memory-infra" category is enabled. */
-class MemoryDumpConfig {}
+class MemoryDumpConfig {
+  MemoryDumpConfig(_);
+}
+
+/// Fired on `Console.messageAdded`.
+class ConsoleMessageAddedEvent {
+  ConsoleMessageAddedEvent(Map map) {
+    message =
+        map.containsKey('message') ? new ConsoleMessage(map['message']) : null;
+  }
+
+/** Console message that has been added. */
+  ConsoleMessage message;
+}
 
 class DevToolsConsole {
   DevToolsConsole(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onMessageAdded =
-      new dart_async.StreamController();
+  dart_async.StreamController<ConsoleMessageAddedEvent> _onMessageAdded =
+      new dart_async.StreamController.broadcast();
 
 /** Does nothing. */
   dart_async.Future clearMessages() {
@@ -3818,11 +4354,13 @@ class DevToolsConsole {
     return _devtools.rpc.sendRequest('Console.enable', params);
   }
 
-/** Issued when new console message is added. */
-  dart_async.Stream get onMessageAdded => _onMessageAdded.stream;
+/** Broadcast stream: Issued when new console message is added. */
+  dart_async.Stream<ConsoleMessageAddedEvent> get onMessageAdded =>
+      _onMessageAdded.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Console.messageAdded', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Console.messageAdded', (json_rpc_2.Parameters params) {
+      _onMessageAdded.add(new ConsoleMessageAddedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -3840,8 +4378,10 @@ class DebuggerEnableResponse {
 
 class DebuggerEvaluateOnCallFrameResponse {
   DebuggerEvaluateOnCallFrameResponse(Map map) {
-    result = map['result'];
-    exceptionDetails = map['exceptionDetails'];
+    result = map.containsKey('result') ? new RemoteObject(map['result']) : null;
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   RemoteObject result;
@@ -3851,7 +4391,9 @@ class DebuggerEvaluateOnCallFrameResponse {
 
 class DebuggerGetPossibleBreakpointsResponse {
   DebuggerGetPossibleBreakpointsResponse(Map map) {
-    locations = map['locations'];
+    locations = map.containsKey('locations')
+        ? map['locations'].map((m) => new BreakLocation(m)).toList()
+        : null;
   }
 
   List<BreakLocation> locations;
@@ -3867,7 +4409,9 @@ class DebuggerGetScriptSourceResponse {
 
 class DebuggerGetStackTraceResponse {
   DebuggerGetStackTraceResponse(Map map) {
-    stackTrace = map['stackTrace'];
+    stackTrace = map.containsKey('stackTrace')
+        ? new StackTrace(map['stackTrace'])
+        : null;
   }
 
   StackTrace stackTrace;
@@ -3875,9 +4419,15 @@ class DebuggerGetStackTraceResponse {
 
 class DebuggerRestartFrameResponse {
   DebuggerRestartFrameResponse(Map map) {
-    callFrames = map['callFrames'];
-    asyncStackTrace = map['asyncStackTrace'];
-    asyncStackTraceId = map['asyncStackTraceId'];
+    callFrames = map.containsKey('callFrames')
+        ? map['callFrames'].map((m) => new CallFrame(m)).toList()
+        : null;
+    asyncStackTrace = map.containsKey('asyncStackTrace')
+        ? new StackTrace(map['asyncStackTrace'])
+        : null;
+    asyncStackTraceId = map.containsKey('asyncStackTraceId')
+        ? new StackTraceId(map['asyncStackTraceId'])
+        : null;
   }
 
   List<CallFrame> callFrames;
@@ -3889,7 +4439,9 @@ class DebuggerRestartFrameResponse {
 
 class DebuggerSearchInContentResponse {
   DebuggerSearchInContentResponse(Map map) {
-    result = map['result'];
+    result = map.containsKey('result')
+        ? map['result'].map((m) => new SearchMatch(m)).toList()
+        : null;
   }
 
   List<SearchMatch> result;
@@ -3898,7 +4450,9 @@ class DebuggerSearchInContentResponse {
 class DebuggerSetBreakpointResponse {
   DebuggerSetBreakpointResponse(Map map) {
     breakpointId = map['breakpointId'];
-    actualLocation = map['actualLocation'];
+    actualLocation = map.containsKey('actualLocation')
+        ? new Location(map['actualLocation'])
+        : null;
   }
 
   String breakpointId;
@@ -3909,7 +4463,9 @@ class DebuggerSetBreakpointResponse {
 class DebuggerSetBreakpointByUrlResponse {
   DebuggerSetBreakpointByUrlResponse(Map map) {
     breakpointId = map['breakpointId'];
-    locations = map['locations'];
+    locations = map.containsKey('locations')
+        ? map['locations'].map((m) => new Location(m)).toList()
+        : null;
   }
 
   String breakpointId;
@@ -3919,11 +4475,19 @@ class DebuggerSetBreakpointByUrlResponse {
 
 class DebuggerSetScriptSourceResponse {
   DebuggerSetScriptSourceResponse(Map map) {
-    callFrames = map['callFrames'];
+    callFrames = map.containsKey('callFrames')
+        ? map['callFrames'].map((m) => new CallFrame(m)).toList()
+        : null;
     stackChanged = map['stackChanged'];
-    asyncStackTrace = map['asyncStackTrace'];
-    asyncStackTraceId = map['asyncStackTraceId'];
-    exceptionDetails = map['exceptionDetails'];
+    asyncStackTrace = map.containsKey('asyncStackTrace')
+        ? new StackTrace(map['asyncStackTrace'])
+        : null;
+    asyncStackTraceId = map.containsKey('asyncStackTraceId')
+        ? new StackTraceId(map['asyncStackTraceId'])
+        : null;
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   List<CallFrame> callFrames;
@@ -3937,25 +4501,226 @@ class DebuggerSetScriptSourceResponse {
   ExceptionDetails exceptionDetails;
 }
 
+/// Fired on `Debugger.breakpointResolved`.
+class DebuggerBreakpointResolvedEvent {
+  DebuggerBreakpointResolvedEvent(Map map) {
+    breakpointId = map['breakpointId'];
+    location =
+        map.containsKey('location') ? new Location(map['location']) : null;
+  }
+
+/** Breakpoint unique identifier. */
+  String breakpointId;
+
+/** Actual breakpoint location. */
+  Location location;
+}
+
+/// Fired on `Debugger.paused`.
+class DebuggerPausedEvent {
+  DebuggerPausedEvent(Map map) {
+    callFrames = map.containsKey('callFrames')
+        ? map['callFrames'].map((m) => new CallFrame(m)).toList()
+        : null;
+    reason = map['reason'];
+    data = map['data'];
+    hitBreakpoints = map.containsKey('hitBreakpoints')
+        ? new List(map['hitBreakpoints'])
+        : null;
+    asyncStackTrace = map.containsKey('asyncStackTrace')
+        ? new StackTrace(map['asyncStackTrace'])
+        : null;
+    asyncStackTraceId = map.containsKey('asyncStackTraceId')
+        ? new StackTraceId(map['asyncStackTraceId'])
+        : null;
+    asyncCallStackTraceId = map.containsKey('asyncCallStackTraceId')
+        ? new StackTraceId(map['asyncCallStackTraceId'])
+        : null;
+  }
+
+/** Call stack the virtual machine stopped on. */
+  List<CallFrame> callFrames;
+
+/** Pause reason. */
+  String reason;
+
+/** Object containing break-specific auxiliary properties. */
+  Map<String, dynamic> data;
+
+/** Hit breakpoints IDs */
+  List hitBreakpoints;
+
+/** Async stack trace, if any. */
+  StackTrace asyncStackTrace;
+
+/** Async stack trace, if any. */
+  StackTraceId asyncStackTraceId;
+
+/** Just scheduled async call will have this stack trace as parent stack during async execution.
+This field is available only after `Debugger.stepInto` call with `breakOnAsynCall` flag. */
+  StackTraceId asyncCallStackTraceId;
+}
+
+/// Fired on `Debugger.resumed`.
+class DebuggerResumedEvent {
+  DebuggerResumedEvent(Map map) {}
+}
+
+/// Fired on `Debugger.scriptFailedToParse`.
+class DebuggerScriptFailedToParseEvent {
+  DebuggerScriptFailedToParseEvent(Map map) {
+    scriptId = map['scriptId'];
+    url = map['url'];
+    startLine = map['startLine'];
+    startColumn = map['startColumn'];
+    endLine = map['endLine'];
+    endColumn = map['endColumn'];
+    executionContextId = map['executionContextId'];
+    hash = map['hash'];
+    executionContextAuxData = map['executionContextAuxData'];
+    sourceMapURL = map['sourceMapURL'];
+    hasSourceURL = map['hasSourceURL'];
+    isModule = map['isModule'];
+    length = map['length'];
+    stackTrace = map.containsKey('stackTrace')
+        ? new StackTrace(map['stackTrace'])
+        : null;
+  }
+
+/** Identifier of the script parsed. */
+  String scriptId;
+
+/** URL or name of the script parsed (if any). */
+  String url;
+
+/** Line offset of the script within the resource with given URL (for script tags). */
+  int startLine;
+
+/** Column offset of the script within the resource with given URL. */
+  int startColumn;
+
+/** Last line of the script. */
+  int endLine;
+
+/** Length of the last line of the script. */
+  int endColumn;
+
+/** Specifies script creation context. */
+  int executionContextId;
+
+/** Content hash of the script. */
+  String hash;
+
+/** Embedder-specific auxiliary data. */
+  Map<String, dynamic> executionContextAuxData;
+
+/** URL of source map associated with script (if any). */
+  String sourceMapURL;
+
+/** True, if this script has sourceURL. */
+  bool hasSourceURL;
+
+/** True, if this script is ES6 module. */
+  bool isModule;
+
+/** This script length. */
+  int length;
+
+/** JavaScript top stack frame of where the script parsed event was triggered if available. */
+  StackTrace stackTrace;
+}
+
+/// Fired on `Debugger.scriptParsed`.
+class DebuggerScriptParsedEvent {
+  DebuggerScriptParsedEvent(Map map) {
+    scriptId = map['scriptId'];
+    url = map['url'];
+    startLine = map['startLine'];
+    startColumn = map['startColumn'];
+    endLine = map['endLine'];
+    endColumn = map['endColumn'];
+    executionContextId = map['executionContextId'];
+    hash = map['hash'];
+    executionContextAuxData = map['executionContextAuxData'];
+    isLiveEdit = map['isLiveEdit'];
+    sourceMapURL = map['sourceMapURL'];
+    hasSourceURL = map['hasSourceURL'];
+    isModule = map['isModule'];
+    length = map['length'];
+    stackTrace = map.containsKey('stackTrace')
+        ? new StackTrace(map['stackTrace'])
+        : null;
+  }
+
+/** Identifier of the script parsed. */
+  String scriptId;
+
+/** URL or name of the script parsed (if any). */
+  String url;
+
+/** Line offset of the script within the resource with given URL (for script tags). */
+  int startLine;
+
+/** Column offset of the script within the resource with given URL. */
+  int startColumn;
+
+/** Last line of the script. */
+  int endLine;
+
+/** Length of the last line of the script. */
+  int endColumn;
+
+/** Specifies script creation context. */
+  int executionContextId;
+
+/** Content hash of the script. */
+  String hash;
+
+/** Embedder-specific auxiliary data. */
+  Map<String, dynamic> executionContextAuxData;
+
+/** True, if this script is generated as a result of the live edit operation. */
+  bool isLiveEdit;
+
+/** URL of source map associated with script (if any). */
+  String sourceMapURL;
+
+/** True, if this script has sourceURL. */
+  bool hasSourceURL;
+
+/** True, if this script is ES6 module. */
+  bool isModule;
+
+/** This script length. */
+  int length;
+
+/** JavaScript top stack frame of where the script parsed event was triggered if available. */
+  StackTrace stackTrace;
+}
+
 class DevToolsDebugger {
   DevToolsDebugger(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onBreakpointResolved =
-      new dart_async.StreamController();
+  dart_async.StreamController<DebuggerBreakpointResolvedEvent>
+      _onBreakpointResolved = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onPaused = new dart_async.StreamController();
+  dart_async.StreamController<DebuggerPausedEvent> _onPaused =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onResumed = new dart_async.StreamController();
+  dart_async.StreamController<DebuggerResumedEvent> _onResumed =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onScriptFailedToParse =
-      new dart_async.StreamController();
+  dart_async.StreamController<DebuggerScriptFailedToParseEvent>
+      _onScriptFailedToParse = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onScriptParsed =
-      new dart_async.StreamController();
+  dart_async.StreamController<DebuggerScriptParsedEvent> _onScriptParsed =
+      new dart_async.StreamController.broadcast();
 
 /** Continues execution until specific location is reached. */
+/** location:[Location] Location to continue to. */
+/** targetCallFrames:[String]  */
   dart_async.Future continueToLocation(
       {Location location, String targetCallFrames}) {
     var params = {};
@@ -3982,6 +4747,17 @@ enabled until the result for this command is received. */
   }
 
 /** Evaluates expression on a given call frame. */
+/** callFrameId:[String] Call frame identifier to evaluate on. */
+/** expression:[String] Expression to evaluate. */
+/** objectGroup:[String] String object group name to put result into (allows rapid releasing resulting object handles
+using `releaseObjectGroup`). */
+/** includeCommandLineAPI:[bool] Specifies whether command line API should be available to the evaluated expression, defaults
+to false. */
+/** silent:[bool] In silent mode exceptions thrown during evaluation are not reported and do not pause
+execution. Overrides `setPauseOnException` state. */
+/** returnByValue:[bool] Whether the result is expected to be a JSON object that should be sent by value. */
+/** generatePreview:[bool] Whether preview should be generated for the result. */
+/** throwOnSideEffect:[bool] Whether to throw an exception if side effect cannot be ruled out during evaluation. */
   dart_async.Future<DebuggerEvaluateOnCallFrameResponse> evaluateOnCallFrame(
       {String callFrameId,
       String expression,
@@ -4017,6 +4793,10 @@ enabled until the result for this command is received. */
 
 /** Returns possible locations for breakpoint. scriptId in start and end range locations should be
 the same. */
+/** start:[Location] Start of range to search possible breakpoint locations in. */
+/** end:[Location] End of range to search possible breakpoint locations in (excluding). When not specified, end
+of scripts is used as end of range. */
+/** restrictToFunction:[bool] Only consider locations which are in the same (non-nested) function as start. */
   dart_async.Future<DebuggerGetPossibleBreakpointsResponse>
       getPossibleBreakpoints(
           {Location start, Location end, bool restrictToFunction}) {
@@ -4035,6 +4815,7 @@ the same. */
   }
 
 /** Returns source for the script with given id. */
+/** scriptId:[String] Id of the script to get source for. */
   dart_async.Future<DebuggerGetScriptSourceResponse> getScriptSource(
       {String scriptId}) {
     var params = {};
@@ -4046,6 +4827,7 @@ the same. */
   }
 
 /** Returns stack trace with given `stackTraceId`. */
+/** stackTraceId:[StackTraceId]  */
   dart_async.Future<DebuggerGetStackTraceResponse> getStackTrace(
       {StackTraceId stackTraceId}) {
     var params = {};
@@ -4063,6 +4845,7 @@ the same. */
   }
 
 /**  */
+/** parentStackTraceId:[StackTraceId] Debugger will pause when async call with given stack trace is started. */
   dart_async.Future pauseOnAsyncCall({StackTraceId parentStackTraceId}) {
     var params = {};
     if (parentStackTraceId != null)
@@ -4072,6 +4855,7 @@ the same. */
   }
 
 /** Removes JavaScript breakpoint. */
+/** breakpointId:[String]  */
   dart_async.Future removeBreakpoint({String breakpointId}) {
     var params = {};
     if (breakpointId != null) params['breakpointId'] = breakpointId;
@@ -4080,6 +4864,7 @@ the same. */
   }
 
 /** Restarts particular call frame from the beginning. */
+/** callFrameId:[String] Call frame identifier to evaluate on. */
   dart_async.Future<DebuggerRestartFrameResponse> restartFrame(
       {String callFrameId}) {
     var params = {};
@@ -4106,6 +4891,10 @@ task were scheduled or another scheduleStepIntoAsync was called. */
   }
 
 /** Searches for given string in script content. */
+/** scriptId:[String] Id of the script to search in. */
+/** query:[String] String to search for. */
+/** caseSensitive:[bool] If true, search is case sensitive. */
+/** isRegex:[bool] If true, treats string parameter as regex. */
   dart_async.Future<DebuggerSearchInContentResponse> searchInContent(
       {String scriptId, String query, bool caseSensitive, bool isRegex}) {
     var params = {};
@@ -4123,6 +4912,8 @@ task were scheduled or another scheduleStepIntoAsync was called. */
   }
 
 /** Enables or disables async call stacks tracking. */
+/** maxDepth:[int] Maximum depth of async call stacks. Setting to `0` will effectively disable collecting async
+call stacks (default). */
   dart_async.Future setAsyncCallStackDepth({int maxDepth}) {
     var params = {};
     if (maxDepth != null) params['maxDepth'] = maxDepth;
@@ -4133,6 +4924,7 @@ task were scheduled or another scheduleStepIntoAsync was called. */
 /** Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in
 scripts with url matching one of the patterns. VM will try to leave blackboxed script by
 performing 'step in' several times, finally resorting to 'step out' if unsuccessful. */
+/** patterns:[List] Array of regexps that will be used to check script url for blackbox state. */
   dart_async.Future setBlackboxPatterns({List patterns}) {
     var params = {};
     if (patterns != null) params['patterns'] = patterns;
@@ -4144,6 +4936,8 @@ performing 'step in' several times, finally resorting to 'step out' if unsuccess
 scripts by performing 'step in' several times, finally resorting to 'step out' if unsuccessful.
 Positions array contains positions where blackbox state is changed. First interval isn't
 blackboxed. Array should be sorted. */
+/** scriptId:[String] Id of the script. */
+/** positions:[List]  */
   dart_async.Future setBlackboxedRanges(
       {String scriptId, List<ScriptPosition> positions}) {
     var params = {};
@@ -4155,6 +4949,9 @@ blackboxed. Array should be sorted. */
   }
 
 /** Sets JavaScript breakpoint at a given location. */
+/** location:[Location] Location to set breakpoint in. */
+/** condition:[String] Expression to use as a breakpoint condition. When specified, debugger will only stop on the
+breakpoint if this expression evaluates to true. */
   dart_async.Future<DebuggerSetBreakpointResponse> setBreakpoint(
       {Location location, String condition}) {
     var params = {};
@@ -4171,6 +4968,14 @@ blackboxed. Array should be sorted. */
 command is issued, all existing parsed scripts will have breakpoints resolved and returned in
 `locations` property. Further matching script parsing will result in subsequent
 `breakpointResolved` events issued. This logical breakpoint will survive page reloads. */
+/** lineNumber:[int] Line number to set breakpoint at. */
+/** url:[String] URL of the resources to set breakpoint on. */
+/** urlRegex:[String] Regex pattern for the URLs of the resources to set breakpoints on. Either `url` or
+`urlRegex` must be specified. */
+/** scriptHash:[String] Script hash of the resources to set breakpoint on. */
+/** columnNumber:[int] Offset in the line to set breakpoint at. */
+/** condition:[String] Expression to use as a breakpoint condition. When specified, debugger will only stop on the
+breakpoint if this expression evaluates to true. */
   dart_async.Future<DebuggerSetBreakpointByUrlResponse> setBreakpointByUrl(
       {int lineNumber,
       String url,
@@ -4197,6 +5002,7 @@ command is issued, all existing parsed scripts will have breakpoints resolved an
   }
 
 /** Activates / deactivates all breakpoints on the page. */
+/** active:[bool] New value for breakpoints active state. */
   dart_async.Future setBreakpointsActive({bool active}) {
     var params = {};
     if (active != null) params['active'] = active;
@@ -4206,6 +5012,7 @@ command is issued, all existing parsed scripts will have breakpoints resolved an
 
 /** Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions or
 no exceptions. Initial pause on exceptions state is `none`. */
+/** state:[String] Pause on exceptions mode. */
   dart_async.Future setPauseOnExceptions({String state}) {
     var params = {};
     if (state != null) params['state'] = state;
@@ -4214,6 +5021,7 @@ no exceptions. Initial pause on exceptions state is `none`. */
   }
 
 /** Changes return value in top frame. Available only at return break position. */
+/** newValue:[CallArgument] New return value. */
   dart_async.Future setReturnValue({CallArgument newValue}) {
     var params = {};
     if (newValue != null) params['newValue'] = newValue;
@@ -4222,6 +5030,10 @@ no exceptions. Initial pause on exceptions state is `none`. */
   }
 
 /** Edits JavaScript source live. */
+/** scriptId:[String] Id of the script to edit. */
+/** scriptSource:[String] New content of the script. */
+/** dryRun:[bool] If true the change will not actually be applied. Dry run may be used to get result
+description without actually modifying the code. */
   dart_async.Future<DebuggerSetScriptSourceResponse> setScriptSource(
       {String scriptId, String scriptSource, bool dryRun}) {
     var params = {};
@@ -4237,6 +5049,7 @@ no exceptions. Initial pause on exceptions state is `none`. */
   }
 
 /** Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc). */
+/** skip:[bool] New value for skip pauses state. */
   dart_async.Future setSkipAllPauses({bool skip}) {
     var params = {};
     if (skip != null) params['skip'] = skip;
@@ -4246,6 +5059,11 @@ no exceptions. Initial pause on exceptions state is `none`. */
 
 /** Changes value of variable in a callframe. Object-based scopes are not supported and must be
 mutated manually. */
+/** scopeNumber:[int] 0-based number of scope as was listed in scope chain. Only 'local', 'closure' and 'catch'
+scope types are allowed. Other scopes could be manipulated manually. */
+/** variableName:[String] Variable name. */
+/** newValue:[CallArgument] New variable value. */
+/** callFrameId:[String] Id of callframe that holds variable. */
   dart_async.Future setVariableValue(
       {int scopeNumber,
       String variableName,
@@ -4264,6 +5082,8 @@ mutated manually. */
   }
 
 /** Steps into the function call. */
+/** breakOnAsyncCall:[bool] Debugger will issue additional Debugger.paused notification if any async task is scheduled
+before next pause. */
   dart_async.Future stepInto({bool breakOnAsyncCall}) {
     var params = {};
     if (breakOnAsyncCall != null) params['breakOnAsyncCall'] = breakOnAsyncCall;
@@ -4283,30 +5103,44 @@ mutated manually. */
     return _devtools.rpc.sendRequest('Debugger.stepOver', params);
   }
 
-/** Fired when breakpoint is resolved to an actual script and location. */
-  dart_async.Stream get onBreakpointResolved => _onBreakpointResolved.stream;
-/** Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria. */
-  dart_async.Stream get onPaused => _onPaused.stream;
-/** Fired when the virtual machine resumed execution. */
-  dart_async.Stream get onResumed => _onResumed.stream;
-/** Fired when virtual machine fails to parse the script. */
-  dart_async.Stream get onScriptFailedToParse => _onScriptFailedToParse.stream;
-/** Fired when virtual machine parses script. This event is also fired for all known and uncollected
+/** Broadcast stream: Fired when breakpoint is resolved to an actual script and location. */
+  dart_async.Stream<DebuggerBreakpointResolvedEvent> get onBreakpointResolved =>
+      _onBreakpointResolved.stream;
+/** Broadcast stream: Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria. */
+  dart_async.Stream<DebuggerPausedEvent> get onPaused => _onPaused.stream;
+/** Broadcast stream: Fired when the virtual machine resumed execution. */
+  dart_async.Stream<DebuggerResumedEvent> get onResumed => _onResumed.stream;
+/** Broadcast stream: Fired when virtual machine fails to parse the script. */
+  dart_async.Stream<DebuggerScriptFailedToParseEvent>
+      get onScriptFailedToParse => _onScriptFailedToParse.stream;
+/** Broadcast stream: Fired when virtual machine parses script. This event is also fired for all known and uncollected
 scripts upon enabling debugger. */
-  dart_async.Stream get onScriptParsed => _onScriptParsed.stream;
+  dart_async.Stream<DebuggerScriptParsedEvent> get onScriptParsed =>
+      _onScriptParsed.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Debugger.breakpointResolved', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Debugger.breakpointResolved',
+        (json_rpc_2.Parameters params) {
+      _onBreakpointResolved
+          .add(new DebuggerBreakpointResolvedEvent(params.asMap));
+    });
 
-    rpc.registerMethod('Debugger.paused', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Debugger.paused', (json_rpc_2.Parameters params) {
+      _onPaused.add(new DebuggerPausedEvent(params.asMap));
+    });
 
-    rpc.registerMethod('Debugger.resumed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Debugger.resumed', (json_rpc_2.Parameters params) {
+      _onResumed.add(new DebuggerResumedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Debugger.scriptFailedToParse', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Debugger.scriptFailedToParse',
+        (json_rpc_2.Parameters params) {
+      _onScriptFailedToParse
+          .add(new DebuggerScriptFailedToParseEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Debugger.scriptParsed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Debugger.scriptParsed', (json_rpc_2.Parameters params) {
+      _onScriptParsed.add(new DebuggerScriptParsedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -4328,7 +5162,7 @@ class HeapProfilerGetHeapObjectIdResponse {
 
 class HeapProfilerGetObjectByHeapObjectIdResponse {
   HeapProfilerGetObjectByHeapObjectIdResponse(Map map) {
-    result = map['result'];
+    result = map.containsKey('result') ? new RemoteObject(map['result']) : null;
   }
 
   RemoteObject result;
@@ -4336,7 +5170,9 @@ class HeapProfilerGetObjectByHeapObjectIdResponse {
 
 class HeapProfilerGetSamplingProfileResponse {
   HeapProfilerGetSamplingProfileResponse(Map map) {
-    profile = map['profile'];
+    profile = map.containsKey('profile')
+        ? new SamplingHeapProfile(map['profile'])
+        : null;
   }
 
   SamplingHeapProfile profile;
@@ -4344,10 +5180,72 @@ class HeapProfilerGetSamplingProfileResponse {
 
 class HeapProfilerStopSamplingResponse {
   HeapProfilerStopSamplingResponse(Map map) {
-    profile = map['profile'];
+    profile = map.containsKey('profile')
+        ? new SamplingHeapProfile(map['profile'])
+        : null;
   }
 
   SamplingHeapProfile profile;
+}
+
+/// Fired on `HeapProfiler.addHeapSnapshotChunk`.
+class HeapProfilerAddHeapSnapshotChunkEvent {
+  HeapProfilerAddHeapSnapshotChunkEvent(Map map) {
+    chunk = map['chunk'];
+  }
+
+/**  */
+  String chunk;
+}
+
+/// Fired on `HeapProfiler.heapStatsUpdate`.
+class HeapProfilerHeapStatsUpdateEvent {
+  HeapProfilerHeapStatsUpdateEvent(Map map) {
+    statsUpdate =
+        map.containsKey('statsUpdate') ? new List(map['statsUpdate']) : null;
+  }
+
+/** An array of triplets. Each triplet describes a fragment. The first integer is the fragment
+index, the second integer is a total count of objects for the fragment, the third integer is
+a total size of the objects for the fragment. */
+  List statsUpdate;
+}
+
+/// Fired on `HeapProfiler.lastSeenObjectId`.
+class HeapProfilerLastSeenObjectIdEvent {
+  HeapProfilerLastSeenObjectIdEvent(Map map) {
+    lastSeenObjectId = map['lastSeenObjectId'];
+    timestamp = map['timestamp'];
+  }
+
+/**  */
+  int lastSeenObjectId;
+
+/**  */
+  num timestamp;
+}
+
+/// Fired on `HeapProfiler.reportHeapSnapshotProgress`.
+class HeapProfilerReportHeapSnapshotProgressEvent {
+  HeapProfilerReportHeapSnapshotProgressEvent(Map map) {
+    done = map['done'];
+    total = map['total'];
+    finished = map['finished'];
+  }
+
+/**  */
+  int done;
+
+/**  */
+  int total;
+
+/**  */
+  bool finished;
+}
+
+/// Fired on `HeapProfiler.resetProfiles`.
+class HeapProfilerResetProfilesEvent {
+  HeapProfilerResetProfilesEvent(Map map) {}
 }
 
 class DevToolsHeapProfiler {
@@ -4355,23 +5253,25 @@ class DevToolsHeapProfiler {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onAddHeapSnapshotChunk =
-      new dart_async.StreamController();
+  dart_async.StreamController<HeapProfilerAddHeapSnapshotChunkEvent>
+      _onAddHeapSnapshotChunk = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onHeapStatsUpdate =
-      new dart_async.StreamController();
+  dart_async.StreamController<HeapProfilerHeapStatsUpdateEvent>
+      _onHeapStatsUpdate = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onLastSeenObjectId =
-      new dart_async.StreamController();
+  dart_async.StreamController<HeapProfilerLastSeenObjectIdEvent>
+      _onLastSeenObjectId = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onReportHeapSnapshotProgress =
-      new dart_async.StreamController();
+  dart_async.StreamController<HeapProfilerReportHeapSnapshotProgressEvent>
+      _onReportHeapSnapshotProgress =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onResetProfiles =
-      new dart_async.StreamController();
+  dart_async.StreamController<HeapProfilerResetProfilesEvent> _onResetProfiles =
+      new dart_async.StreamController.broadcast();
 
 /** Enables console to refer to the node with given id via $x (see Command Line API for more details
 $x functions). */
+/** heapObjectId:[String] Heap snapshot object id to be accessible by means of $x command line API. */
   dart_async.Future addInspectedHeapObject({String heapObjectId}) {
     var params = {};
     if (heapObjectId != null) params['heapObjectId'] = heapObjectId;
@@ -4399,6 +5299,7 @@ $x functions). */
   }
 
 /**  */
+/** objectId:[String] Identifier of the object to get heap object id for. */
   dart_async.Future<HeapProfilerGetHeapObjectIdResponse> getHeapObjectId(
       {String objectId}) {
     var params = {};
@@ -4410,6 +5311,8 @@ $x functions). */
   }
 
 /**  */
+/** objectId:[String]  */
+/** objectGroup:[String] Symbolic group name that can be used to release multiple objects. */
   dart_async.Future<HeapProfilerGetObjectByHeapObjectIdResponse>
       getObjectByHeapObjectId({String objectId, String objectGroup}) {
     var params = {};
@@ -4434,6 +5337,8 @@ $x functions). */
   }
 
 /**  */
+/** samplingInterval:[num] Average sample interval in bytes. Poisson distribution is used for the intervals. The
+default value is 32768 bytes. */
   dart_async.Future startSampling({num samplingInterval}) {
     var params = {};
     if (samplingInterval != null) params['samplingInterval'] = samplingInterval;
@@ -4442,6 +5347,7 @@ $x functions). */
   }
 
 /**  */
+/** trackAllocations:[bool]  */
   dart_async.Future startTrackingHeapObjects({bool trackAllocations}) {
     var params = {};
     if (trackAllocations != null) params['trackAllocations'] = trackAllocations;
@@ -4459,6 +5365,8 @@ $x functions). */
   }
 
 /**  */
+/** reportProgress:[bool] If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken
+when the tracking is stopped. */
   dart_async.Future stopTrackingHeapObjects({bool reportProgress}) {
     var params = {};
     if (reportProgress != null) params['reportProgress'] = reportProgress;
@@ -4468,6 +5376,7 @@ $x functions). */
   }
 
 /**  */
+/** reportProgress:[bool] If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken. */
   dart_async.Future takeHeapSnapshot({bool reportProgress}) {
     var params = {};
     if (reportProgress != null) params['reportProgress'] = reportProgress;
@@ -4475,35 +5384,52 @@ $x functions). */
     return _devtools.rpc.sendRequest('HeapProfiler.takeHeapSnapshot', params);
   }
 
-/**  */
-  dart_async.Stream get onAddHeapSnapshotChunk =>
-      _onAddHeapSnapshotChunk.stream;
-/** If heap objects tracking has been started then backend may send update for one or more fragments */
-  dart_async.Stream get onHeapStatsUpdate => _onHeapStatsUpdate.stream;
-/** If heap objects tracking has been started then backend regularly sends a current value for last
+/** Broadcast stream:  */
+  dart_async.Stream<HeapProfilerAddHeapSnapshotChunkEvent>
+      get onAddHeapSnapshotChunk => _onAddHeapSnapshotChunk.stream;
+/** Broadcast stream: If heap objects tracking has been started then backend may send update for one or more fragments */
+  dart_async.Stream<HeapProfilerHeapStatsUpdateEvent> get onHeapStatsUpdate =>
+      _onHeapStatsUpdate.stream;
+/** Broadcast stream: If heap objects tracking has been started then backend regularly sends a current value for last
 seen object id and corresponding timestamp. If the were changes in the heap since last event
 then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event. */
-  dart_async.Stream get onLastSeenObjectId => _onLastSeenObjectId.stream;
-/**  */
-  dart_async.Stream get onReportHeapSnapshotProgress =>
-      _onReportHeapSnapshotProgress.stream;
-/**  */
-  dart_async.Stream get onResetProfiles => _onResetProfiles.stream;
+  dart_async.Stream<HeapProfilerLastSeenObjectIdEvent> get onLastSeenObjectId =>
+      _onLastSeenObjectId.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<HeapProfilerReportHeapSnapshotProgressEvent>
+      get onReportHeapSnapshotProgress => _onReportHeapSnapshotProgress.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<HeapProfilerResetProfilesEvent> get onResetProfiles =>
+      _onResetProfiles.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'HeapProfiler.addHeapSnapshotChunk', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('HeapProfiler.addHeapSnapshotChunk',
+        (json_rpc_2.Parameters params) {
+      _onAddHeapSnapshotChunk
+          .add(new HeapProfilerAddHeapSnapshotChunkEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'HeapProfiler.heapStatsUpdate', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('HeapProfiler.heapStatsUpdate',
+        (json_rpc_2.Parameters params) {
+      _onHeapStatsUpdate
+          .add(new HeapProfilerHeapStatsUpdateEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'HeapProfiler.lastSeenObjectId', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('HeapProfiler.lastSeenObjectId',
+        (json_rpc_2.Parameters params) {
+      _onLastSeenObjectId
+          .add(new HeapProfilerLastSeenObjectIdEvent(params.asMap));
+    });
 
     rpc.registerMethod('HeapProfiler.reportHeapSnapshotProgress',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onReportHeapSnapshotProgress
+          .add(new HeapProfilerReportHeapSnapshotProgressEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'HeapProfiler.resetProfiles', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('HeapProfiler.resetProfiles',
+        (json_rpc_2.Parameters params) {
+      _onResetProfiles.add(new HeapProfilerResetProfilesEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -4517,7 +5443,9 @@ then one or more heapStatsUpdate events will be sent before a new lastSeenObject
 
 class ProfilerGetBestEffortCoverageResponse {
   ProfilerGetBestEffortCoverageResponse(Map map) {
-    result = map['result'];
+    result = map.containsKey('result')
+        ? map['result'].map((m) => new ScriptCoverage(m)).toList()
+        : null;
   }
 
   List<ScriptCoverage> result;
@@ -4525,7 +5453,7 @@ class ProfilerGetBestEffortCoverageResponse {
 
 class ProfilerStopResponse {
   ProfilerStopResponse(Map map) {
-    profile = map['profile'];
+    profile = map.containsKey('profile') ? new Profile(map['profile']) : null;
   }
 
   Profile profile;
@@ -4533,7 +5461,9 @@ class ProfilerStopResponse {
 
 class ProfilerTakePreciseCoverageResponse {
   ProfilerTakePreciseCoverageResponse(Map map) {
-    result = map['result'];
+    result = map.containsKey('result')
+        ? map['result'].map((m) => new ScriptCoverage(m)).toList()
+        : null;
   }
 
   List<ScriptCoverage> result;
@@ -4541,10 +5471,54 @@ class ProfilerTakePreciseCoverageResponse {
 
 class ProfilerTakeTypeProfileResponse {
   ProfilerTakeTypeProfileResponse(Map map) {
-    result = map['result'];
+    result = map.containsKey('result')
+        ? map['result'].map((m) => new ScriptTypeProfile(m)).toList()
+        : null;
   }
 
   List<ScriptTypeProfile> result;
+}
+
+/// Fired on `Profiler.consoleProfileFinished`.
+class ProfilerConsoleProfileFinishedEvent {
+  ProfilerConsoleProfileFinishedEvent(Map map) {
+    id = map['id'];
+    location =
+        map.containsKey('location') ? new Location(map['location']) : null;
+    profile = map.containsKey('profile') ? new Profile(map['profile']) : null;
+    title = map['title'];
+  }
+
+/**  */
+  String id;
+
+/** Location of console.profileEnd(). */
+  Location location;
+
+/**  */
+  Profile profile;
+
+/** Profile title passed as an argument to console.profile(). */
+  String title;
+}
+
+/// Fired on `Profiler.consoleProfileStarted`.
+class ProfilerConsoleProfileStartedEvent {
+  ProfilerConsoleProfileStartedEvent(Map map) {
+    id = map['id'];
+    location =
+        map.containsKey('location') ? new Location(map['location']) : null;
+    title = map['title'];
+  }
+
+/**  */
+  String id;
+
+/** Location of console.profile(). */
+  Location location;
+
+/** Profile title passed as an argument to console.profile(). */
+  String title;
 }
 
 class DevToolsProfiler {
@@ -4552,11 +5526,11 @@ class DevToolsProfiler {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onConsoleProfileFinished =
-      new dart_async.StreamController();
+  dart_async.StreamController<ProfilerConsoleProfileFinishedEvent>
+      _onConsoleProfileFinished = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onConsoleProfileStarted =
-      new dart_async.StreamController();
+  dart_async.StreamController<ProfilerConsoleProfileStartedEvent>
+      _onConsoleProfileStarted = new dart_async.StreamController.broadcast();
 
 /**  */
   dart_async.Future disable() {
@@ -4582,6 +5556,7 @@ garbage collection. */
   }
 
 /** Changes CPU profiler sampling interval. Must be called before CPU profiles recording started. */
+/** interval:[int] New sampling interval in microseconds. */
   dart_async.Future setSamplingInterval({int interval}) {
     var params = {};
     if (interval != null) params['interval'] = interval;
@@ -4598,6 +5573,8 @@ garbage collection. */
 /** Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code
 coverage may be incomplete. Enabling prevents running optimized code and resets execution
 counters. */
+/** callCount:[bool] Collect accurate call counts beyond simple 'covered' or 'not covered'. */
+/** detailed:[bool] Collect block-based coverage. */
   dart_async.Future startPreciseCoverage({bool callCount, bool detailed}) {
     var params = {};
     if (callCount != null) params['callCount'] = callCount;
@@ -4651,18 +5628,24 @@ coverage needs to have started. */
         .then((response) => new ProfilerTakeTypeProfileResponse(response));
   }
 
-/**  */
-  dart_async.Stream get onConsoleProfileFinished =>
-      _onConsoleProfileFinished.stream;
-/** Sent when new profile recording is started using console.profile() call. */
-  dart_async.Stream get onConsoleProfileStarted =>
-      _onConsoleProfileStarted.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<ProfilerConsoleProfileFinishedEvent>
+      get onConsoleProfileFinished => _onConsoleProfileFinished.stream;
+/** Broadcast stream: Sent when new profile recording is started using console.profile() call. */
+  dart_async.Stream<ProfilerConsoleProfileStartedEvent>
+      get onConsoleProfileStarted => _onConsoleProfileStarted.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Profiler.consoleProfileFinished', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Profiler.consoleProfileFinished',
+        (json_rpc_2.Parameters params) {
+      _onConsoleProfileFinished
+          .add(new ProfilerConsoleProfileFinishedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Profiler.consoleProfileStarted', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Profiler.consoleProfileStarted',
+        (json_rpc_2.Parameters params) {
+      _onConsoleProfileStarted
+          .add(new ProfilerConsoleProfileStartedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -4673,8 +5656,10 @@ coverage needs to have started. */
 
 class RuntimeAwaitPromiseResponse {
   RuntimeAwaitPromiseResponse(Map map) {
-    result = map['result'];
-    exceptionDetails = map['exceptionDetails'];
+    result = map.containsKey('result') ? new RemoteObject(map['result']) : null;
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   RemoteObject result;
@@ -4684,8 +5669,10 @@ class RuntimeAwaitPromiseResponse {
 
 class RuntimeCallFunctionOnResponse {
   RuntimeCallFunctionOnResponse(Map map) {
-    result = map['result'];
-    exceptionDetails = map['exceptionDetails'];
+    result = map.containsKey('result') ? new RemoteObject(map['result']) : null;
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   RemoteObject result;
@@ -4696,7 +5683,9 @@ class RuntimeCallFunctionOnResponse {
 class RuntimeCompileScriptResponse {
   RuntimeCompileScriptResponse(Map map) {
     scriptId = map['scriptId'];
-    exceptionDetails = map['exceptionDetails'];
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   String scriptId;
@@ -4706,8 +5695,10 @@ class RuntimeCompileScriptResponse {
 
 class RuntimeEvaluateResponse {
   RuntimeEvaluateResponse(Map map) {
-    result = map['result'];
-    exceptionDetails = map['exceptionDetails'];
+    result = map.containsKey('result') ? new RemoteObject(map['result']) : null;
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   RemoteObject result;
@@ -4717,9 +5708,17 @@ class RuntimeEvaluateResponse {
 
 class RuntimeGetPropertiesResponse {
   RuntimeGetPropertiesResponse(Map map) {
-    result = map['result'];
-    internalProperties = map['internalProperties'];
-    exceptionDetails = map['exceptionDetails'];
+    result = map.containsKey('result')
+        ? map['result'].map((m) => new PropertyDescriptor(m)).toList()
+        : null;
+    internalProperties = map.containsKey('internalProperties')
+        ? map['internalProperties']
+            .map((m) => new InternalPropertyDescriptor(m))
+            .toList()
+        : null;
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   List<PropertyDescriptor> result;
@@ -4731,7 +5730,7 @@ class RuntimeGetPropertiesResponse {
 
 class RuntimeGlobalLexicalScopeNamesResponse {
   RuntimeGlobalLexicalScopeNamesResponse(Map map) {
-    names = map['names'];
+    names = map.containsKey('names') ? new List(map['names']) : null;
   }
 
   List names;
@@ -4739,7 +5738,8 @@ class RuntimeGlobalLexicalScopeNamesResponse {
 
 class RuntimeQueryObjectsResponse {
   RuntimeQueryObjectsResponse(Map map) {
-    objects = map['objects'];
+    objects =
+        map.containsKey('objects') ? new RemoteObject(map['objects']) : null;
   }
 
   RemoteObject objects;
@@ -4747,8 +5747,10 @@ class RuntimeQueryObjectsResponse {
 
 class RuntimeRunScriptResponse {
   RuntimeRunScriptResponse(Map map) {
-    result = map['result'];
-    exceptionDetails = map['exceptionDetails'];
+    result = map.containsKey('result') ? new RemoteObject(map['result']) : null;
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
   }
 
   RemoteObject result;
@@ -4756,33 +5758,144 @@ class RuntimeRunScriptResponse {
   ExceptionDetails exceptionDetails;
 }
 
+/// Fired on `Runtime.consoleAPICalled`.
+class RuntimeConsoleAPICalledEvent {
+  RuntimeConsoleAPICalledEvent(Map map) {
+    type = map['type'];
+    args = map.containsKey('args')
+        ? map['args'].map((m) => new RemoteObject(m)).toList()
+        : null;
+    executionContextId = map['executionContextId'];
+    timestamp = map['timestamp'];
+    stackTrace = map.containsKey('stackTrace')
+        ? new StackTrace(map['stackTrace'])
+        : null;
+    context = map['context'];
+  }
+
+/** Type of the call. */
+  String type;
+
+/** Call arguments. */
+  List<RemoteObject> args;
+
+/** Identifier of the context where the call was made. */
+  int executionContextId;
+
+/** Call timestamp. */
+  num timestamp;
+
+/** Stack trace captured when the call was made. */
+  StackTrace stackTrace;
+
+/** Console context descriptor for calls on non-default console context (not console.*):
+'anonymous#unique-logger-id' for call on unnamed context, 'name#unique-logger-id' for call
+on named context. */
+  String context;
+}
+
+/// Fired on `Runtime.exceptionRevoked`.
+class RuntimeExceptionRevokedEvent {
+  RuntimeExceptionRevokedEvent(Map map) {
+    reason = map['reason'];
+    exceptionId = map['exceptionId'];
+  }
+
+/** Reason describing why exception was revoked. */
+  String reason;
+
+/** The id of revoked exception, as reported in `exceptionThrown`. */
+  int exceptionId;
+}
+
+/// Fired on `Runtime.exceptionThrown`.
+class RuntimeExceptionThrownEvent {
+  RuntimeExceptionThrownEvent(Map map) {
+    timestamp = map['timestamp'];
+    exceptionDetails = map.containsKey('exceptionDetails')
+        ? new ExceptionDetails(map['exceptionDetails'])
+        : null;
+  }
+
+/** Timestamp of the exception. */
+  num timestamp;
+
+/**  */
+  ExceptionDetails exceptionDetails;
+}
+
+/// Fired on `Runtime.executionContextCreated`.
+class RuntimeExecutionContextCreatedEvent {
+  RuntimeExecutionContextCreatedEvent(Map map) {
+    context = map.containsKey('context')
+        ? new ExecutionContextDescription(map['context'])
+        : null;
+  }
+
+/** A newly created execution context. */
+  ExecutionContextDescription context;
+}
+
+/// Fired on `Runtime.executionContextDestroyed`.
+class RuntimeExecutionContextDestroyedEvent {
+  RuntimeExecutionContextDestroyedEvent(Map map) {
+    executionContextId = map['executionContextId'];
+  }
+
+/** Id of the destroyed context */
+  int executionContextId;
+}
+
+/// Fired on `Runtime.executionContextsCleared`.
+class RuntimeExecutionContextsClearedEvent {
+  RuntimeExecutionContextsClearedEvent(Map map) {}
+}
+
+/// Fired on `Runtime.inspectRequested`.
+class RuntimeInspectRequestedEvent {
+  RuntimeInspectRequestedEvent(Map map) {
+    object = map.containsKey('object') ? new RemoteObject(map['object']) : null;
+    hints = map['hints'];
+  }
+
+/**  */
+  RemoteObject object;
+
+/**  */
+  Map<String, dynamic> hints;
+}
+
 class DevToolsRuntime {
   DevToolsRuntime(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onConsoleAPICalled =
-      new dart_async.StreamController();
+  dart_async.StreamController<RuntimeConsoleAPICalledEvent>
+      _onConsoleAPICalled = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onExceptionRevoked =
-      new dart_async.StreamController();
+  dart_async.StreamController<RuntimeExceptionRevokedEvent>
+      _onExceptionRevoked = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onExceptionThrown =
-      new dart_async.StreamController();
+  dart_async.StreamController<RuntimeExceptionThrownEvent> _onExceptionThrown =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onExecutionContextCreated =
-      new dart_async.StreamController();
+  dart_async.StreamController<RuntimeExecutionContextCreatedEvent>
+      _onExecutionContextCreated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onExecutionContextDestroyed =
-      new dart_async.StreamController();
+  dart_async.StreamController<RuntimeExecutionContextDestroyedEvent>
+      _onExecutionContextDestroyed =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onExecutionContextsCleared =
-      new dart_async.StreamController();
+  dart_async.StreamController<RuntimeExecutionContextsClearedEvent>
+      _onExecutionContextsCleared = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onInspectRequested =
-      new dart_async.StreamController();
+  dart_async.StreamController<RuntimeInspectRequestedEvent>
+      _onInspectRequested = new dart_async.StreamController.broadcast();
 
 /** Add handler to promise with given promise object id. */
+/** promiseObjectId:[String] Identifier of the promise. */
+/** returnByValue:[bool] Whether the result is expected to be a JSON object that should be sent by value. */
+/** generatePreview:[bool] Whether preview should be generated for the result. */
   dart_async.Future<RuntimeAwaitPromiseResponse> awaitPromise(
       {String promiseObjectId, bool returnByValue, bool generatePreview}) {
     var params = {};
@@ -4799,6 +5912,22 @@ class DevToolsRuntime {
 
 /** Calls function with given declaration on the given object. Object group of the result is
 inherited from the target object. */
+/** functionDeclaration:[String] Declaration of the function to call. */
+/** objectId:[String] Identifier of the object to call function on. Either objectId or executionContextId should
+be specified. */
+/** arguments:[List] Call arguments. All call arguments must belong to the same JavaScript world as the target
+object. */
+/** silent:[bool] In silent mode exceptions thrown during evaluation are not reported and do not pause
+execution. Overrides `setPauseOnException` state. */
+/** returnByValue:[bool] Whether the result is expected to be a JSON object which should be sent by value. */
+/** generatePreview:[bool] Whether preview should be generated for the result. */
+/** userGesture:[bool] Whether execution should be treated as initiated by user in the UI. */
+/** awaitPromise:[bool] Whether execution should `await` for resulting value and return once awaited promise is
+resolved. */
+/** executionContextId:[int] Specifies execution context which global object will be used to call function on. Either
+executionContextId or objectId should be specified. */
+/** objectGroup:[String] Symbolic group name that can be used to release multiple objects. If objectGroup is not
+specified and objectId is, objectGroup will be inherited from object. */
   dart_async.Future<RuntimeCallFunctionOnResponse> callFunctionOn(
       {String functionDeclaration,
       String objectId,
@@ -4839,6 +5968,11 @@ inherited from the target object. */
   }
 
 /** Compiles expression. */
+/** expression:[String] Expression to compile. */
+/** sourceURL:[String] Source url to be set for the script. */
+/** persistScript:[bool] Specifies whether the compiled script should be persisted. */
+/** executionContextId:[int] Specifies in which execution context to perform script run. If the parameter is omitted the
+evaluation will be performed in the context of the inspected page. */
   dart_async.Future<RuntimeCompileScriptResponse> compileScript(
       {String expression,
       String sourceURL,
@@ -4880,6 +6014,18 @@ context. */
   }
 
 /** Evaluates expression on global object. */
+/** expression:[String] Expression to evaluate. */
+/** objectGroup:[String] Symbolic group name that can be used to release multiple objects. */
+/** includeCommandLineAPI:[bool] Determines whether Command Line API should be available during the evaluation. */
+/** silent:[bool] In silent mode exceptions thrown during evaluation are not reported and do not pause
+execution. Overrides `setPauseOnException` state. */
+/** contextId:[int] Specifies in which execution context to perform evaluation. If the parameter is omitted the
+evaluation will be performed in the context of the inspected page. */
+/** returnByValue:[bool] Whether the result is expected to be a JSON object that should be sent by value. */
+/** generatePreview:[bool] Whether preview should be generated for the result. */
+/** userGesture:[bool] Whether execution should be treated as initiated by user in the UI. */
+/** awaitPromise:[bool] Whether execution should `await` for resulting value and return once awaited promise is
+resolved. */
   dart_async.Future<RuntimeEvaluateResponse> evaluate(
       {String expression,
       String objectGroup,
@@ -4917,6 +6063,12 @@ context. */
 
 /** Returns properties of a given object. Object group of the result is inherited from the target
 object. */
+/** objectId:[String] Identifier of the object to return properties for. */
+/** ownProperties:[bool] If true, returns properties belonging only to the element itself, not to its prototype
+chain. */
+/** accessorPropertiesOnly:[bool] If true, returns accessor properties (with getter/setter) only; internal properties are not
+returned either. */
+/** generatePreview:[bool] Whether preview should be generated for the results. */
   dart_async.Future<RuntimeGetPropertiesResponse> getProperties(
       {String objectId,
       bool ownProperties,
@@ -4938,6 +6090,7 @@ object. */
   }
 
 /** Returns all let, const and class variables from global scope. */
+/** executionContextId:[int] Specifies in which execution context to lookup global scope variables. */
   dart_async.Future<RuntimeGlobalLexicalScopeNamesResponse>
       globalLexicalScopeNames({int executionContextId}) {
     var params = {};
@@ -4951,6 +6104,7 @@ object. */
   }
 
 /**  */
+/** prototypeObjectId:[String] Identifier of the prototype to return objects for. */
   dart_async.Future<RuntimeQueryObjectsResponse> queryObjects(
       {String prototypeObjectId}) {
     var params = {};
@@ -4963,6 +6117,7 @@ object. */
   }
 
 /** Releases remote object with given id. */
+/** objectId:[String] Identifier of the object to release. */
   dart_async.Future releaseObject({String objectId}) {
     var params = {};
     if (objectId != null) params['objectId'] = objectId;
@@ -4971,6 +6126,7 @@ object. */
   }
 
 /** Releases all remote objects that belong to a given group. */
+/** objectGroup:[String] Symbolic object group name. */
   dart_async.Future releaseObjectGroup({String objectGroup}) {
     var params = {};
     if (objectGroup != null) params['objectGroup'] = objectGroup;
@@ -4985,6 +6141,17 @@ object. */
   }
 
 /** Runs script with given id in a given context. */
+/** scriptId:[String] Id of the script to run. */
+/** executionContextId:[int] Specifies in which execution context to perform script run. If the parameter is omitted the
+evaluation will be performed in the context of the inspected page. */
+/** objectGroup:[String] Symbolic group name that can be used to release multiple objects. */
+/** silent:[bool] In silent mode exceptions thrown during evaluation are not reported and do not pause
+execution. Overrides `setPauseOnException` state. */
+/** includeCommandLineAPI:[bool] Determines whether Command Line API should be available during the evaluation. */
+/** returnByValue:[bool] Whether the result is expected to be a JSON object which should be sent by value. */
+/** generatePreview:[bool] Whether preview should be generated for the result. */
+/** awaitPromise:[bool] Whether execution should `await` for resulting value and return once awaited promise is
+resolved. */
   dart_async.Future<RuntimeRunScriptResponse> runScript(
       {String scriptId,
       int executionContextId,
@@ -5019,6 +6186,7 @@ object. */
   }
 
 /**  */
+/** enabled:[bool]  */
   dart_async.Future setCustomObjectFormatterEnabled({bool enabled}) {
     var params = {};
     if (enabled != null) params['enabled'] = enabled;
@@ -5027,45 +6195,66 @@ object. */
         .sendRequest('Runtime.setCustomObjectFormatterEnabled', params);
   }
 
-/** Issued when console API was called. */
-  dart_async.Stream get onConsoleAPICalled => _onConsoleAPICalled.stream;
-/** Issued when unhandled exception was revoked. */
-  dart_async.Stream get onExceptionRevoked => _onExceptionRevoked.stream;
-/** Issued when exception was thrown and unhandled. */
-  dart_async.Stream get onExceptionThrown => _onExceptionThrown.stream;
-/** Issued when new execution context is created. */
-  dart_async.Stream get onExecutionContextCreated =>
-      _onExecutionContextCreated.stream;
-/** Issued when execution context is destroyed. */
-  dart_async.Stream get onExecutionContextDestroyed =>
-      _onExecutionContextDestroyed.stream;
-/** Issued when all executionContexts were cleared in browser */
-  dart_async.Stream get onExecutionContextsCleared =>
-      _onExecutionContextsCleared.stream;
-/** Issued when object should be inspected (for example, as a result of inspect() command line API
+/** Broadcast stream: Issued when console API was called. */
+  dart_async.Stream<RuntimeConsoleAPICalledEvent> get onConsoleAPICalled =>
+      _onConsoleAPICalled.stream;
+/** Broadcast stream: Issued when unhandled exception was revoked. */
+  dart_async.Stream<RuntimeExceptionRevokedEvent> get onExceptionRevoked =>
+      _onExceptionRevoked.stream;
+/** Broadcast stream: Issued when exception was thrown and unhandled. */
+  dart_async.Stream<RuntimeExceptionThrownEvent> get onExceptionThrown =>
+      _onExceptionThrown.stream;
+/** Broadcast stream: Issued when new execution context is created. */
+  dart_async.Stream<RuntimeExecutionContextCreatedEvent>
+      get onExecutionContextCreated => _onExecutionContextCreated.stream;
+/** Broadcast stream: Issued when execution context is destroyed. */
+  dart_async.Stream<RuntimeExecutionContextDestroyedEvent>
+      get onExecutionContextDestroyed => _onExecutionContextDestroyed.stream;
+/** Broadcast stream: Issued when all executionContexts were cleared in browser */
+  dart_async.Stream<RuntimeExecutionContextsClearedEvent>
+      get onExecutionContextsCleared => _onExecutionContextsCleared.stream;
+/** Broadcast stream: Issued when object should be inspected (for example, as a result of inspect() command line API
 call). */
-  dart_async.Stream get onInspectRequested => _onInspectRequested.stream;
+  dart_async.Stream<RuntimeInspectRequestedEvent> get onInspectRequested =>
+      _onInspectRequested.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Runtime.consoleAPICalled', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Runtime.consoleAPICalled',
+        (json_rpc_2.Parameters params) {
+      _onConsoleAPICalled.add(new RuntimeConsoleAPICalledEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Runtime.exceptionRevoked', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Runtime.exceptionRevoked',
+        (json_rpc_2.Parameters params) {
+      _onExceptionRevoked.add(new RuntimeExceptionRevokedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Runtime.exceptionThrown', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Runtime.exceptionThrown',
+        (json_rpc_2.Parameters params) {
+      _onExceptionThrown.add(new RuntimeExceptionThrownEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Runtime.executionContextCreated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Runtime.executionContextCreated',
+        (json_rpc_2.Parameters params) {
+      _onExecutionContextCreated
+          .add(new RuntimeExecutionContextCreatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Runtime.executionContextDestroyed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Runtime.executionContextDestroyed',
+        (json_rpc_2.Parameters params) {
+      _onExecutionContextDestroyed
+          .add(new RuntimeExecutionContextDestroyedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Runtime.executionContextsCleared', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Runtime.executionContextsCleared',
+        (json_rpc_2.Parameters params) {
+      _onExecutionContextsCleared
+          .add(new RuntimeExecutionContextsClearedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Runtime.inspectRequested', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Runtime.inspectRequested',
+        (json_rpc_2.Parameters params) {
+      _onInspectRequested.add(new RuntimeInspectRequestedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -5081,7 +6270,9 @@ call). */
 
 class SchemaGetDomainsResponse {
   SchemaGetDomainsResponse(Map map) {
-    domains = map['domains'];
+    domains = map.containsKey('domains')
+        ? map['domains'].map((m) => new Domain(m)).toList()
+        : null;
   }
 
   List<Domain> domains;
@@ -5106,7 +6297,9 @@ class DevToolsSchema {
 
 class AccessibilityGetPartialAXTreeResponse {
   AccessibilityGetPartialAXTreeResponse(Map map) {
-    nodes = map['nodes'];
+    nodes = map.containsKey('nodes')
+        ? map['nodes'].map((m) => new AXNode(m)).toList()
+        : null;
   }
 
   List<AXNode> nodes;
@@ -5118,6 +6311,8 @@ class DevToolsAccessibility {
   final ChromeDevToolsBase _devtools;
 
 /** Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists. */
+/** nodeId:[int] ID of node to get the partial accessibility tree for. */
+/** fetchRelatives:[bool] Whether to fetch this nodes ancestors, siblings and children. Defaults to true. */
   dart_async.Future<AccessibilityGetPartialAXTreeResponse> getPartialAXTree(
       {int nodeId, bool fetchRelatives}) {
     var params = {};
@@ -5153,10 +6348,43 @@ class AnimationGetPlaybackRateResponse {
 
 class AnimationResolveAnimationResponse {
   AnimationResolveAnimationResponse(Map map) {
-    remoteObject = map['remoteObject'];
+    remoteObject = map.containsKey('remoteObject')
+        ? new RemoteObject(map['remoteObject'])
+        : null;
   }
 
   RemoteObject remoteObject;
+}
+
+/// Fired on `Animation.animationCanceled`.
+class AnimationAnimationCanceledEvent {
+  AnimationAnimationCanceledEvent(Map map) {
+    id = map['id'];
+  }
+
+/** Id of the animation that was cancelled. */
+  String id;
+}
+
+/// Fired on `Animation.animationCreated`.
+class AnimationAnimationCreatedEvent {
+  AnimationAnimationCreatedEvent(Map map) {
+    id = map['id'];
+  }
+
+/** Id of the animation that was created. */
+  String id;
+}
+
+/// Fired on `Animation.animationStarted`.
+class AnimationAnimationStartedEvent {
+  AnimationAnimationStartedEvent(Map map) {
+    animation =
+        map.containsKey('animation') ? new Animation(map['animation']) : null;
+  }
+
+/** Animation that was started. */
+  Animation animation;
 }
 
 class DevToolsAnimation {
@@ -5164,14 +6392,14 @@ class DevToolsAnimation {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onAnimationCanceled =
-      new dart_async.StreamController();
+  dart_async.StreamController<AnimationAnimationCanceledEvent>
+      _onAnimationCanceled = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onAnimationCreated =
-      new dart_async.StreamController();
+  dart_async.StreamController<AnimationAnimationCreatedEvent>
+      _onAnimationCreated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onAnimationStarted =
-      new dart_async.StreamController();
+  dart_async.StreamController<AnimationAnimationStartedEvent>
+      _onAnimationStarted = new dart_async.StreamController.broadcast();
 
 /** Disables animation domain notifications. */
   dart_async.Future disable() {
@@ -5186,6 +6414,7 @@ class DevToolsAnimation {
   }
 
 /** Returns the current time of the an animation. */
+/** id:[String] Id of animation. */
   dart_async.Future<AnimationGetCurrentTimeResponse> getCurrentTime(
       {String id}) {
     var params = {};
@@ -5205,6 +6434,7 @@ class DevToolsAnimation {
   }
 
 /** Releases a set of animations to no longer be manipulated. */
+/** animations:[List] List of animation ids to seek. */
   dart_async.Future releaseAnimations({List animations}) {
     var params = {};
     if (animations != null) params['animations'] = animations;
@@ -5213,6 +6443,7 @@ class DevToolsAnimation {
   }
 
 /** Gets the remote object of the Animation. */
+/** animationId:[String] Animation id. */
   dart_async.Future<AnimationResolveAnimationResponse> resolveAnimation(
       {String animationId}) {
     var params = {};
@@ -5224,6 +6455,8 @@ class DevToolsAnimation {
   }
 
 /** Seek a set of animations to a particular time within each animation. */
+/** animations:[List] List of animation ids to seek. */
+/** currentTime:[num] Set the current time of each animation. */
   dart_async.Future seekAnimations({List animations, num currentTime}) {
     var params = {};
     if (animations != null) params['animations'] = animations;
@@ -5234,6 +6467,8 @@ class DevToolsAnimation {
   }
 
 /** Sets the paused state of a set of animations. */
+/** animations:[List] Animations to set the pause state of. */
+/** paused:[bool] Paused state to set to. */
   dart_async.Future setPaused({List animations, bool paused}) {
     var params = {};
     if (animations != null) params['animations'] = animations;
@@ -5244,6 +6479,7 @@ class DevToolsAnimation {
   }
 
 /** Sets the playback rate of the document timeline. */
+/** playbackRate:[num] Playback rate for animations on page */
   dart_async.Future setPlaybackRate({num playbackRate}) {
     var params = {};
     if (playbackRate != null) params['playbackRate'] = playbackRate;
@@ -5252,6 +6488,9 @@ class DevToolsAnimation {
   }
 
 /** Sets the timing of an animation node. */
+/** animationId:[String] Animation id. */
+/** duration:[num] Duration of the animation. */
+/** delay:[num] Delay of the animation. */
   dart_async.Future setTiming({String animationId, num duration, num delay}) {
     var params = {};
     if (animationId != null) params['animationId'] = animationId;
@@ -5263,21 +6502,31 @@ class DevToolsAnimation {
     return _devtools.rpc.sendRequest('Animation.setTiming', params);
   }
 
-/** Event for when an animation has been cancelled. */
-  dart_async.Stream get onAnimationCanceled => _onAnimationCanceled.stream;
-/** Event for each animation that has been created. */
-  dart_async.Stream get onAnimationCreated => _onAnimationCreated.stream;
-/** Event for animation that has been started. */
-  dart_async.Stream get onAnimationStarted => _onAnimationStarted.stream;
+/** Broadcast stream: Event for when an animation has been cancelled. */
+  dart_async.Stream<AnimationAnimationCanceledEvent> get onAnimationCanceled =>
+      _onAnimationCanceled.stream;
+/** Broadcast stream: Event for each animation that has been created. */
+  dart_async.Stream<AnimationAnimationCreatedEvent> get onAnimationCreated =>
+      _onAnimationCreated.stream;
+/** Broadcast stream: Event for animation that has been started. */
+  dart_async.Stream<AnimationAnimationStartedEvent> get onAnimationStarted =>
+      _onAnimationStarted.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Animation.animationCanceled', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Animation.animationCanceled',
+        (json_rpc_2.Parameters params) {
+      _onAnimationCanceled
+          .add(new AnimationAnimationCanceledEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Animation.animationCreated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Animation.animationCreated',
+        (json_rpc_2.Parameters params) {
+      _onAnimationCreated.add(new AnimationAnimationCreatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Animation.animationStarted', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Animation.animationStarted',
+        (json_rpc_2.Parameters params) {
+      _onAnimationStarted.add(new AnimationAnimationStartedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -5289,7 +6538,9 @@ class DevToolsAnimation {
 
 class ApplicationCacheGetApplicationCacheForFrameResponse {
   ApplicationCacheGetApplicationCacheForFrameResponse(Map map) {
-    applicationCache = map['applicationCache'];
+    applicationCache = map.containsKey('applicationCache')
+        ? new ApplicationCache(map['applicationCache'])
+        : null;
   }
 
   ApplicationCache applicationCache;
@@ -5297,7 +6548,9 @@ class ApplicationCacheGetApplicationCacheForFrameResponse {
 
 class ApplicationCacheGetFramesWithManifestsResponse {
   ApplicationCacheGetFramesWithManifestsResponse(Map map) {
-    frameIds = map['frameIds'];
+    frameIds = map.containsKey('frameIds')
+        ? map['frameIds'].map((m) => new FrameWithManifest(m)).toList()
+        : null;
   }
 
   List<FrameWithManifest> frameIds;
@@ -5311,16 +6564,46 @@ class ApplicationCacheGetManifestForFrameResponse {
   String manifestURL;
 }
 
+/// Fired on `ApplicationCache.applicationCacheStatusUpdated`.
+class ApplicationCacheApplicationCacheStatusUpdatedEvent {
+  ApplicationCacheApplicationCacheStatusUpdatedEvent(Map map) {
+    frameId = map['frameId'];
+    manifestURL = map['manifestURL'];
+    status = map['status'];
+  }
+
+/** Identifier of the frame containing document whose application cache updated status. */
+  String frameId;
+
+/** Manifest URL. */
+  String manifestURL;
+
+/** Updated application cache status. */
+  int status;
+}
+
+/// Fired on `ApplicationCache.networkStateUpdated`.
+class ApplicationCacheNetworkStateUpdatedEvent {
+  ApplicationCacheNetworkStateUpdatedEvent(Map map) {
+    isNowOnline = map['isNowOnline'];
+  }
+
+/**  */
+  bool isNowOnline;
+}
+
 class DevToolsApplicationCache {
   DevToolsApplicationCache(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onApplicationCacheStatusUpdated =
-      new dart_async.StreamController();
+  dart_async
+          .StreamController<ApplicationCacheApplicationCacheStatusUpdatedEvent>
+      _onApplicationCacheStatusUpdated =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onNetworkStateUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<ApplicationCacheNetworkStateUpdatedEvent>
+      _onNetworkStateUpdated = new dart_async.StreamController.broadcast();
 
 /** Enables application cache domain notifications. */
   dart_async.Future enable() {
@@ -5329,6 +6612,7 @@ class DevToolsApplicationCache {
   }
 
 /** Returns relevant application cache data for the document in given frame. */
+/** frameId:[String] Identifier of the frame containing document whose application cache is retrieved. */
   dart_async.Future<ApplicationCacheGetApplicationCacheForFrameResponse>
       getApplicationCacheForFrame({String frameId}) {
     var params = {};
@@ -5352,6 +6636,7 @@ associated with some application cache. */
   }
 
 /** Returns manifest URL for document in the given frame. */
+/** frameId:[String] Identifier of the frame containing document whose manifest is retrieved. */
   dart_async.Future<ApplicationCacheGetManifestForFrameResponse>
       getManifestForFrame({String frameId}) {
     var params = {};
@@ -5363,17 +6648,25 @@ associated with some application cache. */
             new ApplicationCacheGetManifestForFrameResponse(response));
   }
 
-/**  */
-  dart_async.Stream get onApplicationCacheStatusUpdated =>
-      _onApplicationCacheStatusUpdated.stream;
-/**  */
-  dart_async.Stream get onNetworkStateUpdated => _onNetworkStateUpdated.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<ApplicationCacheApplicationCacheStatusUpdatedEvent>
+      get onApplicationCacheStatusUpdated =>
+          _onApplicationCacheStatusUpdated.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<ApplicationCacheNetworkStateUpdatedEvent>
+      get onNetworkStateUpdated => _onNetworkStateUpdated.stream;
   void listen(json_rpc_2.Peer rpc) {
     rpc.registerMethod('ApplicationCache.applicationCacheStatusUpdated',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onApplicationCacheStatusUpdated.add(
+          new ApplicationCacheApplicationCacheStatusUpdatedEvent(params.asMap));
+    });
 
     rpc.registerMethod('ApplicationCache.networkStateUpdated',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onNetworkStateUpdated
+          .add(new ApplicationCacheNetworkStateUpdatedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -5403,6 +6696,10 @@ class DevToolsAudits {
 
 /** Returns the response body and size if it were re-encoded with the specified settings. Only
 applies to images. */
+/** requestId:[String] Identifier of the network request to get content for. */
+/** encoding:[String] The encoding to use. */
+/** quality:[num] The quality of the encoding (0-1). (defaults to 1) */
+/** sizeOnly:[bool] Whether to only return the size information (defaults to false). */
   dart_async.Future<AuditsGetEncodedResponseResponse> getEncodedResponse(
       {String requestId, String encoding, num quality, bool sizeOnly}) {
     var params = {};
@@ -5445,7 +6742,9 @@ class BrowserGetVersionResponse {
 
 class BrowserGetHistogramsResponse {
   BrowserGetHistogramsResponse(Map map) {
-    histograms = map['histograms'];
+    histograms = map.containsKey('histograms')
+        ? map['histograms'].map((m) => new Histogram(m)).toList()
+        : null;
   }
 
   List<Histogram> histograms;
@@ -5453,7 +6752,8 @@ class BrowserGetHistogramsResponse {
 
 class BrowserGetHistogramResponse {
   BrowserGetHistogramResponse(Map map) {
-    histogram = map['histogram'];
+    histogram =
+        map.containsKey('histogram') ? new Histogram(map['histogram']) : null;
   }
 
   Histogram histogram;
@@ -5461,7 +6761,7 @@ class BrowserGetHistogramResponse {
 
 class BrowserGetWindowBoundsResponse {
   BrowserGetWindowBoundsResponse(Map map) {
-    bounds = map['bounds'];
+    bounds = map.containsKey('bounds') ? new Bounds(map['bounds']) : null;
   }
 
   Bounds bounds;
@@ -5470,7 +6770,7 @@ class BrowserGetWindowBoundsResponse {
 class BrowserGetWindowForTargetResponse {
   BrowserGetWindowForTargetResponse(Map map) {
     windowId = map['windowId'];
-    bounds = map['bounds'];
+    bounds = map.containsKey('bounds') ? new Bounds(map['bounds']) : null;
   }
 
   int windowId;
@@ -5498,6 +6798,9 @@ class DevToolsBrowser {
   }
 
 /** Get Chrome histograms. */
+/** query:[String] Requested substring in name. Only histograms which have query as a
+substring in their name are extracted. An empty or absent query returns
+all histograms. */
   dart_async.Future<BrowserGetHistogramsResponse> getHistograms(
       {String query}) {
     var params = {};
@@ -5509,6 +6812,7 @@ class DevToolsBrowser {
   }
 
 /** Get a Chrome histogram by name. */
+/** name:[String] Requested histogram name. */
   dart_async.Future<BrowserGetHistogramResponse> getHistogram({String name}) {
     var params = {};
     if (name != null) params['name'] = name;
@@ -5519,6 +6823,7 @@ class DevToolsBrowser {
   }
 
 /** Get position and size of the browser window. */
+/** windowId:[int] Browser window id. */
   dart_async.Future<BrowserGetWindowBoundsResponse> getWindowBounds(
       {int windowId}) {
     var params = {};
@@ -5530,6 +6835,7 @@ class DevToolsBrowser {
   }
 
 /** Get the browser window that contains the devtools target. */
+/** targetId:[String] Devtools agent host id. */
   dart_async.Future<BrowserGetWindowForTargetResponse> getWindowForTarget(
       {String targetId}) {
     var params = {};
@@ -5541,6 +6847,9 @@ class DevToolsBrowser {
   }
 
 /** Set position and/or size of the browser window. */
+/** windowId:[int] Browser window id. */
+/** bounds:[Bounds] New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined
+with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged. */
   dart_async.Future setWindowBounds({int windowId, Bounds bounds}) {
     var params = {};
     if (windowId != null) params['windowId'] = windowId;
@@ -5556,7 +6865,7 @@ class DevToolsBrowser {
 
 class CSSAddRuleResponse {
   CSSAddRuleResponse(Map map) {
-    rule = map['rule'];
+    rule = map.containsKey('rule') ? new CSSRule(map['rule']) : null;
   }
 
   CSSRule rule;
@@ -5564,7 +6873,8 @@ class CSSAddRuleResponse {
 
 class CSSCollectClassNamesResponse {
   CSSCollectClassNamesResponse(Map map) {
-    classNames = map['classNames'];
+    classNames =
+        map.containsKey('classNames') ? new List(map['classNames']) : null;
   }
 
   List classNames;
@@ -5580,7 +6890,9 @@ class CSSCreateStyleSheetResponse {
 
 class CSSGetBackgroundColorsResponse {
   CSSGetBackgroundColorsResponse(Map map) {
-    backgroundColors = map['backgroundColors'];
+    backgroundColors = map.containsKey('backgroundColors')
+        ? new List(map['backgroundColors'])
+        : null;
     computedFontSize = map['computedFontSize'];
     computedFontWeight = map['computedFontWeight'];
     computedBodyFontSize = map['computedBodyFontSize'];
@@ -5597,7 +6909,11 @@ class CSSGetBackgroundColorsResponse {
 
 class CSSGetComputedStyleForNodeResponse {
   CSSGetComputedStyleForNodeResponse(Map map) {
-    computedStyle = map['computedStyle'];
+    computedStyle = map.containsKey('computedStyle')
+        ? map['computedStyle']
+            .map((m) => new CSSComputedStyleProperty(m))
+            .toList()
+        : null;
   }
 
   List<CSSComputedStyleProperty> computedStyle;
@@ -5605,8 +6921,12 @@ class CSSGetComputedStyleForNodeResponse {
 
 class CSSGetInlineStylesForNodeResponse {
   CSSGetInlineStylesForNodeResponse(Map map) {
-    inlineStyle = map['inlineStyle'];
-    attributesStyle = map['attributesStyle'];
+    inlineStyle = map.containsKey('inlineStyle')
+        ? new CSSStyle(map['inlineStyle'])
+        : null;
+    attributesStyle = map.containsKey('attributesStyle')
+        ? new CSSStyle(map['attributesStyle'])
+        : null;
   }
 
   CSSStyle inlineStyle;
@@ -5616,12 +6936,24 @@ class CSSGetInlineStylesForNodeResponse {
 
 class CSSGetMatchedStylesForNodeResponse {
   CSSGetMatchedStylesForNodeResponse(Map map) {
-    inlineStyle = map['inlineStyle'];
-    attributesStyle = map['attributesStyle'];
-    matchedCSSRules = map['matchedCSSRules'];
-    pseudoElements = map['pseudoElements'];
-    inherited = map['inherited'];
-    cssKeyframesRules = map['cssKeyframesRules'];
+    inlineStyle = map.containsKey('inlineStyle')
+        ? new CSSStyle(map['inlineStyle'])
+        : null;
+    attributesStyle = map.containsKey('attributesStyle')
+        ? new CSSStyle(map['attributesStyle'])
+        : null;
+    matchedCSSRules = map.containsKey('matchedCSSRules')
+        ? map['matchedCSSRules'].map((m) => new RuleMatch(m)).toList()
+        : null;
+    pseudoElements = map.containsKey('pseudoElements')
+        ? map['pseudoElements'].map((m) => new PseudoElementMatches(m)).toList()
+        : null;
+    inherited = map.containsKey('inherited')
+        ? map['inherited'].map((m) => new InheritedStyleEntry(m)).toList()
+        : null;
+    cssKeyframesRules = map.containsKey('cssKeyframesRules')
+        ? map['cssKeyframesRules'].map((m) => new CSSKeyframesRule(m)).toList()
+        : null;
   }
 
   CSSStyle inlineStyle;
@@ -5639,7 +6971,9 @@ class CSSGetMatchedStylesForNodeResponse {
 
 class CSSGetMediaQueriesResponse {
   CSSGetMediaQueriesResponse(Map map) {
-    medias = map['medias'];
+    medias = map.containsKey('medias')
+        ? map['medias'].map((m) => new CSSMedia(m)).toList()
+        : null;
   }
 
   List<CSSMedia> medias;
@@ -5647,7 +6981,9 @@ class CSSGetMediaQueriesResponse {
 
 class CSSGetPlatformFontsForNodeResponse {
   CSSGetPlatformFontsForNodeResponse(Map map) {
-    fonts = map['fonts'];
+    fonts = map.containsKey('fonts')
+        ? map['fonts'].map((m) => new PlatformFontUsage(m)).toList()
+        : null;
   }
 
   List<PlatformFontUsage> fonts;
@@ -5663,7 +6999,7 @@ class CSSGetStyleSheetTextResponse {
 
 class CSSSetKeyframeKeyResponse {
   CSSSetKeyframeKeyResponse(Map map) {
-    keyText = map['keyText'];
+    keyText = map.containsKey('keyText') ? new Value(map['keyText']) : null;
   }
 
   Value keyText;
@@ -5671,7 +7007,7 @@ class CSSSetKeyframeKeyResponse {
 
 class CSSSetMediaTextResponse {
   CSSSetMediaTextResponse(Map map) {
-    media = map['media'];
+    media = map.containsKey('media') ? new CSSMedia(map['media']) : null;
   }
 
   CSSMedia media;
@@ -5679,7 +7015,9 @@ class CSSSetMediaTextResponse {
 
 class CSSSetRuleSelectorResponse {
   CSSSetRuleSelectorResponse(Map map) {
-    selectorList = map['selectorList'];
+    selectorList = map.containsKey('selectorList')
+        ? new SelectorList(map['selectorList'])
+        : null;
   }
 
   SelectorList selectorList;
@@ -5695,7 +7033,9 @@ class CSSSetStyleSheetTextResponse {
 
 class CSSSetStyleTextsResponse {
   CSSSetStyleTextsResponse(Map map) {
-    styles = map['styles'];
+    styles = map.containsKey('styles')
+        ? map['styles'].map((m) => new CSSStyle(m)).toList()
+        : null;
   }
 
   List<CSSStyle> styles;
@@ -5703,7 +7043,9 @@ class CSSSetStyleTextsResponse {
 
 class CSSStopRuleUsageTrackingResponse {
   CSSStopRuleUsageTrackingResponse(Map map) {
-    ruleUsage = map['ruleUsage'];
+    ruleUsage = map.containsKey('ruleUsage')
+        ? map['ruleUsage'].map((m) => new RuleUsage(m)).toList()
+        : null;
   }
 
   List<RuleUsage> ruleUsage;
@@ -5711,10 +7053,54 @@ class CSSStopRuleUsageTrackingResponse {
 
 class CSSTakeCoverageDeltaResponse {
   CSSTakeCoverageDeltaResponse(Map map) {
-    coverage = map['coverage'];
+    coverage = map.containsKey('coverage')
+        ? map['coverage'].map((m) => new RuleUsage(m)).toList()
+        : null;
   }
 
   List<RuleUsage> coverage;
+}
+
+/// Fired on `CSS.fontsUpdated`.
+class CSSFontsUpdatedEvent {
+  CSSFontsUpdatedEvent(Map map) {}
+}
+
+/// Fired on `CSS.mediaQueryResultChanged`.
+class CSSMediaQueryResultChangedEvent {
+  CSSMediaQueryResultChangedEvent(Map map) {}
+}
+
+/// Fired on `CSS.styleSheetAdded`.
+class CSSStyleSheetAddedEvent {
+  CSSStyleSheetAddedEvent(Map map) {
+    header = map.containsKey('header')
+        ? new CSSStyleSheetHeader(map['header'])
+        : null;
+  }
+
+/** Added stylesheet metainfo. */
+  CSSStyleSheetHeader header;
+}
+
+/// Fired on `CSS.styleSheetChanged`.
+class CSSStyleSheetChangedEvent {
+  CSSStyleSheetChangedEvent(Map map) {
+    styleSheetId = map['styleSheetId'];
+  }
+
+/**  */
+  String styleSheetId;
+}
+
+/// Fired on `CSS.styleSheetRemoved`.
+class CSSStyleSheetRemovedEvent {
+  CSSStyleSheetRemovedEvent(Map map) {
+    styleSheetId = map['styleSheetId'];
+  }
+
+/** Identifier of the removed stylesheet. */
+  String styleSheetId;
 }
 
 class DevToolsCSS {
@@ -5722,23 +7108,26 @@ class DevToolsCSS {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onFontsUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<CSSFontsUpdatedEvent> _onFontsUpdated =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onMediaQueryResultChanged =
-      new dart_async.StreamController();
+  dart_async.StreamController<CSSMediaQueryResultChangedEvent>
+      _onMediaQueryResultChanged = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onStyleSheetAdded =
-      new dart_async.StreamController();
+  dart_async.StreamController<CSSStyleSheetAddedEvent> _onStyleSheetAdded =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onStyleSheetChanged =
-      new dart_async.StreamController();
+  dart_async.StreamController<CSSStyleSheetChangedEvent> _onStyleSheetChanged =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onStyleSheetRemoved =
-      new dart_async.StreamController();
+  dart_async.StreamController<CSSStyleSheetRemovedEvent> _onStyleSheetRemoved =
+      new dart_async.StreamController.broadcast();
 
 /** Inserts a new rule with the given `ruleText` in a stylesheet with given `styleSheetId`, at the
 position specified by `location`. */
+/** styleSheetId:[String] The css style sheet identifier where a new rule should be inserted. */
+/** ruleText:[String] The text of a new rule. */
+/** location:[SourceRange] Text position of a new rule in the target style sheet. */
   dart_async.Future<CSSAddRuleResponse> addRule(
       {String styleSheetId, String ruleText, SourceRange location}) {
     var params = {};
@@ -5754,6 +7143,7 @@ position specified by `location`. */
   }
 
 /** Returns all class names from specified stylesheet. */
+/** styleSheetId:[String]  */
   dart_async.Future<CSSCollectClassNamesResponse> collectClassNames(
       {String styleSheetId}) {
     var params = {};
@@ -5765,6 +7155,7 @@ position specified by `location`. */
   }
 
 /** Creates a new special "via-inspector" stylesheet in the frame with given `frameId`. */
+/** frameId:[String] Identifier of the frame where "via-inspector" stylesheet should be created. */
   dart_async.Future<CSSCreateStyleSheetResponse> createStyleSheet(
       {String frameId}) {
     var params = {};
@@ -5790,6 +7181,8 @@ enabled until the result of this command is received. */
 
 /** Ensures that the given node will have specified pseudo-classes whenever its style is computed by
 the browser. */
+/** nodeId:[int] The element id for which to force the pseudo state. */
+/** forcedPseudoClasses:[List] Element pseudo classes to force when computing the element's style. */
   dart_async.Future forcePseudoState({int nodeId, List forcedPseudoClasses}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -5801,6 +7194,7 @@ the browser. */
   }
 
 /**  */
+/** nodeId:[int] Id of the node to get background colors for. */
   dart_async.Future<CSSGetBackgroundColorsResponse> getBackgroundColors(
       {int nodeId}) {
     var params = {};
@@ -5812,6 +7206,7 @@ the browser. */
   }
 
 /** Returns the computed style for a DOM node identified by `nodeId`. */
+/** nodeId:[int]  */
   dart_async.Future<CSSGetComputedStyleForNodeResponse> getComputedStyleForNode(
       {int nodeId}) {
     var params = {};
@@ -5824,6 +7219,7 @@ the browser. */
 
 /** Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM
 attributes) for a DOM node identified by `nodeId`. */
+/** nodeId:[int]  */
   dart_async.Future<CSSGetInlineStylesForNodeResponse> getInlineStylesForNode(
       {int nodeId}) {
     var params = {};
@@ -5835,6 +7231,7 @@ attributes) for a DOM node identified by `nodeId`. */
   }
 
 /** Returns requested styles for a DOM node identified by `nodeId`. */
+/** nodeId:[int]  */
   dart_async.Future<CSSGetMatchedStylesForNodeResponse> getMatchedStylesForNode(
       {int nodeId}) {
     var params = {};
@@ -5855,6 +7252,7 @@ attributes) for a DOM node identified by `nodeId`. */
 
 /** Requests information about platform fonts which we used to render child TextNodes in the given
 node. */
+/** nodeId:[int]  */
   dart_async.Future<CSSGetPlatformFontsForNodeResponse> getPlatformFontsForNode(
       {int nodeId}) {
     var params = {};
@@ -5866,6 +7264,7 @@ node. */
   }
 
 /** Returns the current textual content and the URL for a stylesheet. */
+/** styleSheetId:[String]  */
   dart_async.Future<CSSGetStyleSheetTextResponse> getStyleSheetText(
       {String styleSheetId}) {
     var params = {};
@@ -5878,6 +7277,9 @@ node. */
 
 /** Find a rule with the given active property for the given node and set the new value for this
 property */
+/** nodeId:[int] The element id for which to set property. */
+/** propertyName:[String]  */
+/** value:[String]  */
   dart_async.Future setEffectivePropertyValueForNode(
       {int nodeId, String propertyName, String value}) {
     var params = {};
@@ -5892,6 +7294,9 @@ property */
   }
 
 /** Modifies the keyframe rule key text. */
+/** styleSheetId:[String]  */
+/** range:[SourceRange]  */
+/** keyText:[String]  */
   dart_async.Future<CSSSetKeyframeKeyResponse> setKeyframeKey(
       {String styleSheetId, SourceRange range, String keyText}) {
     var params = {};
@@ -5907,6 +7312,9 @@ property */
   }
 
 /** Modifies the rule selector. */
+/** styleSheetId:[String]  */
+/** range:[SourceRange]  */
+/** text:[String]  */
   dart_async.Future<CSSSetMediaTextResponse> setMediaText(
       {String styleSheetId, SourceRange range, String text}) {
     var params = {};
@@ -5922,6 +7330,9 @@ property */
   }
 
 /** Modifies the rule selector. */
+/** styleSheetId:[String]  */
+/** range:[SourceRange]  */
+/** selector:[String]  */
   dart_async.Future<CSSSetRuleSelectorResponse> setRuleSelector(
       {String styleSheetId, SourceRange range, String selector}) {
     var params = {};
@@ -5937,6 +7348,8 @@ property */
   }
 
 /** Sets the new stylesheet text. */
+/** styleSheetId:[String]  */
+/** text:[String]  */
   dart_async.Future<CSSSetStyleSheetTextResponse> setStyleSheetText(
       {String styleSheetId, String text}) {
     var params = {};
@@ -5950,6 +7363,7 @@ property */
   }
 
 /** Applies specified style edits one after another in the given order. */
+/** edits:[List]  */
   dart_async.Future<CSSSetStyleTextsResponse> setStyleTexts(
       {List<StyleDeclarationEdit> edits}) {
     var params = {};
@@ -5984,32 +7398,44 @@ instrumentation) */
         .then((response) => new CSSTakeCoverageDeltaResponse(response));
   }
 
-/** Fires whenever a web font gets loaded. */
-  dart_async.Stream get onFontsUpdated => _onFontsUpdated.stream;
-/** Fires whenever a MediaQuery result changes (for example, after a browser window has been
+/** Broadcast stream: Fires whenever a web font gets loaded. */
+  dart_async.Stream<CSSFontsUpdatedEvent> get onFontsUpdated =>
+      _onFontsUpdated.stream;
+/** Broadcast stream: Fires whenever a MediaQuery result changes (for example, after a browser window has been
 resized.) The current implementation considers only viewport-dependent media features. */
-  dart_async.Stream get onMediaQueryResultChanged =>
-      _onMediaQueryResultChanged.stream;
-/** Fired whenever an active document stylesheet is added. */
-  dart_async.Stream get onStyleSheetAdded => _onStyleSheetAdded.stream;
-/** Fired whenever a stylesheet is changed as a result of the client operation. */
-  dart_async.Stream get onStyleSheetChanged => _onStyleSheetChanged.stream;
-/** Fired whenever an active document stylesheet is removed. */
-  dart_async.Stream get onStyleSheetRemoved => _onStyleSheetRemoved.stream;
+  dart_async.Stream<CSSMediaQueryResultChangedEvent>
+      get onMediaQueryResultChanged => _onMediaQueryResultChanged.stream;
+/** Broadcast stream: Fired whenever an active document stylesheet is added. */
+  dart_async.Stream<CSSStyleSheetAddedEvent> get onStyleSheetAdded =>
+      _onStyleSheetAdded.stream;
+/** Broadcast stream: Fired whenever a stylesheet is changed as a result of the client operation. */
+  dart_async.Stream<CSSStyleSheetChangedEvent> get onStyleSheetChanged =>
+      _onStyleSheetChanged.stream;
+/** Broadcast stream: Fired whenever an active document stylesheet is removed. */
+  dart_async.Stream<CSSStyleSheetRemovedEvent> get onStyleSheetRemoved =>
+      _onStyleSheetRemoved.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod('CSS.fontsUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('CSS.fontsUpdated', (json_rpc_2.Parameters params) {
+      _onFontsUpdated.add(new CSSFontsUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'CSS.mediaQueryResultChanged', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('CSS.mediaQueryResultChanged',
+        (json_rpc_2.Parameters params) {
+      _onMediaQueryResultChanged
+          .add(new CSSMediaQueryResultChangedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'CSS.styleSheetAdded', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('CSS.styleSheetAdded', (json_rpc_2.Parameters params) {
+      _onStyleSheetAdded.add(new CSSStyleSheetAddedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'CSS.styleSheetChanged', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('CSS.styleSheetChanged', (json_rpc_2.Parameters params) {
+      _onStyleSheetChanged.add(new CSSStyleSheetChangedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'CSS.styleSheetRemoved', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('CSS.styleSheetRemoved', (json_rpc_2.Parameters params) {
+      _onStyleSheetRemoved.add(new CSSStyleSheetRemovedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -6023,7 +7449,9 @@ resized.) The current implementation considers only viewport-dependent media fea
 
 class CacheStorageRequestCacheNamesResponse {
   CacheStorageRequestCacheNamesResponse(Map map) {
-    caches = map['caches'];
+    caches = map.containsKey('caches')
+        ? map['caches'].map((m) => new Cache(m)).toList()
+        : null;
   }
 
   List<Cache> caches;
@@ -6031,7 +7459,9 @@ class CacheStorageRequestCacheNamesResponse {
 
 class CacheStorageRequestCachedResponseResponse {
   CacheStorageRequestCachedResponseResponse(Map map) {
-    response = map['response'];
+    response = map.containsKey('response')
+        ? new CachedResponse(map['response'])
+        : null;
   }
 
   CachedResponse response;
@@ -6039,7 +7469,9 @@ class CacheStorageRequestCachedResponseResponse {
 
 class CacheStorageRequestEntriesResponse {
   CacheStorageRequestEntriesResponse(Map map) {
-    cacheDataEntries = map['cacheDataEntries'];
+    cacheDataEntries = map.containsKey('cacheDataEntries')
+        ? map['cacheDataEntries'].map((m) => new DataEntry(m)).toList()
+        : null;
     hasMore = map['hasMore'];
   }
 
@@ -6054,6 +7486,7 @@ class DevToolsCacheStorage {
   final ChromeDevToolsBase _devtools;
 
 /** Deletes a cache. */
+/** cacheId:[String] Id of cache for deletion. */
   dart_async.Future deleteCache({String cacheId}) {
     var params = {};
     if (cacheId != null) params['cacheId'] = cacheId;
@@ -6062,6 +7495,8 @@ class DevToolsCacheStorage {
   }
 
 /** Deletes a cache entry. */
+/** cacheId:[String] Id of cache where the entry will be deleted. */
+/** request:[String] URL spec of the request. */
   dart_async.Future deleteEntry({String cacheId, String request}) {
     var params = {};
     if (cacheId != null) params['cacheId'] = cacheId;
@@ -6072,6 +7507,7 @@ class DevToolsCacheStorage {
   }
 
 /** Requests cache names. */
+/** securityOrigin:[String] Security origin. */
   dart_async.Future<CacheStorageRequestCacheNamesResponse> requestCacheNames(
       {String securityOrigin}) {
     var params = {};
@@ -6084,6 +7520,8 @@ class DevToolsCacheStorage {
   }
 
 /** Fetches cache entry. */
+/** cacheId:[String] Id of cache that contains the enty. */
+/** requestURL:[String] URL spec of the request. */
   dart_async.Future<CacheStorageRequestCachedResponseResponse>
       requestCachedResponse({String cacheId, String requestURL}) {
     var params = {};
@@ -6098,6 +7536,9 @@ class DevToolsCacheStorage {
   }
 
 /** Requests data from cache. */
+/** cacheId:[String] ID of cache to get entries from. */
+/** skipCount:[int] Number of records to skip. */
+/** pageSize:[int] Number of records to fetch. */
   dart_async.Future<CacheStorageRequestEntriesResponse> requestEntries(
       {String cacheId, int skipCount, int pageSize}) {
     var params = {};
@@ -6118,7 +7559,8 @@ class DevToolsCacheStorage {
 
 class DOMCollectClassNamesFromSubtreeResponse {
   DOMCollectClassNamesFromSubtreeResponse(Map map) {
-    classNames = map['classNames'];
+    classNames =
+        map.containsKey('classNames') ? new List(map['classNames']) : null;
   }
 
   List classNames;
@@ -6134,7 +7576,7 @@ class DOMCopyToResponse {
 
 class DOMDescribeNodeResponse {
   DOMDescribeNodeResponse(Map map) {
-    node = map['node'];
+    node = map.containsKey('node') ? new Node(map['node']) : null;
   }
 
   Node node;
@@ -6142,7 +7584,8 @@ class DOMDescribeNodeResponse {
 
 class DOMGetAttributesResponse {
   DOMGetAttributesResponse(Map map) {
-    attributes = map['attributes'];
+    attributes =
+        map.containsKey('attributes') ? new List(map['attributes']) : null;
   }
 
   List attributes;
@@ -6150,7 +7593,7 @@ class DOMGetAttributesResponse {
 
 class DOMGetBoxModelResponse {
   DOMGetBoxModelResponse(Map map) {
-    model = map['model'];
+    model = map.containsKey('model') ? new BoxModel(map['model']) : null;
   }
 
   BoxModel model;
@@ -6158,7 +7601,7 @@ class DOMGetBoxModelResponse {
 
 class DOMGetDocumentResponse {
   DOMGetDocumentResponse(Map map) {
-    root = map['root'];
+    root = map.containsKey('root') ? new Node(map['root']) : null;
   }
 
   Node root;
@@ -6166,7 +7609,9 @@ class DOMGetDocumentResponse {
 
 class DOMGetFlattenedDocumentResponse {
   DOMGetFlattenedDocumentResponse(Map map) {
-    nodes = map['nodes'];
+    nodes = map.containsKey('nodes')
+        ? map['nodes'].map((m) => new Node(m)).toList()
+        : null;
   }
 
   List<Node> nodes;
@@ -6265,7 +7710,7 @@ class DOMRequestNodeResponse {
 
 class DOMResolveNodeResponse {
   DOMResolveNodeResponse(Map map) {
-    object = map['object'];
+    object = map.containsKey('object') ? new RemoteObject(map['object']) : null;
   }
 
   RemoteObject object;
@@ -6287,54 +7732,252 @@ class DOMGetFrameOwnerResponse {
   int nodeId;
 }
 
+/// Fired on `DOM.attributeModified`.
+class DOMAttributeModifiedEvent {
+  DOMAttributeModifiedEvent(Map map) {
+    nodeId = map['nodeId'];
+    name = map['name'];
+    value = map['value'];
+  }
+
+/** Id of the node that has changed. */
+  int nodeId;
+
+/** Attribute name. */
+  String name;
+
+/** Attribute value. */
+  String value;
+}
+
+/// Fired on `DOM.attributeRemoved`.
+class DOMAttributeRemovedEvent {
+  DOMAttributeRemovedEvent(Map map) {
+    nodeId = map['nodeId'];
+    name = map['name'];
+  }
+
+/** Id of the node that has changed. */
+  int nodeId;
+
+/** A ttribute name. */
+  String name;
+}
+
+/// Fired on `DOM.characterDataModified`.
+class DOMCharacterDataModifiedEvent {
+  DOMCharacterDataModifiedEvent(Map map) {
+    nodeId = map['nodeId'];
+    characterData = map['characterData'];
+  }
+
+/** Id of the node that has changed. */
+  int nodeId;
+
+/** New text value. */
+  String characterData;
+}
+
+/// Fired on `DOM.childNodeCountUpdated`.
+class DOMChildNodeCountUpdatedEvent {
+  DOMChildNodeCountUpdatedEvent(Map map) {
+    nodeId = map['nodeId'];
+    childNodeCount = map['childNodeCount'];
+  }
+
+/** Id of the node that has changed. */
+  int nodeId;
+
+/** New node count. */
+  int childNodeCount;
+}
+
+/// Fired on `DOM.childNodeInserted`.
+class DOMChildNodeInsertedEvent {
+  DOMChildNodeInsertedEvent(Map map) {
+    parentNodeId = map['parentNodeId'];
+    previousNodeId = map['previousNodeId'];
+    node = map.containsKey('node') ? new Node(map['node']) : null;
+  }
+
+/** Id of the node that has changed. */
+  int parentNodeId;
+
+/** If of the previous siblint. */
+  int previousNodeId;
+
+/** Inserted node data. */
+  Node node;
+}
+
+/// Fired on `DOM.childNodeRemoved`.
+class DOMChildNodeRemovedEvent {
+  DOMChildNodeRemovedEvent(Map map) {
+    parentNodeId = map['parentNodeId'];
+    nodeId = map['nodeId'];
+  }
+
+/** Parent id. */
+  int parentNodeId;
+
+/** Id of the node that has been removed. */
+  int nodeId;
+}
+
+/// Fired on `DOM.distributedNodesUpdated`.
+class DOMDistributedNodesUpdatedEvent {
+  DOMDistributedNodesUpdatedEvent(Map map) {
+    insertionPointId = map['insertionPointId'];
+    distributedNodes = map.containsKey('distributedNodes')
+        ? map['distributedNodes'].map((m) => new BackendNode(m)).toList()
+        : null;
+  }
+
+/** Insertion point where distrubuted nodes were updated. */
+  int insertionPointId;
+
+/** Distributed nodes for given insertion point. */
+  List<BackendNode> distributedNodes;
+}
+
+/// Fired on `DOM.documentUpdated`.
+class DOMDocumentUpdatedEvent {
+  DOMDocumentUpdatedEvent(Map map) {}
+}
+
+/// Fired on `DOM.inlineStyleInvalidated`.
+class DOMInlineStyleInvalidatedEvent {
+  DOMInlineStyleInvalidatedEvent(Map map) {
+    nodeIds = map['nodeIds'];
+  }
+
+/** Ids of the nodes for which the inline styles have been invalidated. */
+  List<int> nodeIds;
+}
+
+/// Fired on `DOM.pseudoElementAdded`.
+class DOMPseudoElementAddedEvent {
+  DOMPseudoElementAddedEvent(Map map) {
+    parentId = map['parentId'];
+    pseudoElement = map.containsKey('pseudoElement')
+        ? new Node(map['pseudoElement'])
+        : null;
+  }
+
+/** Pseudo element's parent element id. */
+  int parentId;
+
+/** The added pseudo element. */
+  Node pseudoElement;
+}
+
+/// Fired on `DOM.pseudoElementRemoved`.
+class DOMPseudoElementRemovedEvent {
+  DOMPseudoElementRemovedEvent(Map map) {
+    parentId = map['parentId'];
+    pseudoElementId = map['pseudoElementId'];
+  }
+
+/** Pseudo element's parent element id. */
+  int parentId;
+
+/** The removed pseudo element id. */
+  int pseudoElementId;
+}
+
+/// Fired on `DOM.setChildNodes`.
+class DOMSetChildNodesEvent {
+  DOMSetChildNodesEvent(Map map) {
+    parentId = map['parentId'];
+    nodes = map.containsKey('nodes')
+        ? map['nodes'].map((m) => new Node(m)).toList()
+        : null;
+  }
+
+/** Parent node id to populate with children. */
+  int parentId;
+
+/** Child nodes array. */
+  List<Node> nodes;
+}
+
+/// Fired on `DOM.shadowRootPopped`.
+class DOMShadowRootPoppedEvent {
+  DOMShadowRootPoppedEvent(Map map) {
+    hostId = map['hostId'];
+    rootId = map['rootId'];
+  }
+
+/** Host element id. */
+  int hostId;
+
+/** Shadow root id. */
+  int rootId;
+}
+
+/// Fired on `DOM.shadowRootPushed`.
+class DOMShadowRootPushedEvent {
+  DOMShadowRootPushedEvent(Map map) {
+    hostId = map['hostId'];
+    root = map.containsKey('root') ? new Node(map['root']) : null;
+  }
+
+/** Host element id. */
+  int hostId;
+
+/** Shadow root. */
+  Node root;
+}
+
 class DevToolsDOM {
   DevToolsDOM(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onAttributeModified =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMAttributeModifiedEvent> _onAttributeModified =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onAttributeRemoved =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMAttributeRemovedEvent> _onAttributeRemoved =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onCharacterDataModified =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMCharacterDataModifiedEvent>
+      _onCharacterDataModified = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onChildNodeCountUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMChildNodeCountUpdatedEvent>
+      _onChildNodeCountUpdated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onChildNodeInserted =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMChildNodeInsertedEvent> _onChildNodeInserted =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onChildNodeRemoved =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMChildNodeRemovedEvent> _onChildNodeRemoved =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onDistributedNodesUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMDistributedNodesUpdatedEvent>
+      _onDistributedNodesUpdated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onDocumentUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMDocumentUpdatedEvent> _onDocumentUpdated =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onInlineStyleInvalidated =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMInlineStyleInvalidatedEvent>
+      _onInlineStyleInvalidated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onPseudoElementAdded =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMPseudoElementAddedEvent>
+      _onPseudoElementAdded = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onPseudoElementRemoved =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMPseudoElementRemovedEvent>
+      _onPseudoElementRemoved = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onSetChildNodes =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMSetChildNodesEvent> _onSetChildNodes =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onShadowRootPopped =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMShadowRootPoppedEvent> _onShadowRootPopped =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onShadowRootPushed =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMShadowRootPushedEvent> _onShadowRootPushed =
+      new dart_async.StreamController.broadcast();
 
 /** Collects class names for the node with given id and all of it's child nodes. */
+/** nodeId:[int] Id of the node to collect class names. */
   dart_async.Future<DOMCollectClassNamesFromSubtreeResponse>
       collectClassNamesFromSubtree({int nodeId}) {
     var params = {};
@@ -6348,6 +7991,10 @@ class DevToolsDOM {
 
 /** Creates a deep copy of the specified node and places it into the target container before the
 given anchor. */
+/** nodeId:[int] Id of the node to copy. */
+/** targetNodeId:[int] Id of the element to drop the copy into. */
+/** insertBeforeNodeId:[int] Drop the copy before this node (if absent, the copy becomes the last child of
+`targetNodeId`). */
   dart_async.Future<DOMCopyToResponse> copyTo(
       {int nodeId, int targetNodeId, int insertBeforeNodeId}) {
     var params = {};
@@ -6365,6 +8012,13 @@ given anchor. */
 
 /** Describes node given its id, does not require domain to be enabled. Does not start tracking any
 objects, can be used for automation. */
+/** nodeId:[int] Identifier of the node. */
+/** backendNodeId:[int] Identifier of the backend node. */
+/** objectId:[String] JavaScript object id of the node wrapper. */
+/** depth:[int] The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the
+entire subtree or provide an integer larger than 0. */
+/** pierce:[bool] Whether or not iframes and shadow roots should be traversed when returning the subtree
+(default is false). */
   dart_async.Future<DOMDescribeNodeResponse> describeNode(
       {int nodeId,
       int backendNodeId,
@@ -6395,6 +8049,7 @@ objects, can be used for automation. */
 
 /** Discards search results from the session with the given id. `getSearchResults` should no longer
 be called for that search. */
+/** searchId:[String] Unique search session identifier. */
   dart_async.Future discardSearchResults({String searchId}) {
     var params = {};
     if (searchId != null) params['searchId'] = searchId;
@@ -6409,6 +8064,9 @@ be called for that search. */
   }
 
 /** Focuses the given element. */
+/** nodeId:[int] Identifier of the node. */
+/** backendNodeId:[int] Identifier of the backend node. */
+/** objectId:[String] JavaScript object id of the node wrapper. */
   dart_async.Future focus({int nodeId, int backendNodeId, String objectId}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6421,6 +8079,7 @@ be called for that search. */
   }
 
 /** Returns attributes for the specified node. */
+/** nodeId:[int] Id of the node to retrieve attibutes for. */
   dart_async.Future<DOMGetAttributesResponse> getAttributes({int nodeId}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6431,6 +8090,9 @@ be called for that search. */
   }
 
 /** Returns boxes for the given node. */
+/** nodeId:[int] Identifier of the node. */
+/** backendNodeId:[int] Identifier of the backend node. */
+/** objectId:[String] JavaScript object id of the node wrapper. */
   dart_async.Future<DOMGetBoxModelResponse> getBoxModel(
       {int nodeId, int backendNodeId, String objectId}) {
     var params = {};
@@ -6446,6 +8108,10 @@ be called for that search. */
   }
 
 /** Returns the root DOM node (and optionally the subtree) to the caller. */
+/** depth:[int] The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the
+entire subtree or provide an integer larger than 0. */
+/** pierce:[bool] Whether or not iframes and shadow roots should be traversed when returning the subtree
+(default is false). */
   dart_async.Future<DOMGetDocumentResponse> getDocument(
       {int depth, bool pierce}) {
     var params = {};
@@ -6459,6 +8125,10 @@ be called for that search. */
   }
 
 /** Returns the root DOM node (and optionally the subtree) to the caller. */
+/** depth:[int] The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the
+entire subtree or provide an integer larger than 0. */
+/** pierce:[bool] Whether or not iframes and shadow roots should be traversed when returning the subtree
+(default is false). */
   dart_async.Future<DOMGetFlattenedDocumentResponse> getFlattenedDocument(
       {int depth, bool pierce}) {
     var params = {};
@@ -6472,6 +8142,9 @@ be called for that search. */
   }
 
 /** Returns node id at given location. */
+/** x:[int] X coordinate. */
+/** y:[int] Y coordinate. */
+/** includeUserAgentShadowDOM:[bool] False to skip to the nearest non-UA shadow root ancestor (default: false). */
   dart_async.Future<DOMGetNodeForLocationResponse> getNodeForLocation(
       {int x, int y, bool includeUserAgentShadowDOM}) {
     var params = {};
@@ -6488,6 +8161,9 @@ be called for that search. */
   }
 
 /** Returns node's HTML markup. */
+/** nodeId:[int] Identifier of the node. */
+/** backendNodeId:[int] Identifier of the backend node. */
+/** objectId:[String] JavaScript object id of the node wrapper. */
   dart_async.Future<DOMGetOuterHTMLResponse> getOuterHTML(
       {int nodeId, int backendNodeId, String objectId}) {
     var params = {};
@@ -6503,6 +8179,7 @@ be called for that search. */
   }
 
 /** Returns the id of the nearest ancestor that is a relayout boundary. */
+/** nodeId:[int] Id of the node. */
   dart_async.Future<DOMGetRelayoutBoundaryResponse> getRelayoutBoundary(
       {int nodeId}) {
     var params = {};
@@ -6515,6 +8192,9 @@ be called for that search. */
 
 /** Returns search results from given `fromIndex` to given `toIndex` from the search with the given
 identifier. */
+/** searchId:[String] Unique search session identifier. */
+/** fromIndex:[int] Start index of the search result to be returned. */
+/** toIndex:[int] End index of the search result to be returned. */
   dart_async.Future<DOMGetSearchResultsResponse> getSearchResults(
       {String searchId, int fromIndex, int toIndex}) {
     var params = {};
@@ -6554,6 +8234,10 @@ identifier. */
   }
 
 /** Moves node into the new container, places it before the given anchor. */
+/** nodeId:[int] Id of the node to move. */
+/** targetNodeId:[int] Id of the element to drop the moved node into. */
+/** insertBeforeNodeId:[int] Drop node before this one (if absent, the moved node becomes the last child of
+`targetNodeId`). */
   dart_async.Future<DOMMoveToResponse> moveTo(
       {int nodeId, int targetNodeId, int insertBeforeNodeId}) {
     var params = {};
@@ -6571,6 +8255,8 @@ identifier. */
 
 /** Searches for a given string in the DOM tree. Use `getSearchResults` to access search results or
 `cancelSearch` to end this search session. */
+/** query:[String] Plain text or query selector or XPath search query. */
+/** includeUserAgentShadowDOM:[bool] True to search in user agent shadow DOM. */
   dart_async.Future<DOMPerformSearchResponse> performSearch(
       {String query, bool includeUserAgentShadowDOM}) {
     var params = {};
@@ -6585,6 +8271,7 @@ identifier. */
   }
 
 /** Requests that the node is sent to the caller given its path. // FIXME, use XPath */
+/** path:[String] Path to node in the proprietary format. */
   dart_async.Future<DOMPushNodeByPathToFrontendResponse>
       pushNodeByPathToFrontend({String path}) {
     var params = {};
@@ -6596,6 +8283,7 @@ identifier. */
   }
 
 /** Requests that a batch of nodes is sent to the caller given their backend node ids. */
+/** backendNodeIds:[List] The array of backend node ids. */
   dart_async.Future<DOMPushNodesByBackendIdsToFrontendResponse>
       pushNodesByBackendIdsToFrontend({List<int> backendNodeIds}) {
     var params = {};
@@ -6608,6 +8296,8 @@ identifier. */
   }
 
 /** Executes `querySelector` on a given node. */
+/** nodeId:[int] Id of the node to query upon. */
+/** selector:[String] Selector string. */
   dart_async.Future<DOMQuerySelectorResponse> querySelector(
       {int nodeId, String selector}) {
     var params = {};
@@ -6621,6 +8311,8 @@ identifier. */
   }
 
 /** Executes `querySelectorAll` on a given node. */
+/** nodeId:[int] Id of the node to query upon. */
+/** selector:[String] Selector string. */
   dart_async.Future<DOMQuerySelectorAllResponse> querySelectorAll(
       {int nodeId, String selector}) {
     var params = {};
@@ -6640,6 +8332,8 @@ identifier. */
   }
 
 /** Removes attribute with given name from an element with given id. */
+/** nodeId:[int] Id of the element to remove attribute from. */
+/** name:[String] Name of the attribute to remove. */
   dart_async.Future removeAttribute({int nodeId, String name}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6650,6 +8344,7 @@ identifier. */
   }
 
 /** Removes node with given id. */
+/** nodeId:[int] Id of the node to remove. */
   dart_async.Future removeNode({int nodeId}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6660,6 +8355,11 @@ identifier. */
 /** Requests that children of the node with given id are returned to the caller in form of
 `setChildNodes` events where not only immediate children are retrieved, but all children down to
 the specified depth. */
+/** nodeId:[int] Id of the node to get children for. */
+/** depth:[int] The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the
+entire subtree or provide an integer larger than 0. */
+/** pierce:[bool] Whether or not iframes and shadow roots should be traversed when returning the sub-tree
+(default is false). */
   dart_async.Future requestChildNodes({int nodeId, int depth, bool pierce}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6674,6 +8374,7 @@ the specified depth. */
 /** Requests that the node is sent to the caller given the JavaScript node object reference. All
 nodes that form the path from the node to the root are also sent to the client as a series of
 `setChildNodes` notifications. */
+/** objectId:[String] JavaScript object id to convert into node. */
   dart_async.Future<DOMRequestNodeResponse> requestNode({String objectId}) {
     var params = {};
     if (objectId != null) params['objectId'] = objectId;
@@ -6684,6 +8385,9 @@ nodes that form the path from the node to the root are also sent to the client a
   }
 
 /** Resolves the JavaScript node object for a given NodeId or BackendNodeId. */
+/** nodeId:[int] Id of the node to resolve. */
+/** backendNodeId:[int] Backend identifier of the node to resolve. */
+/** objectGroup:[String] Symbolic group name that can be used to release multiple objects. */
   dart_async.Future<DOMResolveNodeResponse> resolveNode(
       {int nodeId, int backendNodeId, String objectGroup}) {
     var params = {};
@@ -6699,6 +8403,9 @@ nodes that form the path from the node to the root are also sent to the client a
   }
 
 /** Sets attribute for an element with given id. */
+/** nodeId:[int] Id of the element to set attribute for. */
+/** name:[String] Attribute name. */
+/** value:[String] Attribute value. */
   dart_async.Future setAttributeValue({int nodeId, String name, String value}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6712,6 +8419,10 @@ nodes that form the path from the node to the root are also sent to the client a
 
 /** Sets attributes on element with given id. This method is useful when user edits some existing
 attribute value and types in several attribute name/value pairs. */
+/** nodeId:[int] Id of the element to set attributes for. */
+/** text:[String] Text with a number of attributes. Will parse this text using HTML parser. */
+/** name:[String] Attribute name to replace with new attributes derived from text in case text parsed
+successfully. */
   dart_async.Future setAttributesAsText(
       {int nodeId, String text, String name}) {
     var params = {};
@@ -6725,6 +8436,10 @@ attribute value and types in several attribute name/value pairs. */
   }
 
 /** Sets files for the given file input element. */
+/** files:[List] Array of file paths to set. */
+/** nodeId:[int] Identifier of the node. */
+/** backendNodeId:[int] Identifier of the backend node. */
+/** objectId:[String] JavaScript object id of the node wrapper. */
   dart_async.Future setFileInputFiles(
       {List files, int nodeId, int backendNodeId, String objectId}) {
     var params = {};
@@ -6741,6 +8456,7 @@ attribute value and types in several attribute name/value pairs. */
 
 /** Enables console to refer to the node with given id via $x (see Command Line API for more details
 $x functions). */
+/** nodeId:[int] DOM node id to be accessible by means of $x command line API. */
   dart_async.Future setInspectedNode({int nodeId}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6749,6 +8465,8 @@ $x functions). */
   }
 
 /** Sets node name for a node with given id. */
+/** nodeId:[int] Id of the node to set name for. */
+/** name:[String] New node's name. */
   dart_async.Future<DOMSetNodeNameResponse> setNodeName(
       {int nodeId, String name}) {
     var params = {};
@@ -6762,6 +8480,8 @@ $x functions). */
   }
 
 /** Sets node value for a node with given id. */
+/** nodeId:[int] Id of the node to set value for. */
+/** value:[String] New node's value. */
   dart_async.Future setNodeValue({int nodeId, String value}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6772,6 +8492,8 @@ $x functions). */
   }
 
 /** Sets node HTML markup, returns new node id. */
+/** nodeId:[int] Id of the node to set markup for. */
+/** outerHTML:[String] Outer HTML markup to set. */
   dart_async.Future setOuterHTML({int nodeId, String outerHTML}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6788,6 +8510,7 @@ $x functions). */
   }
 
 /** Returns iframe node that owns iframe with the given domain. */
+/** frameId:[String]  */
   dart_async.Future<DOMGetFrameOwnerResponse> getFrameOwner({String frameId}) {
     var params = {};
     if (frameId != null) params['frameId'] = frameId;
@@ -6797,81 +8520,116 @@ $x functions). */
         .then((response) => new DOMGetFrameOwnerResponse(response));
   }
 
-/** Fired when `Element`'s attribute is modified. */
-  dart_async.Stream get onAttributeModified => _onAttributeModified.stream;
-/** Fired when `Element`'s attribute is removed. */
-  dart_async.Stream get onAttributeRemoved => _onAttributeRemoved.stream;
-/** Mirrors `DOMCharacterDataModified` event. */
-  dart_async.Stream get onCharacterDataModified =>
-      _onCharacterDataModified.stream;
-/** Fired when `Container`'s child node count has changed. */
-  dart_async.Stream get onChildNodeCountUpdated =>
-      _onChildNodeCountUpdated.stream;
-/** Mirrors `DOMNodeInserted` event. */
-  dart_async.Stream get onChildNodeInserted => _onChildNodeInserted.stream;
-/** Mirrors `DOMNodeRemoved` event. */
-  dart_async.Stream get onChildNodeRemoved => _onChildNodeRemoved.stream;
-/** Called when distrubution is changed. */
-  dart_async.Stream get onDistributedNodesUpdated =>
-      _onDistributedNodesUpdated.stream;
-/** Fired when `Document` has been totally updated. Node ids are no longer valid. */
-  dart_async.Stream get onDocumentUpdated => _onDocumentUpdated.stream;
-/** Fired when `Element`'s inline style is modified via a CSS property modification. */
-  dart_async.Stream get onInlineStyleInvalidated =>
-      _onInlineStyleInvalidated.stream;
-/** Called when a pseudo element is added to an element. */
-  dart_async.Stream get onPseudoElementAdded => _onPseudoElementAdded.stream;
-/** Called when a pseudo element is removed from an element. */
-  dart_async.Stream get onPseudoElementRemoved =>
+/** Broadcast stream: Fired when `Element`'s attribute is modified. */
+  dart_async.Stream<DOMAttributeModifiedEvent> get onAttributeModified =>
+      _onAttributeModified.stream;
+/** Broadcast stream: Fired when `Element`'s attribute is removed. */
+  dart_async.Stream<DOMAttributeRemovedEvent> get onAttributeRemoved =>
+      _onAttributeRemoved.stream;
+/** Broadcast stream: Mirrors `DOMCharacterDataModified` event. */
+  dart_async.Stream<DOMCharacterDataModifiedEvent>
+      get onCharacterDataModified => _onCharacterDataModified.stream;
+/** Broadcast stream: Fired when `Container`'s child node count has changed. */
+  dart_async.Stream<DOMChildNodeCountUpdatedEvent>
+      get onChildNodeCountUpdated => _onChildNodeCountUpdated.stream;
+/** Broadcast stream: Mirrors `DOMNodeInserted` event. */
+  dart_async.Stream<DOMChildNodeInsertedEvent> get onChildNodeInserted =>
+      _onChildNodeInserted.stream;
+/** Broadcast stream: Mirrors `DOMNodeRemoved` event. */
+  dart_async.Stream<DOMChildNodeRemovedEvent> get onChildNodeRemoved =>
+      _onChildNodeRemoved.stream;
+/** Broadcast stream: Called when distrubution is changed. */
+  dart_async.Stream<DOMDistributedNodesUpdatedEvent>
+      get onDistributedNodesUpdated => _onDistributedNodesUpdated.stream;
+/** Broadcast stream: Fired when `Document` has been totally updated. Node ids are no longer valid. */
+  dart_async.Stream<DOMDocumentUpdatedEvent> get onDocumentUpdated =>
+      _onDocumentUpdated.stream;
+/** Broadcast stream: Fired when `Element`'s inline style is modified via a CSS property modification. */
+  dart_async.Stream<DOMInlineStyleInvalidatedEvent>
+      get onInlineStyleInvalidated => _onInlineStyleInvalidated.stream;
+/** Broadcast stream: Called when a pseudo element is added to an element. */
+  dart_async.Stream<DOMPseudoElementAddedEvent> get onPseudoElementAdded =>
+      _onPseudoElementAdded.stream;
+/** Broadcast stream: Called when a pseudo element is removed from an element. */
+  dart_async.Stream<DOMPseudoElementRemovedEvent> get onPseudoElementRemoved =>
       _onPseudoElementRemoved.stream;
-/** Fired when backend wants to provide client with the missing DOM structure. This happens upon
+/** Broadcast stream: Fired when backend wants to provide client with the missing DOM structure. This happens upon
 most of the calls requesting node ids. */
-  dart_async.Stream get onSetChildNodes => _onSetChildNodes.stream;
-/** Called when shadow root is popped from the element. */
-  dart_async.Stream get onShadowRootPopped => _onShadowRootPopped.stream;
-/** Called when shadow root is pushed into the element. */
-  dart_async.Stream get onShadowRootPushed => _onShadowRootPushed.stream;
+  dart_async.Stream<DOMSetChildNodesEvent> get onSetChildNodes =>
+      _onSetChildNodes.stream;
+/** Broadcast stream: Called when shadow root is popped from the element. */
+  dart_async.Stream<DOMShadowRootPoppedEvent> get onShadowRootPopped =>
+      _onShadowRootPopped.stream;
+/** Broadcast stream: Called when shadow root is pushed into the element. */
+  dart_async.Stream<DOMShadowRootPushedEvent> get onShadowRootPushed =>
+      _onShadowRootPushed.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'DOM.attributeModified', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.attributeModified', (json_rpc_2.Parameters params) {
+      _onAttributeModified.add(new DOMAttributeModifiedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.attributeRemoved', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.attributeRemoved', (json_rpc_2.Parameters params) {
+      _onAttributeRemoved.add(new DOMAttributeRemovedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.characterDataModified', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.characterDataModified',
+        (json_rpc_2.Parameters params) {
+      _onCharacterDataModified
+          .add(new DOMCharacterDataModifiedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.childNodeCountUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.childNodeCountUpdated',
+        (json_rpc_2.Parameters params) {
+      _onChildNodeCountUpdated
+          .add(new DOMChildNodeCountUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.childNodeInserted', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.childNodeInserted', (json_rpc_2.Parameters params) {
+      _onChildNodeInserted.add(new DOMChildNodeInsertedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.childNodeRemoved', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.childNodeRemoved', (json_rpc_2.Parameters params) {
+      _onChildNodeRemoved.add(new DOMChildNodeRemovedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.distributedNodesUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.distributedNodesUpdated',
+        (json_rpc_2.Parameters params) {
+      _onDistributedNodesUpdated
+          .add(new DOMDistributedNodesUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.documentUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.documentUpdated', (json_rpc_2.Parameters params) {
+      _onDocumentUpdated.add(new DOMDocumentUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.inlineStyleInvalidated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.inlineStyleInvalidated',
+        (json_rpc_2.Parameters params) {
+      _onInlineStyleInvalidated
+          .add(new DOMInlineStyleInvalidatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.pseudoElementAdded', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.pseudoElementAdded',
+        (json_rpc_2.Parameters params) {
+      _onPseudoElementAdded.add(new DOMPseudoElementAddedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.pseudoElementRemoved', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.pseudoElementRemoved',
+        (json_rpc_2.Parameters params) {
+      _onPseudoElementRemoved
+          .add(new DOMPseudoElementRemovedEvent(params.asMap));
+    });
 
-    rpc.registerMethod('DOM.setChildNodes', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.setChildNodes', (json_rpc_2.Parameters params) {
+      _onSetChildNodes.add(new DOMSetChildNodesEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.shadowRootPopped', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.shadowRootPopped', (json_rpc_2.Parameters params) {
+      _onShadowRootPopped.add(new DOMShadowRootPoppedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOM.shadowRootPushed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOM.shadowRootPushed', (json_rpc_2.Parameters params) {
+      _onShadowRootPushed.add(new DOMShadowRootPushedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -6894,7 +8652,9 @@ most of the calls requesting node ids. */
 
 class DOMDebuggerGetEventListenersResponse {
   DOMDebuggerGetEventListenersResponse(Map map) {
-    listeners = map['listeners'];
+    listeners = map.containsKey('listeners')
+        ? map['listeners'].map((m) => new EventListener(m)).toList()
+        : null;
   }
 
   List<EventListener> listeners;
@@ -6906,6 +8666,11 @@ class DevToolsDOMDebugger {
   final ChromeDevToolsBase _devtools;
 
 /** Returns event listeners of the given object. */
+/** objectId:[String] Identifier of the object to return listeners for. */
+/** depth:[int] The maximum depth at which Node children should be retrieved, defaults to 1. Use -1 for the
+entire subtree or provide an integer larger than 0. */
+/** pierce:[bool] Whether or not iframes and shadow roots should be traversed when returning the subtree
+(default is false). Reports listeners for all contexts if pierce is enabled. */
   dart_async.Future<DOMDebuggerGetEventListenersResponse> getEventListeners(
       {String objectId, int depth, bool pierce}) {
     var params = {};
@@ -6921,6 +8686,8 @@ class DevToolsDOMDebugger {
   }
 
 /** Removes DOM breakpoint that was set using `setDOMBreakpoint`. */
+/** nodeId:[int] Identifier of the node to remove breakpoint from. */
+/** type:[String] Type of the breakpoint to remove. */
   dart_async.Future removeDOMBreakpoint({int nodeId, String type}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6931,6 +8698,8 @@ class DevToolsDOMDebugger {
   }
 
 /** Removes breakpoint on particular DOM event. */
+/** eventName:[String] Event name. */
+/** targetName:[String] EventTarget interface name. */
   dart_async.Future removeEventListenerBreakpoint(
       {String eventName, String targetName}) {
     var params = {};
@@ -6943,6 +8712,7 @@ class DevToolsDOMDebugger {
   }
 
 /** Removes breakpoint on particular native event. */
+/** eventName:[String] Instrumentation name to stop on. */
   dart_async.Future removeInstrumentationBreakpoint({String eventName}) {
     var params = {};
     if (eventName != null) params['eventName'] = eventName;
@@ -6952,6 +8722,7 @@ class DevToolsDOMDebugger {
   }
 
 /** Removes breakpoint from XMLHttpRequest. */
+/** url:[String] Resource URL substring. */
   dart_async.Future removeXHRBreakpoint({String url}) {
     var params = {};
     if (url != null) params['url'] = url;
@@ -6960,6 +8731,8 @@ class DevToolsDOMDebugger {
   }
 
 /** Sets breakpoint on particular operation with DOM. */
+/** nodeId:[int] Identifier of the node to set breakpoint on. */
+/** type:[String] Type of the operation to stop upon. */
   dart_async.Future setDOMBreakpoint({int nodeId, String type}) {
     var params = {};
     if (nodeId != null) params['nodeId'] = nodeId;
@@ -6970,6 +8743,9 @@ class DevToolsDOMDebugger {
   }
 
 /** Sets breakpoint on particular DOM event. */
+/** eventName:[String] DOM Event name to stop on (any DOM event will do). */
+/** targetName:[String] EventTarget interface name to stop on. If equal to `"*"` or not provided, will stop on any
+EventTarget. */
   dart_async.Future setEventListenerBreakpoint(
       {String eventName, String targetName}) {
     var params = {};
@@ -6982,6 +8758,7 @@ class DevToolsDOMDebugger {
   }
 
 /** Sets breakpoint on particular native event. */
+/** eventName:[String] Instrumentation name to stop on. */
   dart_async.Future setInstrumentationBreakpoint({String eventName}) {
     var params = {};
     if (eventName != null) params['eventName'] = eventName;
@@ -6991,6 +8768,7 @@ class DevToolsDOMDebugger {
   }
 
 /** Sets breakpoint on XMLHttpRequest. */
+/** url:[String] Resource URL substring. All XHRs having this substring in the URL will get stopped upon. */
   dart_async.Future setXHRBreakpoint({String url}) {
     var params = {};
     if (url != null) params['url'] = url;
@@ -7004,9 +8782,15 @@ class DevToolsDOMDebugger {
 
 class DOMSnapshotGetSnapshotResponse {
   DOMSnapshotGetSnapshotResponse(Map map) {
-    domNodes = map['domNodes'];
-    layoutTreeNodes = map['layoutTreeNodes'];
-    computedStyles = map['computedStyles'];
+    domNodes = map.containsKey('domNodes')
+        ? map['domNodes'].map((m) => new DOMNode(m)).toList()
+        : null;
+    layoutTreeNodes = map.containsKey('layoutTreeNodes')
+        ? map['layoutTreeNodes'].map((m) => new LayoutTreeNode(m)).toList()
+        : null;
+    computedStyles = map.containsKey('computedStyles')
+        ? map['computedStyles'].map((m) => new ComputedStyle(m)).toList()
+        : null;
   }
 
   List<DOMNode> domNodes;
@@ -7025,6 +8809,8 @@ class DevToolsDOMSnapshot {
 template contents, and imported documents) in a flattened array, as well as layout and
 white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is
 flattened. */
+/** computedStyleWhitelist:[List] Whitelist of computed styles to return. */
+/** includeEventListeners:[bool] Whether or not to retrieve details of DOM listeners (default false). */
   dart_async.Future<DOMSnapshotGetSnapshotResponse> getSnapshot(
       {List computedStyleWhitelist, bool includeEventListeners}) {
     var params = {};
@@ -7045,10 +8831,80 @@ flattened. */
 
 class DOMStorageGetDOMStorageItemsResponse {
   DOMStorageGetDOMStorageItemsResponse(Map map) {
-    entries = map['entries'];
+    entries = map.containsKey('entries')
+        ? map['entries'].map((m) => new List(m)).toList()
+        : null;
   }
 
   List<List> entries;
+}
+
+/// Fired on `DOMStorage.domStorageItemAdded`.
+class DOMStorageDomStorageItemAddedEvent {
+  DOMStorageDomStorageItemAddedEvent(Map map) {
+    storageId =
+        map.containsKey('storageId') ? new StorageId(map['storageId']) : null;
+    key = map['key'];
+    newValue = map['newValue'];
+  }
+
+/**  */
+  StorageId storageId;
+
+/**  */
+  String key;
+
+/**  */
+  String newValue;
+}
+
+/// Fired on `DOMStorage.domStorageItemRemoved`.
+class DOMStorageDomStorageItemRemovedEvent {
+  DOMStorageDomStorageItemRemovedEvent(Map map) {
+    storageId =
+        map.containsKey('storageId') ? new StorageId(map['storageId']) : null;
+    key = map['key'];
+  }
+
+/**  */
+  StorageId storageId;
+
+/**  */
+  String key;
+}
+
+/// Fired on `DOMStorage.domStorageItemUpdated`.
+class DOMStorageDomStorageItemUpdatedEvent {
+  DOMStorageDomStorageItemUpdatedEvent(Map map) {
+    storageId =
+        map.containsKey('storageId') ? new StorageId(map['storageId']) : null;
+    key = map['key'];
+    oldValue = map['oldValue'];
+    newValue = map['newValue'];
+  }
+
+/**  */
+  StorageId storageId;
+
+/**  */
+  String key;
+
+/**  */
+  String oldValue;
+
+/**  */
+  String newValue;
+}
+
+/// Fired on `DOMStorage.domStorageItemsCleared`.
+class DOMStorageDomStorageItemsClearedEvent {
+  DOMStorageDomStorageItemsClearedEvent(Map map) {
+    storageId =
+        map.containsKey('storageId') ? new StorageId(map['storageId']) : null;
+  }
+
+/**  */
+  StorageId storageId;
 }
 
 class DevToolsDOMStorage {
@@ -7056,19 +8912,20 @@ class DevToolsDOMStorage {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onDomStorageItemAdded =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMStorageDomStorageItemAddedEvent>
+      _onDomStorageItemAdded = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onDomStorageItemRemoved =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMStorageDomStorageItemRemovedEvent>
+      _onDomStorageItemRemoved = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onDomStorageItemUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMStorageDomStorageItemUpdatedEvent>
+      _onDomStorageItemUpdated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onDomStorageItemsCleared =
-      new dart_async.StreamController();
+  dart_async.StreamController<DOMStorageDomStorageItemsClearedEvent>
+      _onDomStorageItemsCleared = new dart_async.StreamController.broadcast();
 
 /**  */
+/** storageId:[StorageId]  */
   dart_async.Future clear({StorageId storageId}) {
     var params = {};
     if (storageId != null) params['storageId'] = storageId;
@@ -7089,6 +8946,7 @@ class DevToolsDOMStorage {
   }
 
 /**  */
+/** storageId:[StorageId]  */
   dart_async.Future<DOMStorageGetDOMStorageItemsResponse> getDOMStorageItems(
       {StorageId storageId}) {
     var params = {};
@@ -7100,6 +8958,8 @@ class DevToolsDOMStorage {
   }
 
 /**  */
+/** storageId:[StorageId]  */
+/** key:[String]  */
   dart_async.Future removeDOMStorageItem({StorageId storageId, String key}) {
     var params = {};
     if (storageId != null) params['storageId'] = storageId;
@@ -7110,6 +8970,9 @@ class DevToolsDOMStorage {
   }
 
 /**  */
+/** storageId:[StorageId]  */
+/** key:[String]  */
+/** value:[String]  */
   dart_async.Future setDOMStorageItem(
       {StorageId storageId, String key, String value}) {
     var params = {};
@@ -7122,29 +8985,42 @@ class DevToolsDOMStorage {
     return _devtools.rpc.sendRequest('DOMStorage.setDOMStorageItem', params);
   }
 
-/**  */
-  dart_async.Stream get onDomStorageItemAdded => _onDomStorageItemAdded.stream;
-/**  */
-  dart_async.Stream get onDomStorageItemRemoved =>
-      _onDomStorageItemRemoved.stream;
-/**  */
-  dart_async.Stream get onDomStorageItemUpdated =>
-      _onDomStorageItemUpdated.stream;
-/**  */
-  dart_async.Stream get onDomStorageItemsCleared =>
-      _onDomStorageItemsCleared.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<DOMStorageDomStorageItemAddedEvent>
+      get onDomStorageItemAdded => _onDomStorageItemAdded.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<DOMStorageDomStorageItemRemovedEvent>
+      get onDomStorageItemRemoved => _onDomStorageItemRemoved.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<DOMStorageDomStorageItemUpdatedEvent>
+      get onDomStorageItemUpdated => _onDomStorageItemUpdated.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<DOMStorageDomStorageItemsClearedEvent>
+      get onDomStorageItemsCleared => _onDomStorageItemsCleared.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'DOMStorage.domStorageItemAdded', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOMStorage.domStorageItemAdded',
+        (json_rpc_2.Parameters params) {
+      _onDomStorageItemAdded
+          .add(new DOMStorageDomStorageItemAddedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOMStorage.domStorageItemRemoved', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOMStorage.domStorageItemRemoved',
+        (json_rpc_2.Parameters params) {
+      _onDomStorageItemRemoved
+          .add(new DOMStorageDomStorageItemRemovedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOMStorage.domStorageItemUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOMStorage.domStorageItemUpdated',
+        (json_rpc_2.Parameters params) {
+      _onDomStorageItemUpdated
+          .add(new DOMStorageDomStorageItemUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'DOMStorage.domStorageItemsCleared', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('DOMStorage.domStorageItemsCleared',
+        (json_rpc_2.Parameters params) {
+      _onDomStorageItemsCleared
+          .add(new DOMStorageDomStorageItemsClearedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -7157,9 +9033,10 @@ class DevToolsDOMStorage {
 
 class DatabaseExecuteSQLResponse {
   DatabaseExecuteSQLResponse(Map map) {
-    columnNames = map['columnNames'];
-    values = map['values'];
-    sqlError = map['sqlError'];
+    columnNames =
+        map.containsKey('columnNames') ? new List(map['columnNames']) : null;
+    values = map.containsKey('values') ? new List(map['values']) : null;
+    sqlError = map.containsKey('sqlError') ? new Error(map['sqlError']) : null;
   }
 
   List columnNames;
@@ -7171,10 +9048,22 @@ class DatabaseExecuteSQLResponse {
 
 class DatabaseGetDatabaseTableNamesResponse {
   DatabaseGetDatabaseTableNamesResponse(Map map) {
-    tableNames = map['tableNames'];
+    tableNames =
+        map.containsKey('tableNames') ? new List(map['tableNames']) : null;
   }
 
   List tableNames;
+}
+
+/// Fired on `Database.addDatabase`.
+class DatabaseAddDatabaseEvent {
+  DatabaseAddDatabaseEvent(Map map) {
+    database =
+        map.containsKey('database') ? new Database(map['database']) : null;
+  }
+
+/**  */
+  Database database;
 }
 
 class DevToolsDatabase {
@@ -7182,8 +9071,8 @@ class DevToolsDatabase {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onAddDatabase =
-      new dart_async.StreamController();
+  dart_async.StreamController<DatabaseAddDatabaseEvent> _onAddDatabase =
+      new dart_async.StreamController.broadcast();
 
 /** Disables database tracking, prevents database events from being sent to the client. */
   dart_async.Future disable() {
@@ -7198,6 +9087,8 @@ class DevToolsDatabase {
   }
 
 /**  */
+/** databaseId:[String]  */
+/** query:[String]  */
   dart_async.Future<DatabaseExecuteSQLResponse> executeSQL(
       {String databaseId, String query}) {
     var params = {};
@@ -7211,6 +9102,7 @@ class DevToolsDatabase {
   }
 
 /**  */
+/** databaseId:[String]  */
   dart_async.Future<DatabaseGetDatabaseTableNamesResponse>
       getDatabaseTableNames({String databaseId}) {
     var params = {};
@@ -7222,11 +9114,13 @@ class DevToolsDatabase {
             (response) => new DatabaseGetDatabaseTableNamesResponse(response));
   }
 
-/**  */
-  dart_async.Stream get onAddDatabase => _onAddDatabase.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<DatabaseAddDatabaseEvent> get onAddDatabase =>
+      _onAddDatabase.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Database.addDatabase', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Database.addDatabase', (json_rpc_2.Parameters params) {
+      _onAddDatabase.add(new DatabaseAddDatabaseEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -7247,6 +9141,9 @@ class DevToolsDeviceOrientation {
   }
 
 /** Overrides the Device Orientation. */
+/** alpha:[num] Mock alpha */
+/** beta:[num] Mock beta */
+/** gamma:[num] Mock gamma */
   dart_async.Future setDeviceOrientationOverride(
       {num alpha, num beta, num gamma}) {
     var params = {};
@@ -7280,19 +9177,46 @@ class EmulationSetVirtualTimePolicyResponse {
   num virtualTimeBase;
 }
 
+/// Fired on `Emulation.virtualTimeAdvanced`.
+class EmulationVirtualTimeAdvancedEvent {
+  EmulationVirtualTimeAdvancedEvent(Map map) {
+    virtualTimeElapsed = map['virtualTimeElapsed'];
+  }
+
+/** The amount of virtual time that has elapsed in milliseconds since virtual time was first
+enabled. */
+  num virtualTimeElapsed;
+}
+
+/// Fired on `Emulation.virtualTimeBudgetExpired`.
+class EmulationVirtualTimeBudgetExpiredEvent {
+  EmulationVirtualTimeBudgetExpiredEvent(Map map) {}
+}
+
+/// Fired on `Emulation.virtualTimePaused`.
+class EmulationVirtualTimePausedEvent {
+  EmulationVirtualTimePausedEvent(Map map) {
+    virtualTimeElapsed = map['virtualTimeElapsed'];
+  }
+
+/** The amount of virtual time that has elapsed in milliseconds since virtual time was first
+enabled. */
+  num virtualTimeElapsed;
+}
+
 class DevToolsEmulation {
   DevToolsEmulation(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onVirtualTimeAdvanced =
-      new dart_async.StreamController();
+  dart_async.StreamController<EmulationVirtualTimeAdvancedEvent>
+      _onVirtualTimeAdvanced = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onVirtualTimeBudgetExpired =
-      new dart_async.StreamController();
+  dart_async.StreamController<EmulationVirtualTimeBudgetExpiredEvent>
+      _onVirtualTimeBudgetExpired = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onVirtualTimePaused =
-      new dart_async.StreamController();
+  dart_async.StreamController<EmulationVirtualTimePausedEvent>
+      _onVirtualTimePaused = new dart_async.StreamController.broadcast();
 
 /** Tells whether emulation is supported. */
   dart_async.Future<EmulationCanEmulateResponse> canEmulate() {
@@ -7323,6 +9247,7 @@ class DevToolsEmulation {
   }
 
 /** Enables CPU throttling to emulate slow CPUs. */
+/** rate:[num] Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc). */
   dart_async.Future setCPUThrottlingRate({num rate}) {
     var params = {};
     if (rate != null) params['rate'] = rate;
@@ -7332,6 +9257,8 @@ class DevToolsEmulation {
 
 /** Sets or clears an override of the default background color of the frame. This override is used
 if the content does not specify one. */
+/** color:[RGBA] RGBA of the default background color. If not specified, any existing override will be
+cleared. */
   dart_async.Future setDefaultBackgroundColorOverride({RGBA color}) {
     var params = {};
     if (color != null) params['color'] = color;
@@ -7343,6 +9270,20 @@ if the content does not specify one. */
 /** Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
 window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media
 query results). */
+/** width:[int] Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override. */
+/** height:[int] Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override. */
+/** deviceScaleFactor:[num] Overriding device scale factor value. 0 disables the override. */
+/** mobile:[bool] Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
+autosizing and more. */
+/** scale:[num] Scale to apply to resulting view image. */
+/** screenWidth:[int] Overriding screen width value in pixels (minimum 0, maximum 10000000). */
+/** screenHeight:[int] Overriding screen height value in pixels (minimum 0, maximum 10000000). */
+/** positionX:[int] Overriding view X position on screen in pixels (minimum 0, maximum 10000000). */
+/** positionY:[int] Overriding view Y position on screen in pixels (minimum 0, maximum 10000000). */
+/** dontSetVisibleSize:[bool] Do not set visible view size, rely upon explicit setVisibleSize call. */
+/** screenOrientation:[ScreenOrientation] Screen orientation override. */
+/** viewport:[Viewport] If set, the visible area of the page will be overridden to this viewport. This viewport
+change is not observed by the page, e.g. viewport-relative elements do not change positions. */
   dart_async.Future setDeviceMetricsOverride(
       {int width,
       int height,
@@ -7389,6 +9330,8 @@ query results). */
   }
 
 /**  */
+/** enabled:[bool] Whether touch emulation based on mouse input should be enabled. */
+/** configuration:[String] Touch/gesture events configuration. Default: current platform. */
   dart_async.Future setEmitTouchEventsForMouse(
       {bool enabled, String configuration}) {
     var params = {};
@@ -7401,6 +9344,7 @@ query results). */
   }
 
 /** Emulates the given media for CSS media queries. */
+/** media:[String] Media type to emulate. Empty string disables the override. */
   dart_async.Future setEmulatedMedia({String media}) {
     var params = {};
     if (media != null) params['media'] = media;
@@ -7410,6 +9354,9 @@ query results). */
 
 /** Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
 unavailable. */
+/** latitude:[num] Mock latitude */
+/** longitude:[num] Mock longitude */
+/** accuracy:[num] Mock accuracy */
   dart_async.Future setGeolocationOverride(
       {num latitude, num longitude, num accuracy}) {
     var params = {};
@@ -7424,6 +9371,7 @@ unavailable. */
   }
 
 /** Overrides value returned by the javascript navigator object. */
+/** platform:[String] The platform navigator.platform should return. */
   dart_async.Future setNavigatorOverrides({String platform}) {
     var params = {};
     if (platform != null) params['platform'] = platform;
@@ -7432,6 +9380,7 @@ unavailable. */
   }
 
 /** Sets a specified page scale factor. */
+/** pageScaleFactor:[num] Page scale factor. */
   dart_async.Future setPageScaleFactor({num pageScaleFactor}) {
     var params = {};
     if (pageScaleFactor != null) params['pageScaleFactor'] = pageScaleFactor;
@@ -7440,6 +9389,7 @@ unavailable. */
   }
 
 /** Switches script execution in the page. */
+/** value:[bool] Whether script execution should be disabled in the page. */
   dart_async.Future setScriptExecutionDisabled({bool value}) {
     var params = {};
     if (value != null) params['value'] = value;
@@ -7449,6 +9399,8 @@ unavailable. */
   }
 
 /** Enables touch on platforms which do not support them. */
+/** enabled:[bool] Whether the touch event emulation should be enabled. */
+/** maxTouchPoints:[int] Maximum touch points supported. Defaults to one. */
   dart_async.Future setTouchEmulationEnabled(
       {bool enabled, int maxTouchPoints}) {
     var params = {};
@@ -7462,6 +9414,13 @@ unavailable. */
 
 /** Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets
 the current virtual time policy.  Note this supersedes any previous time budget. */
+/** policy:[String]  */
+/** budget:[num] If set, after this many virtual milliseconds have elapsed virtual time will be paused and a
+virtualTimeBudgetExpired event is sent. */
+/** maxVirtualTimeTaskStarvationCount:[int] If set this specifies the maximum number of tasks that can be run before virtual is forced
+forwards to prevent deadlock. */
+/** waitForNavigation:[bool] If set the virtual time policy change should be deferred until any frame starts navigating.
+Note any previous deferred policy change is superseded. */
   dart_async.Future<EmulationSetVirtualTimePolicyResponse> setVirtualTimePolicy(
       {String policy,
       num budget,
@@ -7488,6 +9447,8 @@ the current virtual time policy.  Note this supersedes any previous time budget.
 /** Resizes the frame/viewport of the page. Note that this does not affect the frame's container
 (e.g. browser window). Can be used to produce screenshots of the specified size. Not supported
 on Android. */
+/** width:[int] Frame width (DIP). */
+/** height:[int] Frame height (DIP). */
   dart_async.Future setVisibleSize({int width, int height}) {
     var params = {};
     if (width != null) params['width'] = width;
@@ -7497,22 +9458,33 @@ on Android. */
     return _devtools.rpc.sendRequest('Emulation.setVisibleSize', params);
   }
 
-/** Notification sent after the virtual time has advanced. */
-  dart_async.Stream get onVirtualTimeAdvanced => _onVirtualTimeAdvanced.stream;
-/** Notification sent after the virtual time budget for the current VirtualTimePolicy has run out. */
-  dart_async.Stream get onVirtualTimeBudgetExpired =>
-      _onVirtualTimeBudgetExpired.stream;
-/** Notification sent after the virtual time has paused. */
-  dart_async.Stream get onVirtualTimePaused => _onVirtualTimePaused.stream;
+/** Broadcast stream: Notification sent after the virtual time has advanced. */
+  dart_async.Stream<EmulationVirtualTimeAdvancedEvent>
+      get onVirtualTimeAdvanced => _onVirtualTimeAdvanced.stream;
+/** Broadcast stream: Notification sent after the virtual time budget for the current VirtualTimePolicy has run out. */
+  dart_async.Stream<EmulationVirtualTimeBudgetExpiredEvent>
+      get onVirtualTimeBudgetExpired => _onVirtualTimeBudgetExpired.stream;
+/** Broadcast stream: Notification sent after the virtual time has paused. */
+  dart_async.Stream<EmulationVirtualTimePausedEvent> get onVirtualTimePaused =>
+      _onVirtualTimePaused.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Emulation.virtualTimeAdvanced', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Emulation.virtualTimeAdvanced',
+        (json_rpc_2.Parameters params) {
+      _onVirtualTimeAdvanced
+          .add(new EmulationVirtualTimeAdvancedEvent(params.asMap));
+    });
 
     rpc.registerMethod('Emulation.virtualTimeBudgetExpired',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onVirtualTimeBudgetExpired
+          .add(new EmulationVirtualTimeBudgetExpiredEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Emulation.virtualTimePaused', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Emulation.virtualTimePaused',
+        (json_rpc_2.Parameters params) {
+      _onVirtualTimePaused
+          .add(new EmulationVirtualTimePausedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -7536,20 +9508,48 @@ class HeadlessExperimentalBeginFrameResponse {
   String screenshotData;
 }
 
+/// Fired on `HeadlessExperimental.mainFrameReadyForScreenshots`.
+class HeadlessExperimentalMainFrameReadyForScreenshotsEvent {
+  HeadlessExperimentalMainFrameReadyForScreenshotsEvent(Map map) {}
+}
+
+/// Fired on `HeadlessExperimental.needsBeginFramesChanged`.
+class HeadlessExperimentalNeedsBeginFramesChangedEvent {
+  HeadlessExperimentalNeedsBeginFramesChangedEvent(Map map) {
+    needsBeginFrames = map['needsBeginFrames'];
+  }
+
+/** True if BeginFrames are needed, false otherwise. */
+  bool needsBeginFrames;
+}
+
 class DevToolsHeadlessExperimental {
   DevToolsHeadlessExperimental(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onMainFrameReadyForScreenshots =
-      new dart_async.StreamController();
+  dart_async.StreamController<
+          HeadlessExperimentalMainFrameReadyForScreenshotsEvent>
+      _onMainFrameReadyForScreenshots =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onNeedsBeginFramesChanged =
-      new dart_async.StreamController();
+  dart_async.StreamController<HeadlessExperimentalNeedsBeginFramesChangedEvent>
+      _onNeedsBeginFramesChanged = new dart_async.StreamController.broadcast();
 
 /** Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a
 screenshot from the resulting frame. Requires that the target was created with enabled
 BeginFrameControl. */
+/** frameTime:[num] Timestamp of this BeginFrame (milliseconds since epoch). If not set, the current time will
+be used. */
+/** deadline:[num] Deadline of this BeginFrame (milliseconds since epoch). If not set, the deadline will be
+calculated from the frameTime and interval. */
+/** interval:[num] The interval between BeginFrames that is reported to the compositor, in milliseconds.
+Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds. */
+/** noDisplayUpdates:[bool] Whether updates should not be committed and drawn onto the display. False by default. If
+true, only side effects of the BeginFrame will be run, such as layout and animations, but
+any visual updates may not be visible on the display or in screenshots. */
+/** screenshot:[ScreenshotParams] If set, a screenshot of the frame will be captured and returned in the response. Otherwise,
+no screenshot will be captured. */
   dart_async.Future<HeadlessExperimentalBeginFrameResponse> beginFrame(
       {num frameTime,
       num deadline,
@@ -7585,19 +9585,27 @@ BeginFrameControl. */
     return _devtools.rpc.sendRequest('HeadlessExperimental.enable', params);
   }
 
-/** Issued when the main frame has first submitted a frame to the browser. May only be fired while a
+/** Broadcast stream: Issued when the main frame has first submitted a frame to the browser. May only be fired while a
 BeginFrame is in flight. Before this event, screenshotting requests may fail. */
-  dart_async.Stream get onMainFrameReadyForScreenshots =>
-      _onMainFrameReadyForScreenshots.stream;
-/** Issued when the target starts or stops needing BeginFrames. */
-  dart_async.Stream get onNeedsBeginFramesChanged =>
-      _onNeedsBeginFramesChanged.stream;
+  dart_async.Stream<HeadlessExperimentalMainFrameReadyForScreenshotsEvent>
+      get onMainFrameReadyForScreenshots =>
+          _onMainFrameReadyForScreenshots.stream;
+/** Broadcast stream: Issued when the target starts or stops needing BeginFrames. */
+  dart_async.Stream<HeadlessExperimentalNeedsBeginFramesChangedEvent>
+      get onNeedsBeginFramesChanged => _onNeedsBeginFramesChanged.stream;
   void listen(json_rpc_2.Peer rpc) {
     rpc.registerMethod('HeadlessExperimental.mainFrameReadyForScreenshots',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onMainFrameReadyForScreenshots.add(
+          new HeadlessExperimentalMainFrameReadyForScreenshotsEvent(
+              params.asMap));
+    });
 
     rpc.registerMethod('HeadlessExperimental.needsBeginFramesChanged',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onNeedsBeginFramesChanged.add(
+          new HeadlessExperimentalNeedsBeginFramesChangedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -7634,6 +9642,7 @@ class DevToolsIO {
   final ChromeDevToolsBase _devtools;
 
 /** Close the stream, discard any temporary backing storage. */
+/** handle:[String] Handle of the stream to close. */
   dart_async.Future close({String handle}) {
     var params = {};
     if (handle != null) params['handle'] = handle;
@@ -7642,6 +9651,10 @@ class DevToolsIO {
   }
 
 /** Read a chunk of the stream */
+/** handle:[String] Handle of the stream to read. */
+/** offset:[int] Seek to the specified offset before reading (if not specificed, proceed with offset
+following the last read). */
+/** size:[int] Maximum number of bytes to read (left upon the agent discretion if not specified). */
   dart_async.Future<IOReadResponse> read(
       {String handle, int offset, int size}) {
     var params = {};
@@ -7657,6 +9670,7 @@ class DevToolsIO {
   }
 
 /** Return UUID of Blob object specified by a remote object id. */
+/** objectId:[String] Object id of a Blob object wrapper. */
   dart_async.Future<IOResolveBlobResponse> resolveBlob({String objectId}) {
     var params = {};
     if (objectId != null) params['objectId'] = objectId;
@@ -7672,7 +9686,9 @@ class DevToolsIO {
 
 class IndexedDBRequestDataResponse {
   IndexedDBRequestDataResponse(Map map) {
-    objectStoreDataEntries = map['objectStoreDataEntries'];
+    objectStoreDataEntries = map.containsKey('objectStoreDataEntries')
+        ? map['objectStoreDataEntries'].map((m) => new DataEntry(m)).toList()
+        : null;
     hasMore = map['hasMore'];
   }
 
@@ -7683,7 +9699,9 @@ class IndexedDBRequestDataResponse {
 
 class IndexedDBRequestDatabaseResponse {
   IndexedDBRequestDatabaseResponse(Map map) {
-    databaseWithObjectStores = map['databaseWithObjectStores'];
+    databaseWithObjectStores = map.containsKey('databaseWithObjectStores')
+        ? new DatabaseWithObjectStores(map['databaseWithObjectStores'])
+        : null;
   }
 
   DatabaseWithObjectStores databaseWithObjectStores;
@@ -7691,7 +9709,9 @@ class IndexedDBRequestDatabaseResponse {
 
 class IndexedDBRequestDatabaseNamesResponse {
   IndexedDBRequestDatabaseNamesResponse(Map map) {
-    databaseNames = map['databaseNames'];
+    databaseNames = map.containsKey('databaseNames')
+        ? new List(map['databaseNames'])
+        : null;
   }
 
   List databaseNames;
@@ -7703,6 +9723,9 @@ class DevToolsIndexedDB {
   final ChromeDevToolsBase _devtools;
 
 /** Clears all entries from an object store. */
+/** securityOrigin:[String] Security origin. */
+/** databaseName:[String] Database name. */
+/** objectStoreName:[String] Object store name. */
   dart_async.Future clearObjectStore(
       {String securityOrigin, String databaseName, String objectStoreName}) {
     var params = {};
@@ -7716,6 +9739,8 @@ class DevToolsIndexedDB {
   }
 
 /** Deletes a database. */
+/** securityOrigin:[String] Security origin. */
+/** databaseName:[String] Database name. */
   dart_async.Future deleteDatabase(
       {String securityOrigin, String databaseName}) {
     var params = {};
@@ -7727,6 +9752,10 @@ class DevToolsIndexedDB {
   }
 
 /** Delete a range of entries from an object store */
+/** securityOrigin:[String]  */
+/** databaseName:[String]  */
+/** objectStoreName:[String]  */
+/** keyRange:[KeyRange] Range of entry keys to delete */
   dart_async.Future deleteObjectStoreEntries(
       {String securityOrigin,
       String databaseName,
@@ -7758,6 +9787,13 @@ class DevToolsIndexedDB {
   }
 
 /** Requests data from object store or index. */
+/** securityOrigin:[String] Security origin. */
+/** databaseName:[String] Database name. */
+/** objectStoreName:[String] Object store name. */
+/** indexName:[String] Index name, empty string for object store data requests. */
+/** skipCount:[int] Number of records to skip. */
+/** pageSize:[int] Number of records to fetch. */
+/** keyRange:[KeyRange] Key range. */
   dart_async.Future<IndexedDBRequestDataResponse> requestData(
       {String securityOrigin,
       String databaseName,
@@ -7787,6 +9823,8 @@ class DevToolsIndexedDB {
   }
 
 /** Requests database with given name in given frame. */
+/** securityOrigin:[String] Security origin. */
+/** databaseName:[String] Database name. */
   dart_async.Future<IndexedDBRequestDatabaseResponse> requestDatabase(
       {String securityOrigin, String databaseName}) {
     var params = {};
@@ -7800,6 +9838,7 @@ class DevToolsIndexedDB {
   }
 
 /** Requests database names for given security origin. */
+/** securityOrigin:[String] Security origin. */
   dart_async.Future<IndexedDBRequestDatabaseNamesResponse> requestDatabaseNames(
       {String securityOrigin}) {
     var params = {};
@@ -7821,6 +9860,25 @@ class DevToolsInput {
   final ChromeDevToolsBase _devtools;
 
 /** Dispatches a key event to the page. */
+/** type:[String] Type of the key event. */
+/** modifiers:[int] Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+(default: 0). */
+/** timestamp:[num] Time at which the event occurred. */
+/** text:[String] Text as generated by processing a virtual key code with a keyboard layout. Not needed for
+for `keyUp` and `rawKeyDown` events (default: "") */
+/** unmodifiedText:[String] Text that would have been generated by the keyboard if no modifiers were pressed (except for
+shift). Useful for shortcut (accelerator) key handling (default: ""). */
+/** keyIdentifier:[String] Unique key identifier (e.g., 'U+0041') (default: ""). */
+/** code:[String] Unique DOM defined string value for each physical key (e.g., 'KeyA') (default: ""). */
+/** key:[String] Unique DOM defined string value describing the meaning of the key in the context of active
+modifiers, keyboard layout, etc (e.g., 'AltGr') (default: ""). */
+/** windowsVirtualKeyCode:[int] Windows virtual key code (default: 0). */
+/** nativeVirtualKeyCode:[int] Native virtual key code (default: 0). */
+/** autoRepeat:[bool] Whether the event was generated from auto repeat (default: false). */
+/** isKeypad:[bool] Whether the event was generated from the keypad (default: false). */
+/** isSystemKey:[bool] Whether the event was a system key event (default: false). */
+/** location:[int] Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default:
+0). */
   dart_async.Future dispatchKeyEvent(
       {String type,
       int modifiers,
@@ -7871,6 +9929,17 @@ class DevToolsInput {
   }
 
 /** Dispatches a mouse event to the page. */
+/** type:[String] Type of the mouse event. */
+/** x:[num] X coordinate of the event relative to the main frame's viewport in CSS pixels. */
+/** y:[num] Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
+the top of the viewport and Y increases as it proceeds towards the bottom of the viewport. */
+/** modifiers:[int] Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+(default: 0). */
+/** timestamp:[num] Time at which the event occurred. */
+/** button:[String] Mouse button (default: "none"). */
+/** clickCount:[int] Number of times the mouse button was clicked (default: 0). */
+/** deltaX:[num] X delta in CSS pixels for mouse wheel event (default: 0). */
+/** deltaY:[num] Y delta in CSS pixels for mouse wheel event (default: 0). */
   dart_async.Future dispatchMouseEvent(
       {String type,
       num x,
@@ -7904,6 +9973,14 @@ class DevToolsInput {
   }
 
 /** Dispatches a touch event to the page. */
+/** type:[String] Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while
+TouchStart and TouchMove must contains at least one. */
+/** touchPoints:[List] Active touch points on the touch device. One event per any changed point (compared to
+previous touch event in a sequence) is generated, emulating pressing/moving/releasing points
+one by one. */
+/** modifiers:[int] Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+(default: 0). */
+/** timestamp:[num] Time at which the event occurred. */
   dart_async.Future dispatchTouchEvent(
       {String type,
       List<TouchPoint> touchPoints,
@@ -7922,6 +9999,16 @@ class DevToolsInput {
   }
 
 /** Emulates touch event from the mouse event parameters. */
+/** type:[String] Type of the mouse event. */
+/** x:[int] X coordinate of the mouse pointer in DIP. */
+/** y:[int] Y coordinate of the mouse pointer in DIP. */
+/** button:[String] Mouse button. */
+/** timestamp:[num] Time at which the event occurred (default: current time). */
+/** deltaX:[num] X delta in DIP for mouse wheel event (default: 0). */
+/** deltaY:[num] Y delta in DIP for mouse wheel event (default: 0). */
+/** modifiers:[int] Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+(default: 0). */
+/** clickCount:[int] Number of times the mouse button was clicked (default: 0). */
   dart_async.Future emulateTouchFromMouseEvent(
       {String type,
       int x,
@@ -7956,6 +10043,7 @@ class DevToolsInput {
   }
 
 /** Ignores input events (useful while auditing page). */
+/** ignore:[bool] Ignores input events processing when set to true. */
   dart_async.Future setIgnoreInputEvents({bool ignore}) {
     var params = {};
     if (ignore != null) params['ignore'] = ignore;
@@ -7964,6 +10052,12 @@ class DevToolsInput {
   }
 
 /** Synthesizes a pinch gesture over a time period by issuing appropriate touch events. */
+/** x:[num] X coordinate of the start of the gesture in CSS pixels. */
+/** y:[num] Y coordinate of the start of the gesture in CSS pixels. */
+/** scaleFactor:[num] Relative scale factor after zooming (>1.0 zooms in, <1.0 zooms out). */
+/** relativeSpeed:[int] Relative pointer speed in pixels per second (default: 800). */
+/** gestureSourceType:[String] Which type of input events to be generated (default: 'default', which queries the platform
+for the preferred input type). */
   dart_async.Future synthesizePinchGesture(
       {num x,
       num y,
@@ -7986,6 +10080,21 @@ class DevToolsInput {
   }
 
 /** Synthesizes a scroll gesture over a time period by issuing appropriate touch events. */
+/** x:[num] X coordinate of the start of the gesture in CSS pixels. */
+/** y:[num] Y coordinate of the start of the gesture in CSS pixels. */
+/** xDistance:[num] The distance to scroll along the X axis (positive to scroll left). */
+/** yDistance:[num] The distance to scroll along the Y axis (positive to scroll up). */
+/** xOverscroll:[num] The number of additional pixels to scroll back along the X axis, in addition to the given
+distance. */
+/** yOverscroll:[num] The number of additional pixels to scroll back along the Y axis, in addition to the given
+distance. */
+/** preventFling:[bool] Prevent fling (default: true). */
+/** speed:[int] Swipe speed in pixels per second (default: 800). */
+/** gestureSourceType:[String] Which type of input events to be generated (default: 'default', which queries the platform
+for the preferred input type). */
+/** repeatCount:[int] The number of times to repeat the gesture (default: 0). */
+/** repeatDelayMs:[int] The number of milliseconds delay between each repeat. (default: 250). */
+/** interactionMarkerName:[String] The name of the interaction markers to generate, if not empty (default: ""). */
   dart_async.Future synthesizeScrollGesture(
       {num x,
       num y,
@@ -8030,6 +10139,12 @@ class DevToolsInput {
   }
 
 /** Synthesizes a tap gesture over a time period by issuing appropriate touch events. */
+/** x:[num] X coordinate of the start of the gesture in CSS pixels. */
+/** y:[num] Y coordinate of the start of the gesture in CSS pixels. */
+/** duration:[int] Duration between touchdown and touchup events in ms (default: 50). */
+/** tapCount:[int] Number of times to perform the tap (e.g. 2 for double tap, default: 1). */
+/** gestureSourceType:[String] Which type of input events to be generated (default: 'default', which queries the platform
+for the preferred input type). */
   dart_async.Future synthesizeTapGesture(
       {num x, num y, int duration, int tapCount, String gestureSourceType}) {
     var params = {};
@@ -8051,18 +10166,39 @@ class DevToolsInput {
   void _close() {}
 }
 
+/// Fired on `Inspector.detached`.
+class InspectorDetachedEvent {
+  InspectorDetachedEvent(Map map) {
+    reason = map['reason'];
+  }
+
+/** The reason why connection has been terminated. */
+  String reason;
+}
+
+/// Fired on `Inspector.targetCrashed`.
+class InspectorTargetCrashedEvent {
+  InspectorTargetCrashedEvent(Map map) {}
+}
+
+/// Fired on `Inspector.targetReloadedAfterCrash`.
+class InspectorTargetReloadedAfterCrashEvent {
+  InspectorTargetReloadedAfterCrashEvent(Map map) {}
+}
+
 class DevToolsInspector {
   DevToolsInspector(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onDetached = new dart_async.StreamController();
+  dart_async.StreamController<InspectorDetachedEvent> _onDetached =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onTargetCrashed =
-      new dart_async.StreamController();
+  dart_async.StreamController<InspectorTargetCrashedEvent> _onTargetCrashed =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onTargetReloadedAfterCrash =
-      new dart_async.StreamController();
+  dart_async.StreamController<InspectorTargetReloadedAfterCrashEvent>
+      _onTargetReloadedAfterCrash = new dart_async.StreamController.broadcast();
 
 /** Disables inspector domain notifications. */
   dart_async.Future disable() {
@@ -8076,21 +10212,30 @@ class DevToolsInspector {
     return _devtools.rpc.sendRequest('Inspector.enable', params);
   }
 
-/** Fired when remote debugging connection is about to be terminated. Contains detach reason. */
-  dart_async.Stream get onDetached => _onDetached.stream;
-/** Fired when debugging target has crashed */
-  dart_async.Stream get onTargetCrashed => _onTargetCrashed.stream;
-/** Fired when debugging target has reloaded after crash */
-  dart_async.Stream get onTargetReloadedAfterCrash =>
-      _onTargetReloadedAfterCrash.stream;
+/** Broadcast stream: Fired when remote debugging connection is about to be terminated. Contains detach reason. */
+  dart_async.Stream<InspectorDetachedEvent> get onDetached =>
+      _onDetached.stream;
+/** Broadcast stream: Fired when debugging target has crashed */
+  dart_async.Stream<InspectorTargetCrashedEvent> get onTargetCrashed =>
+      _onTargetCrashed.stream;
+/** Broadcast stream: Fired when debugging target has reloaded after crash */
+  dart_async.Stream<InspectorTargetReloadedAfterCrashEvent>
+      get onTargetReloadedAfterCrash => _onTargetReloadedAfterCrash.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod('Inspector.detached', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Inspector.detached', (json_rpc_2.Parameters params) {
+      _onDetached.add(new InspectorDetachedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Inspector.targetCrashed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Inspector.targetCrashed',
+        (json_rpc_2.Parameters params) {
+      _onTargetCrashed.add(new InspectorTargetCrashedEvent(params.asMap));
+    });
 
     rpc.registerMethod('Inspector.targetReloadedAfterCrash',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onTargetReloadedAfterCrash
+          .add(new InspectorTargetReloadedAfterCrashEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -8102,7 +10247,9 @@ class DevToolsInspector {
 
 class LayerTreeCompositingReasonsResponse {
   LayerTreeCompositingReasonsResponse(Map map) {
-    compositingReasons = map['compositingReasons'];
+    compositingReasons = map.containsKey('compositingReasons')
+        ? new List(map['compositingReasons'])
+        : null;
   }
 
   List compositingReasons;
@@ -8126,7 +10273,9 @@ class LayerTreeMakeSnapshotResponse {
 
 class LayerTreeProfileSnapshotResponse {
   LayerTreeProfileSnapshotResponse(Map map) {
-    timings = map['timings'];
+    timings = map.containsKey('timings')
+        ? map['timings'].map((m) => new List(m)).toList()
+        : null;
   }
 
   List<List> timings;
@@ -8142,10 +10291,37 @@ class LayerTreeReplaySnapshotResponse {
 
 class LayerTreeSnapshotCommandLogResponse {
   LayerTreeSnapshotCommandLogResponse(Map map) {
-    commandLog = map['commandLog'];
+    commandLog =
+        map.containsKey('commandLog') ? new List(map['commandLog']) : null;
   }
 
   List commandLog;
+}
+
+/// Fired on `LayerTree.layerPainted`.
+class LayerTreeLayerPaintedEvent {
+  LayerTreeLayerPaintedEvent(Map map) {
+    layerId = map['layerId'];
+    clip = map.containsKey('clip') ? new Rect(map['clip']) : null;
+  }
+
+/** The id of the painted layer. */
+  String layerId;
+
+/** Clip rectangle. */
+  Rect clip;
+}
+
+/// Fired on `LayerTree.layerTreeDidChange`.
+class LayerTreeLayerTreeDidChangeEvent {
+  LayerTreeLayerTreeDidChangeEvent(Map map) {
+    layers = map.containsKey('layers')
+        ? map['layers'].map((m) => new Layer(m)).toList()
+        : null;
+  }
+
+/** Layer tree, absent if not in the comspositing mode. */
+  List<Layer> layers;
 }
 
 class DevToolsLayerTree {
@@ -8153,13 +10329,14 @@ class DevToolsLayerTree {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onLayerPainted =
-      new dart_async.StreamController();
+  dart_async.StreamController<LayerTreeLayerPaintedEvent> _onLayerPainted =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onLayerTreeDidChange =
-      new dart_async.StreamController();
+  dart_async.StreamController<LayerTreeLayerTreeDidChangeEvent>
+      _onLayerTreeDidChange = new dart_async.StreamController.broadcast();
 
 /** Provides the reasons why the given layer was composited. */
+/** layerId:[String] The id of the layer for which we want to get the reasons it was composited. */
   dart_async.Future<LayerTreeCompositingReasonsResponse> compositingReasons(
       {String layerId}) {
     var params = {};
@@ -8183,6 +10360,7 @@ class DevToolsLayerTree {
   }
 
 /** Returns the snapshot identifier. */
+/** tiles:[List] An array of tiles composing the snapshot. */
   dart_async.Future<LayerTreeLoadSnapshotResponse> loadSnapshot(
       {List<PictureTile> tiles}) {
     var params = {};
@@ -8194,6 +10372,7 @@ class DevToolsLayerTree {
   }
 
 /** Returns the layer snapshot identifier. */
+/** layerId:[String] The id of the layer. */
   dart_async.Future<LayerTreeMakeSnapshotResponse> makeSnapshot(
       {String layerId}) {
     var params = {};
@@ -8205,6 +10384,10 @@ class DevToolsLayerTree {
   }
 
 /**  */
+/** snapshotId:[String] The id of the layer snapshot. */
+/** minRepeatCount:[int] The maximum number of times to replay the snapshot (1, if not specified). */
+/** minDuration:[num] The minimum duration (in seconds) to replay the snapshot. */
+/** clipRect:[Rect] The clip rectangle to apply when replaying the snapshot. */
   dart_async.Future<LayerTreeProfileSnapshotResponse> profileSnapshot(
       {String snapshotId, int minRepeatCount, num minDuration, Rect clipRect}) {
     var params = {};
@@ -8222,6 +10405,7 @@ class DevToolsLayerTree {
   }
 
 /** Releases layer snapshot captured by the back-end. */
+/** snapshotId:[String] The id of the layer snapshot. */
   dart_async.Future releaseSnapshot({String snapshotId}) {
     var params = {};
     if (snapshotId != null) params['snapshotId'] = snapshotId;
@@ -8230,6 +10414,10 @@ class DevToolsLayerTree {
   }
 
 /** Replays the layer snapshot and returns the resulting bitmap. */
+/** snapshotId:[String] The id of the layer snapshot. */
+/** fromStep:[int] The first step to replay from (replay from the very start if not specified). */
+/** toStep:[int] The last step to replay to (replay till the end if not specified). */
+/** scale:[num] The scale to apply while replaying (defaults to 1). */
   dart_async.Future<LayerTreeReplaySnapshotResponse> replaySnapshot(
       {String snapshotId, int fromStep, int toStep, num scale}) {
     var params = {};
@@ -8247,6 +10435,7 @@ class DevToolsLayerTree {
   }
 
 /** Replays the layer snapshot and returns canvas log. */
+/** snapshotId:[String] The id of the layer snapshot. */
   dart_async.Future<LayerTreeSnapshotCommandLogResponse> snapshotCommandLog(
       {String snapshotId}) {
     var params = {};
@@ -8257,16 +10446,23 @@ class DevToolsLayerTree {
         .then((response) => new LayerTreeSnapshotCommandLogResponse(response));
   }
 
-/**  */
-  dart_async.Stream get onLayerPainted => _onLayerPainted.stream;
-/**  */
-  dart_async.Stream get onLayerTreeDidChange => _onLayerTreeDidChange.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<LayerTreeLayerPaintedEvent> get onLayerPainted =>
+      _onLayerPainted.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<LayerTreeLayerTreeDidChangeEvent>
+      get onLayerTreeDidChange => _onLayerTreeDidChange.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'LayerTree.layerPainted', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('LayerTree.layerPainted',
+        (json_rpc_2.Parameters params) {
+      _onLayerPainted.add(new LayerTreeLayerPaintedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'LayerTree.layerTreeDidChange', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('LayerTree.layerTreeDidChange',
+        (json_rpc_2.Parameters params) {
+      _onLayerTreeDidChange
+          .add(new LayerTreeLayerTreeDidChangeEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -8275,12 +10471,23 @@ class DevToolsLayerTree {
   }
 }
 
+/// Fired on `Log.entryAdded`.
+class LogEntryAddedEvent {
+  LogEntryAddedEvent(Map map) {
+    entry = map.containsKey('entry') ? new LogEntry(map['entry']) : null;
+  }
+
+/** The entry. */
+  LogEntry entry;
+}
+
 class DevToolsLog {
   DevToolsLog(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onEntryAdded = new dart_async.StreamController();
+  dart_async.StreamController<LogEntryAddedEvent> _onEntryAdded =
+      new dart_async.StreamController.broadcast();
 
 /** Clears the log. */
   dart_async.Future clear() {
@@ -8302,6 +10509,7 @@ class DevToolsLog {
   }
 
 /** start violation reporting. */
+/** config:[List] Configuration for violations. */
   dart_async.Future startViolationsReport({List<ViolationSetting> config}) {
     var params = {};
     if (config != null) params['config'] = config;
@@ -8315,10 +10523,13 @@ class DevToolsLog {
     return _devtools.rpc.sendRequest('Log.stopViolationsReport', params);
   }
 
-/** Issued when new message was logged. */
-  dart_async.Stream get onEntryAdded => _onEntryAdded.stream;
+/** Broadcast stream: Issued when new message was logged. */
+  dart_async.Stream<LogEntryAddedEvent> get onEntryAdded =>
+      _onEntryAdded.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod('Log.entryAdded', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Log.entryAdded', (json_rpc_2.Parameters params) {
+      _onEntryAdded.add(new LogEntryAddedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -8342,7 +10553,8 @@ class MemoryGetDOMCountersResponse {
 
 class MemoryGetAllTimeSamplingProfileResponse {
   MemoryGetAllTimeSamplingProfileResponse(Map map) {
-    profile = map['profile'];
+    profile =
+        map.containsKey('profile') ? new SamplingProfile(map['profile']) : null;
   }
 
   SamplingProfile profile;
@@ -8350,7 +10562,8 @@ class MemoryGetAllTimeSamplingProfileResponse {
 
 class MemoryGetSamplingProfileResponse {
   MemoryGetSamplingProfileResponse(Map map) {
-    profile = map['profile'];
+    profile =
+        map.containsKey('profile') ? new SamplingProfile(map['profile']) : null;
   }
 
   SamplingProfile profile;
@@ -8376,6 +10589,7 @@ class DevToolsMemory {
   }
 
 /** Enable/disable suppressing memory pressure notifications in all processes. */
+/** suppressed:[bool] If true, memory pressure notifications will be suppressed. */
   dart_async.Future setPressureNotificationsSuppressed({bool suppressed}) {
     var params = {};
     if (suppressed != null) params['suppressed'] = suppressed;
@@ -8385,6 +10599,7 @@ class DevToolsMemory {
   }
 
 /** Simulate a memory pressure notification in all processes. */
+/** level:[String] Memory pressure level of the notification. */
   dart_async.Future simulatePressureNotification({String level}) {
     var params = {};
     if (level != null) params['level'] = level;
@@ -8394,6 +10609,8 @@ class DevToolsMemory {
   }
 
 /** Start collecting native memory profile. */
+/** samplingInterval:[int] Average number of bytes between samples. */
+/** suppressRandomness:[bool] Do not randomize intervals between samples. */
   dart_async.Future startSampling(
       {int samplingInterval, bool suppressRandomness}) {
     var params = {};
@@ -8460,7 +10677,9 @@ class NetworkCanEmulateNetworkConditionsResponse {
 
 class NetworkGetAllCookiesResponse {
   NetworkGetAllCookiesResponse(Map map) {
-    cookies = map['cookies'];
+    cookies = map.containsKey('cookies')
+        ? map['cookies'].map((m) => new Cookie(m)).toList()
+        : null;
   }
 
   List<Cookie> cookies;
@@ -8468,7 +10687,8 @@ class NetworkGetAllCookiesResponse {
 
 class NetworkGetCertificateResponse {
   NetworkGetCertificateResponse(Map map) {
-    tableNames = map['tableNames'];
+    tableNames =
+        map.containsKey('tableNames') ? new List(map['tableNames']) : null;
   }
 
   List tableNames;
@@ -8476,7 +10696,9 @@ class NetworkGetCertificateResponse {
 
 class NetworkGetCookiesResponse {
   NetworkGetCookiesResponse(Map map) {
-    cookies = map['cookies'];
+    cookies = map.containsKey('cookies')
+        ? map['cookies'].map((m) => new Cookie(m)).toList()
+        : null;
   }
 
   List<Cookie> cookies;
@@ -8514,7 +10736,9 @@ class NetworkGetResponseBodyForInterceptionResponse {
 
 class NetworkSearchInResponseBodyResponse {
   NetworkSearchInResponseBodyResponse(Map map) {
-    result = map['result'];
+    result = map.containsKey('result')
+        ? map['result'].map((m) => new SearchMatch(m)).toList()
+        : null;
   }
 
   List<SearchMatch> result;
@@ -8528,58 +10752,460 @@ class NetworkSetCookieResponse {
   bool success;
 }
 
+/// Fired on `Network.dataReceived`.
+class NetworkDataReceivedEvent {
+  NetworkDataReceivedEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    dataLength = map['dataLength'];
+    encodedDataLength = map['encodedDataLength'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** Data chunk length. */
+  int dataLength;
+
+/** Actual bytes received (might be less than dataLength for compressed encodings). */
+  int encodedDataLength;
+}
+
+/// Fired on `Network.eventSourceMessageReceived`.
+class NetworkEventSourceMessageReceivedEvent {
+  NetworkEventSourceMessageReceivedEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    eventName = map['eventName'];
+    eventId = map['eventId'];
+    data = map['data'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** Message type. */
+  String eventName;
+
+/** Message identifier. */
+  String eventId;
+
+/** Message content. */
+  String data;
+}
+
+/// Fired on `Network.loadingFailed`.
+class NetworkLoadingFailedEvent {
+  NetworkLoadingFailedEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    type = map['type'];
+    errorText = map['errorText'];
+    canceled = map['canceled'];
+    blockedReason = map['blockedReason'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** Resource type. */
+  String type;
+
+/** User friendly error message. */
+  String errorText;
+
+/** True if loading was canceled. */
+  bool canceled;
+
+/** The reason why loading was blocked, if any. */
+  String blockedReason;
+}
+
+/// Fired on `Network.loadingFinished`.
+class NetworkLoadingFinishedEvent {
+  NetworkLoadingFinishedEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    encodedDataLength = map['encodedDataLength'];
+    blockedCrossSiteDocument = map['blockedCrossSiteDocument'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** Total number of bytes received for this request. */
+  num encodedDataLength;
+
+/** Set when response was blocked due to being cross-site document response. */
+  bool blockedCrossSiteDocument;
+}
+
+/// Fired on `Network.requestIntercepted`.
+class NetworkRequestInterceptedEvent {
+  NetworkRequestInterceptedEvent(Map map) {
+    interceptionId = map['interceptionId'];
+    request = map.containsKey('request') ? new Request(map['request']) : null;
+    frameId = map['frameId'];
+    resourceType = map['resourceType'];
+    isNavigationRequest = map['isNavigationRequest'];
+    redirectUrl = map['redirectUrl'];
+    authChallenge = map.containsKey('authChallenge')
+        ? new AuthChallenge(map['authChallenge'])
+        : null;
+    responseErrorReason = map['responseErrorReason'];
+    responseStatusCode = map['responseStatusCode'];
+    responseHeaders = map.containsKey('responseHeaders')
+        ? new Headers(map['responseHeaders'])
+        : null;
+  }
+
+/** Each request the page makes will have a unique id, however if any redirects are encountered
+while processing that fetch, they will be reported with the same id as the original fetch.
+Likewise if HTTP authentication is needed then the same fetch id will be used. */
+  String interceptionId;
+
+/**  */
+  Request request;
+
+/** The id of the frame that initiated the request. */
+  String frameId;
+
+/** How the requested resource will be used. */
+  String resourceType;
+
+/** Whether this is a navigation request, which can abort the navigation completely. */
+  bool isNavigationRequest;
+
+/** Redirect location, only sent if a redirect was intercepted. */
+  String redirectUrl;
+
+/** Details of the Authorization Challenge encountered. If this is set then
+continueInterceptedRequest must contain an authChallengeResponse. */
+  AuthChallenge authChallenge;
+
+/** Response error if intercepted at response stage or if redirect occurred while intercepting
+request. */
+  String responseErrorReason;
+
+/** Response code if intercepted at response stage or if redirect occurred while intercepting
+request or auth retry occurred. */
+  int responseStatusCode;
+
+/** Response headers if intercepted at the response stage or if redirect occurred while
+intercepting request or auth retry occurred. */
+  Headers responseHeaders;
+}
+
+/// Fired on `Network.requestServedFromCache`.
+class NetworkRequestServedFromCacheEvent {
+  NetworkRequestServedFromCacheEvent(Map map) {
+    requestId = map['requestId'];
+  }
+
+/** Request identifier. */
+  String requestId;
+}
+
+/// Fired on `Network.requestWillBeSent`.
+class NetworkRequestWillBeSentEvent {
+  NetworkRequestWillBeSentEvent(Map map) {
+    requestId = map['requestId'];
+    loaderId = map['loaderId'];
+    documentURL = map['documentURL'];
+    request = map.containsKey('request') ? new Request(map['request']) : null;
+    timestamp = map['timestamp'];
+    wallTime = map['wallTime'];
+    initiator =
+        map.containsKey('initiator') ? new Initiator(map['initiator']) : null;
+    redirectResponse = map.containsKey('redirectResponse')
+        ? new Response(map['redirectResponse'])
+        : null;
+    type = map['type'];
+    frameId = map['frameId'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Loader identifier. Empty string if the request is fetched from worker. */
+  String loaderId;
+
+/** URL of the document this request is loaded for. */
+  String documentURL;
+
+/** Request data. */
+  Request request;
+
+/** Timestamp. */
+  num timestamp;
+
+/** Timestamp. */
+  num wallTime;
+
+/** Request initiator. */
+  Initiator initiator;
+
+/** Redirect response data. */
+  Response redirectResponse;
+
+/** Type of this resource. */
+  String type;
+
+/** Frame identifier. */
+  String frameId;
+}
+
+/// Fired on `Network.resourceChangedPriority`.
+class NetworkResourceChangedPriorityEvent {
+  NetworkResourceChangedPriorityEvent(Map map) {
+    requestId = map['requestId'];
+    newPriority = map['newPriority'];
+    timestamp = map['timestamp'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** New priority */
+  String newPriority;
+
+/** Timestamp. */
+  num timestamp;
+}
+
+/// Fired on `Network.responseReceived`.
+class NetworkResponseReceivedEvent {
+  NetworkResponseReceivedEvent(Map map) {
+    requestId = map['requestId'];
+    loaderId = map['loaderId'];
+    timestamp = map['timestamp'];
+    type = map['type'];
+    response =
+        map.containsKey('response') ? new Response(map['response']) : null;
+    frameId = map['frameId'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Loader identifier. Empty string if the request is fetched from worker. */
+  String loaderId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** Resource type. */
+  String type;
+
+/** Response data. */
+  Response response;
+
+/** Frame identifier. */
+  String frameId;
+}
+
+/// Fired on `Network.webSocketClosed`.
+class NetworkWebSocketClosedEvent {
+  NetworkWebSocketClosedEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+}
+
+/// Fired on `Network.webSocketCreated`.
+class NetworkWebSocketCreatedEvent {
+  NetworkWebSocketCreatedEvent(Map map) {
+    requestId = map['requestId'];
+    url = map['url'];
+    initiator =
+        map.containsKey('initiator') ? new Initiator(map['initiator']) : null;
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** WebSocket request URL. */
+  String url;
+
+/** Request initiator. */
+  Initiator initiator;
+}
+
+/// Fired on `Network.webSocketFrameError`.
+class NetworkWebSocketFrameErrorEvent {
+  NetworkWebSocketFrameErrorEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    errorMessage = map['errorMessage'];
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** WebSocket frame error message. */
+  String errorMessage;
+}
+
+/// Fired on `Network.webSocketFrameReceived`.
+class NetworkWebSocketFrameReceivedEvent {
+  NetworkWebSocketFrameReceivedEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    response = map.containsKey('response')
+        ? new WebSocketFrame(map['response'])
+        : null;
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** WebSocket response data. */
+  WebSocketFrame response;
+}
+
+/// Fired on `Network.webSocketFrameSent`.
+class NetworkWebSocketFrameSentEvent {
+  NetworkWebSocketFrameSentEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    response = map.containsKey('response')
+        ? new WebSocketFrame(map['response'])
+        : null;
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** WebSocket response data. */
+  WebSocketFrame response;
+}
+
+/// Fired on `Network.webSocketHandshakeResponseReceived`.
+class NetworkWebSocketHandshakeResponseReceivedEvent {
+  NetworkWebSocketHandshakeResponseReceivedEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    response = map.containsKey('response')
+        ? new WebSocketResponse(map['response'])
+        : null;
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** WebSocket response data. */
+  WebSocketResponse response;
+}
+
+/// Fired on `Network.webSocketWillSendHandshakeRequest`.
+class NetworkWebSocketWillSendHandshakeRequestEvent {
+  NetworkWebSocketWillSendHandshakeRequestEvent(Map map) {
+    requestId = map['requestId'];
+    timestamp = map['timestamp'];
+    wallTime = map['wallTime'];
+    request = map.containsKey('request')
+        ? new WebSocketRequest(map['request'])
+        : null;
+  }
+
+/** Request identifier. */
+  String requestId;
+
+/** Timestamp. */
+  num timestamp;
+
+/** UTC Timestamp. */
+  num wallTime;
+
+/** WebSocket request data. */
+  WebSocketRequest request;
+}
+
 class DevToolsNetwork {
   DevToolsNetwork(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onDataReceived =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkDataReceivedEvent> _onDataReceived =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onEventSourceMessageReceived =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkEventSourceMessageReceivedEvent>
+      _onEventSourceMessageReceived =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onLoadingFailed =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkLoadingFailedEvent> _onLoadingFailed =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onLoadingFinished =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkLoadingFinishedEvent> _onLoadingFinished =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onRequestIntercepted =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkRequestInterceptedEvent>
+      _onRequestIntercepted = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onRequestServedFromCache =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkRequestServedFromCacheEvent>
+      _onRequestServedFromCache = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onRequestWillBeSent =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkRequestWillBeSentEvent>
+      _onRequestWillBeSent = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onResourceChangedPriority =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkResourceChangedPriorityEvent>
+      _onResourceChangedPriority = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onResponseReceived =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkResponseReceivedEvent>
+      _onResponseReceived = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWebSocketClosed =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkWebSocketClosedEvent> _onWebSocketClosed =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWebSocketCreated =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkWebSocketCreatedEvent>
+      _onWebSocketCreated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWebSocketFrameError =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkWebSocketFrameErrorEvent>
+      _onWebSocketFrameError = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWebSocketFrameReceived =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkWebSocketFrameReceivedEvent>
+      _onWebSocketFrameReceived = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWebSocketFrameSent =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkWebSocketFrameSentEvent>
+      _onWebSocketFrameSent = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWebSocketHandshakeResponseReceived =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkWebSocketHandshakeResponseReceivedEvent>
+      _onWebSocketHandshakeResponseReceived =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWebSocketWillSendHandshakeRequest =
-      new dart_async.StreamController();
+  dart_async.StreamController<NetworkWebSocketWillSendHandshakeRequestEvent>
+      _onWebSocketWillSendHandshakeRequest =
+      new dart_async.StreamController.broadcast();
 
 /** Tells whether clearing browser cache is supported. */
   dart_async.Future<NetworkCanClearBrowserCacheResponse>
@@ -8626,6 +11252,20 @@ class DevToolsNetwork {
 modifications, or blocks it, or completes it with the provided response bytes. If a network
 fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted
 event will be sent with the same InterceptionId. */
+/** interceptionId:[String]  */
+/** errorReason:[String] If set this causes the request to fail with the given reason. Passing `Aborted` for requests
+marked with `isNavigationRequest` also cancels the navigation. Must not be set in response
+to an authChallenge. */
+/** rawResponse:[String] If set the requests completes using with the provided base64 encoded raw response, including
+HTTP status line and headers etc... Must not be set in response to an authChallenge. */
+/** url:[String] If set the request url will be modified in a way that's not observable by page. Must not be
+set in response to an authChallenge. */
+/** method:[String] If set this allows the request method to be overridden. Must not be set in response to an
+authChallenge. */
+/** postData:[String] If set this allows postData to be set. Must not be set in response to an authChallenge. */
+/** headers:[Headers] If set this allows the request headers to be changed. Must not be set in response to an
+authChallenge. */
+/** authChallengeResponse:[AuthChallengeResponse] Response to a requestIntercepted with an authChallenge. Must not be set otherwise. */
   dart_async.Future continueInterceptedRequest(
       {String interceptionId,
       String errorReason,
@@ -8658,6 +11298,11 @@ event will be sent with the same InterceptionId. */
   }
 
 /** Deletes browser cookies with matching name and url or domain/path pair. */
+/** name:[String] Name of the cookies to remove. */
+/** url:[String] If specified, deletes all the cookies with the given name where domain and path match
+provided URL. */
+/** domain:[String] If specified, deletes only cookies with the exact domain. */
+/** path:[String] If specified, deletes only cookies with the exact path. */
   dart_async.Future deleteCookies(
       {String name, String url, String domain, String path}) {
     var params = {};
@@ -8679,6 +11324,11 @@ event will be sent with the same InterceptionId. */
   }
 
 /** Activates emulation of network conditions. */
+/** offline:[bool] True to emulate internet disconnection. */
+/** latency:[num] Minimum latency from request sent to response headers received (ms). */
+/** downloadThroughput:[num] Maximal aggregated download throughput (bytes/sec). -1 disables download throttling. */
+/** uploadThroughput:[num] Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling. */
+/** connectionType:[String] Connection type if known. */
   dart_async.Future emulateNetworkConditions(
       {bool offline,
       num latency,
@@ -8702,6 +11352,9 @@ event will be sent with the same InterceptionId. */
   }
 
 /** Enables network tracking, network events will now be delivered to the client. */
+/** maxTotalBufferSize:[int] Buffer size in bytes to use when preserving network payloads (XHRs, etc). */
+/** maxResourceBufferSize:[int] Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc). */
+/** maxPostDataSize:[int] Longest post body size (in bytes) that would be included in requestWillBeSent notification */
   dart_async.Future enable(
       {int maxTotalBufferSize,
       int maxResourceBufferSize,
@@ -8728,6 +11381,7 @@ information in the `cookies` field. */
   }
 
 /** Returns the DER-encoded certificate. */
+/** origin:[String] Origin to get certificate for. */
   dart_async.Future<NetworkGetCertificateResponse> getCertificate(
       {String origin}) {
     var params = {};
@@ -8740,6 +11394,7 @@ information in the `cookies` field. */
 
 /** Returns all browser cookies for the current URL. Depending on the backend support, will return
 detailed cookie information in the `cookies` field. */
+/** urls:[List] The list of URLs for which applicable cookies will be fetched */
   dart_async.Future<NetworkGetCookiesResponse> getCookies({List urls}) {
     var params = {};
     if (urls != null) params['urls'] = urls;
@@ -8750,6 +11405,7 @@ detailed cookie information in the `cookies` field. */
   }
 
 /** Returns content served for the given request. */
+/** requestId:[String] Identifier of the network request to get content for. */
   dart_async.Future<NetworkGetResponseBodyResponse> getResponseBody(
       {String requestId}) {
     var params = {};
@@ -8761,6 +11417,7 @@ detailed cookie information in the `cookies` field. */
   }
 
 /** Returns post data sent with the request. Returns an error when no data was sent with the request. */
+/** requestId:[String] Identifier of the network request to get content for. */
   dart_async.Future<NetworkGetRequestPostDataResponse> getRequestPostData(
       {String requestId}) {
     var params = {};
@@ -8772,6 +11429,7 @@ detailed cookie information in the `cookies` field. */
   }
 
 /** Returns content served for the given currently intercepted request. */
+/** interceptionId:[String] Identifier for the intercepted request to get body for. */
   dart_async.Future<NetworkGetResponseBodyForInterceptionResponse>
       getResponseBodyForInterception({String interceptionId}) {
     var params = {};
@@ -8786,6 +11444,7 @@ detailed cookie information in the `cookies` field. */
 /** This method sends a new XMLHttpRequest which is identical to the original one. The following
 parameters should be identical: method, url, async, request body, extra headers, withCredentials
 attribute, user, password. */
+/** requestId:[String] Identifier of XHR to replay. */
   dart_async.Future replayXHR({String requestId}) {
     var params = {};
     if (requestId != null) params['requestId'] = requestId;
@@ -8794,6 +11453,10 @@ attribute, user, password. */
   }
 
 /** Searches for given string in response content. */
+/** requestId:[String] Identifier of the network response to search. */
+/** query:[String] String to search for. */
+/** caseSensitive:[bool] If true, search is case sensitive. */
+/** isRegex:[bool] If true, treats string parameter as regex. */
   dart_async.Future<NetworkSearchInResponseBodyResponse> searchInResponseBody(
       {String requestId, String query, bool caseSensitive, bool isRegex}) {
     var params = {};
@@ -8811,6 +11474,7 @@ attribute, user, password. */
   }
 
 /** Blocks URLs from loading. */
+/** urls:[List] URL patterns to block. Wildcards ('*') are allowed. */
   dart_async.Future setBlockedURLs({List urls}) {
     var params = {};
     if (urls != null) params['urls'] = urls;
@@ -8819,6 +11483,7 @@ attribute, user, password. */
   }
 
 /** Toggles ignoring of service worker for each request. */
+/** bypass:[bool] Bypass service worker and load from network. */
   dart_async.Future setBypassServiceWorker({bool bypass}) {
     var params = {};
     if (bypass != null) params['bypass'] = bypass;
@@ -8827,6 +11492,7 @@ attribute, user, password. */
   }
 
 /** Toggles ignoring cache for each request. If `true`, cache will not be used. */
+/** cacheDisabled:[bool] Cache disabled state. */
   dart_async.Future setCacheDisabled({bool cacheDisabled}) {
     var params = {};
     if (cacheDisabled != null) params['cacheDisabled'] = cacheDisabled;
@@ -8835,6 +11501,16 @@ attribute, user, password. */
   }
 
 /** Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist. */
+/** name:[String] Cookie name. */
+/** value:[String] Cookie value. */
+/** url:[String] The request-URI to associate with the setting of the cookie. This value can affect the
+default domain and path values of the created cookie. */
+/** domain:[String] Cookie domain. */
+/** path:[String] Cookie path. */
+/** secure:[bool] True if cookie is secure. */
+/** httpOnly:[bool] True if cookie is http-only. */
+/** sameSite:[String] Cookie SameSite type. */
+/** expires:[num] Cookie expiration date, session cookie if not set */
   dart_async.Future<NetworkSetCookieResponse> setCookie(
       {String name,
       String value,
@@ -8870,6 +11546,7 @@ attribute, user, password. */
   }
 
 /** Sets given cookies. */
+/** cookies:[List] Cookies to be set. */
   dart_async.Future setCookies({List<CookieParam> cookies}) {
     var params = {};
     if (cookies != null) params['cookies'] = cookies;
@@ -8878,6 +11555,8 @@ attribute, user, password. */
   }
 
 /** For testing. */
+/** maxTotalSize:[int] Maximum total buffer size. */
+/** maxResourceSize:[int] Maximum per-resource size. */
   dart_async.Future setDataSizeLimitsForTest(
       {int maxTotalSize, int maxResourceSize}) {
     var params = {};
@@ -8890,6 +11569,7 @@ attribute, user, password. */
   }
 
 /** Specifies whether to always send extra HTTP headers with the requests from this page. */
+/** headers:[Headers] Map with extra HTTP headers. */
   dart_async.Future setExtraHTTPHeaders({Headers headers}) {
     var params = {};
     if (headers != null) params['headers'] = headers;
@@ -8898,6 +11578,8 @@ attribute, user, password. */
   }
 
 /** Sets the requests to intercept that match a the provided patterns and optionally resource types. */
+/** patterns:[List] Requests matching any of these patterns will be forwarded and wait for the corresponding
+continueInterceptedRequest call. */
   dart_async.Future setRequestInterception({List<RequestPattern> patterns}) {
     var params = {};
     if (patterns != null) params['patterns'] = patterns;
@@ -8906,6 +11588,7 @@ attribute, user, password. */
   }
 
 /** Allows overriding user agent with the given string. */
+/** userAgent:[String] User agent to use. */
   dart_async.Future setUserAgentOverride({String userAgent}) {
     var params = {};
     if (userAgent != null) params['userAgent'] = userAgent;
@@ -8913,93 +11596,144 @@ attribute, user, password. */
     return _devtools.rpc.sendRequest('Network.setUserAgentOverride', params);
   }
 
-/** Fired when data chunk was received over the network. */
-  dart_async.Stream get onDataReceived => _onDataReceived.stream;
-/** Fired when EventSource message is received. */
-  dart_async.Stream get onEventSourceMessageReceived =>
-      _onEventSourceMessageReceived.stream;
-/** Fired when HTTP request has failed to load. */
-  dart_async.Stream get onLoadingFailed => _onLoadingFailed.stream;
-/** Fired when HTTP request has finished loading. */
-  dart_async.Stream get onLoadingFinished => _onLoadingFinished.stream;
-/** Details of an intercepted HTTP request, which must be either allowed, blocked, modified or
+/** Broadcast stream: Fired when data chunk was received over the network. */
+  dart_async.Stream<NetworkDataReceivedEvent> get onDataReceived =>
+      _onDataReceived.stream;
+/** Broadcast stream: Fired when EventSource message is received. */
+  dart_async.Stream<NetworkEventSourceMessageReceivedEvent>
+      get onEventSourceMessageReceived => _onEventSourceMessageReceived.stream;
+/** Broadcast stream: Fired when HTTP request has failed to load. */
+  dart_async.Stream<NetworkLoadingFailedEvent> get onLoadingFailed =>
+      _onLoadingFailed.stream;
+/** Broadcast stream: Fired when HTTP request has finished loading. */
+  dart_async.Stream<NetworkLoadingFinishedEvent> get onLoadingFinished =>
+      _onLoadingFinished.stream;
+/** Broadcast stream: Details of an intercepted HTTP request, which must be either allowed, blocked, modified or
 mocked. */
-  dart_async.Stream get onRequestIntercepted => _onRequestIntercepted.stream;
-/** Fired if request ended up loading from cache. */
-  dart_async.Stream get onRequestServedFromCache =>
-      _onRequestServedFromCache.stream;
-/** Fired when page is about to send HTTP request. */
-  dart_async.Stream get onRequestWillBeSent => _onRequestWillBeSent.stream;
-/** Fired when resource loading priority is changed */
-  dart_async.Stream get onResourceChangedPriority =>
-      _onResourceChangedPriority.stream;
-/** Fired when HTTP response is available. */
-  dart_async.Stream get onResponseReceived => _onResponseReceived.stream;
-/** Fired when WebSocket is closed. */
-  dart_async.Stream get onWebSocketClosed => _onWebSocketClosed.stream;
-/** Fired upon WebSocket creation. */
-  dart_async.Stream get onWebSocketCreated => _onWebSocketCreated.stream;
-/** Fired when WebSocket frame error occurs. */
-  dart_async.Stream get onWebSocketFrameError => _onWebSocketFrameError.stream;
-/** Fired when WebSocket frame is received. */
-  dart_async.Stream get onWebSocketFrameReceived =>
-      _onWebSocketFrameReceived.stream;
-/** Fired when WebSocket frame is sent. */
-  dart_async.Stream get onWebSocketFrameSent => _onWebSocketFrameSent.stream;
-/** Fired when WebSocket handshake response becomes available. */
-  dart_async.Stream get onWebSocketHandshakeResponseReceived =>
-      _onWebSocketHandshakeResponseReceived.stream;
-/** Fired when WebSocket is about to initiate handshake. */
-  dart_async.Stream get onWebSocketWillSendHandshakeRequest =>
-      _onWebSocketWillSendHandshakeRequest.stream;
+  dart_async.Stream<NetworkRequestInterceptedEvent> get onRequestIntercepted =>
+      _onRequestIntercepted.stream;
+/** Broadcast stream: Fired if request ended up loading from cache. */
+  dart_async.Stream<NetworkRequestServedFromCacheEvent>
+      get onRequestServedFromCache => _onRequestServedFromCache.stream;
+/** Broadcast stream: Fired when page is about to send HTTP request. */
+  dart_async.Stream<NetworkRequestWillBeSentEvent> get onRequestWillBeSent =>
+      _onRequestWillBeSent.stream;
+/** Broadcast stream: Fired when resource loading priority is changed */
+  dart_async.Stream<NetworkResourceChangedPriorityEvent>
+      get onResourceChangedPriority => _onResourceChangedPriority.stream;
+/** Broadcast stream: Fired when HTTP response is available. */
+  dart_async.Stream<NetworkResponseReceivedEvent> get onResponseReceived =>
+      _onResponseReceived.stream;
+/** Broadcast stream: Fired when WebSocket is closed. */
+  dart_async.Stream<NetworkWebSocketClosedEvent> get onWebSocketClosed =>
+      _onWebSocketClosed.stream;
+/** Broadcast stream: Fired upon WebSocket creation. */
+  dart_async.Stream<NetworkWebSocketCreatedEvent> get onWebSocketCreated =>
+      _onWebSocketCreated.stream;
+/** Broadcast stream: Fired when WebSocket frame error occurs. */
+  dart_async.Stream<NetworkWebSocketFrameErrorEvent>
+      get onWebSocketFrameError => _onWebSocketFrameError.stream;
+/** Broadcast stream: Fired when WebSocket frame is received. */
+  dart_async.Stream<NetworkWebSocketFrameReceivedEvent>
+      get onWebSocketFrameReceived => _onWebSocketFrameReceived.stream;
+/** Broadcast stream: Fired when WebSocket frame is sent. */
+  dart_async.Stream<NetworkWebSocketFrameSentEvent> get onWebSocketFrameSent =>
+      _onWebSocketFrameSent.stream;
+/** Broadcast stream: Fired when WebSocket handshake response becomes available. */
+  dart_async.Stream<NetworkWebSocketHandshakeResponseReceivedEvent>
+      get onWebSocketHandshakeResponseReceived =>
+          _onWebSocketHandshakeResponseReceived.stream;
+/** Broadcast stream: Fired when WebSocket is about to initiate handshake. */
+  dart_async.Stream<NetworkWebSocketWillSendHandshakeRequestEvent>
+      get onWebSocketWillSendHandshakeRequest =>
+          _onWebSocketWillSendHandshakeRequest.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Network.dataReceived', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.dataReceived', (json_rpc_2.Parameters params) {
+      _onDataReceived.add(new NetworkDataReceivedEvent(params.asMap));
+    });
 
     rpc.registerMethod('Network.eventSourceMessageReceived',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onEventSourceMessageReceived
+          .add(new NetworkEventSourceMessageReceivedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.loadingFailed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.loadingFailed', (json_rpc_2.Parameters params) {
+      _onLoadingFailed.add(new NetworkLoadingFailedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.loadingFinished', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.loadingFinished',
+        (json_rpc_2.Parameters params) {
+      _onLoadingFinished.add(new NetworkLoadingFinishedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.requestIntercepted', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.requestIntercepted',
+        (json_rpc_2.Parameters params) {
+      _onRequestIntercepted
+          .add(new NetworkRequestInterceptedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.requestServedFromCache', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.requestServedFromCache',
+        (json_rpc_2.Parameters params) {
+      _onRequestServedFromCache
+          .add(new NetworkRequestServedFromCacheEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.requestWillBeSent', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.requestWillBeSent',
+        (json_rpc_2.Parameters params) {
+      _onRequestWillBeSent.add(new NetworkRequestWillBeSentEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.resourceChangedPriority', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.resourceChangedPriority',
+        (json_rpc_2.Parameters params) {
+      _onResourceChangedPriority
+          .add(new NetworkResourceChangedPriorityEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.responseReceived', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.responseReceived',
+        (json_rpc_2.Parameters params) {
+      _onResponseReceived.add(new NetworkResponseReceivedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.webSocketClosed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.webSocketClosed',
+        (json_rpc_2.Parameters params) {
+      _onWebSocketClosed.add(new NetworkWebSocketClosedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.webSocketCreated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.webSocketCreated',
+        (json_rpc_2.Parameters params) {
+      _onWebSocketCreated.add(new NetworkWebSocketCreatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.webSocketFrameError', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.webSocketFrameError',
+        (json_rpc_2.Parameters params) {
+      _onWebSocketFrameError
+          .add(new NetworkWebSocketFrameErrorEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.webSocketFrameReceived', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.webSocketFrameReceived',
+        (json_rpc_2.Parameters params) {
+      _onWebSocketFrameReceived
+          .add(new NetworkWebSocketFrameReceivedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Network.webSocketFrameSent', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Network.webSocketFrameSent',
+        (json_rpc_2.Parameters params) {
+      _onWebSocketFrameSent
+          .add(new NetworkWebSocketFrameSentEvent(params.asMap));
+    });
 
     rpc.registerMethod('Network.webSocketHandshakeResponseReceived',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onWebSocketHandshakeResponseReceived.add(
+          new NetworkWebSocketHandshakeResponseReceivedEvent(params.asMap));
+    });
 
     rpc.registerMethod('Network.webSocketWillSendHandshakeRequest',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onWebSocketWillSendHandshakeRequest
+          .add(new NetworkWebSocketWillSendHandshakeRequestEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -9027,7 +11761,38 @@ class OverlayGetHighlightObjectForTestResponse {
     highlight = map['highlight'];
   }
 
-  Map highlight;
+  Map<String, dynamic> highlight;
+}
+
+/// Fired on `Overlay.inspectNodeRequested`.
+class OverlayInspectNodeRequestedEvent {
+  OverlayInspectNodeRequestedEvent(Map map) {
+    backendNodeId = map['backendNodeId'];
+  }
+
+/** Id of the node to inspect. */
+  int backendNodeId;
+}
+
+/// Fired on `Overlay.nodeHighlightRequested`.
+class OverlayNodeHighlightRequestedEvent {
+  OverlayNodeHighlightRequestedEvent(Map map) {
+    nodeId = map['nodeId'];
+  }
+
+/**  */
+  int nodeId;
+}
+
+/// Fired on `Overlay.screenshotRequested`.
+class OverlayScreenshotRequestedEvent {
+  OverlayScreenshotRequestedEvent(Map map) {
+    viewport =
+        map.containsKey('viewport') ? new Viewport(map['viewport']) : null;
+  }
+
+/** Viewport to capture, in CSS. */
+  Viewport viewport;
 }
 
 class DevToolsOverlay {
@@ -9035,14 +11800,14 @@ class DevToolsOverlay {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onInspectNodeRequested =
-      new dart_async.StreamController();
+  dart_async.StreamController<OverlayInspectNodeRequestedEvent>
+      _onInspectNodeRequested = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onNodeHighlightRequested =
-      new dart_async.StreamController();
+  dart_async.StreamController<OverlayNodeHighlightRequestedEvent>
+      _onNodeHighlightRequested = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onScreenshotRequested =
-      new dart_async.StreamController();
+  dart_async.StreamController<OverlayScreenshotRequestedEvent>
+      _onScreenshotRequested = new dart_async.StreamController.broadcast();
 
 /** Disables domain notifications. */
   dart_async.Future disable() {
@@ -9057,6 +11822,7 @@ class DevToolsOverlay {
   }
 
 /** For testing. */
+/** nodeId:[int] Id of the node to get highlight object for. */
   dart_async.Future<OverlayGetHighlightObjectForTestResponse>
       getHighlightObjectForTest({int nodeId}) {
     var params = {};
@@ -9075,6 +11841,9 @@ class DevToolsOverlay {
   }
 
 /** Highlights owner element of the frame with given id. */
+/** frameId:[String] Identifier of the frame to highlight. */
+/** contentColor:[RGBA] The content box highlight fill color (default: transparent). */
+/** contentOutlineColor:[RGBA] The content box highlight outline color (default: transparent). */
   dart_async.Future highlightFrame(
       {String frameId, RGBA contentColor, RGBA contentOutlineColor}) {
     var params = {};
@@ -9090,6 +11859,10 @@ class DevToolsOverlay {
 
 /** Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or
 objectId must be specified. */
+/** highlightConfig:[HighlightConfig] A descriptor for the highlight appearance. */
+/** nodeId:[int] Identifier of the node to highlight. */
+/** backendNodeId:[int] Identifier of the backend node to highlight. */
+/** objectId:[String] JavaScript object id of the node to be highlighted. */
   dart_async.Future highlightNode(
       {HighlightConfig highlightConfig,
       int nodeId,
@@ -9108,6 +11881,9 @@ objectId must be specified. */
   }
 
 /** Highlights given quad. Coordinates are absolute with respect to the main frame viewport. */
+/** quad:[List] Quad to highlight */
+/** color:[RGBA] The highlight fill color (default: transparent). */
+/** outlineColor:[RGBA] The highlight outline color (default: transparent). */
   dart_async.Future highlightQuad({List quad, RGBA color, RGBA outlineColor}) {
     var params = {};
     if (quad != null) params['quad'] = quad;
@@ -9120,6 +11896,12 @@ objectId must be specified. */
   }
 
 /** Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. */
+/** x:[int] X coordinate */
+/** y:[int] Y coordinate */
+/** width:[int] Rectangle width */
+/** height:[int] Rectangle height */
+/** color:[RGBA] The highlight fill color (default: transparent). */
+/** outlineColor:[RGBA] The highlight outline color (default: transparent). */
   dart_async.Future highlightRect(
       {int x, int y, int width, int height, RGBA color, RGBA outlineColor}) {
     var params = {};
@@ -9140,6 +11922,9 @@ objectId must be specified. */
 
 /** Enters the 'inspect' mode. In this mode, elements that user is hovering over are highlighted.
 Backend then generates 'inspectNodeRequested' event upon element selection. */
+/** mode:[String] Set an inspection mode. */
+/** highlightConfig:[HighlightConfig] A descriptor for the highlight appearance of hovered-over nodes. May be omitted if `enabled
+== false`. */
   dart_async.Future setInspectMode(
       {String mode, HighlightConfig highlightConfig}) {
     var params = {};
@@ -9151,6 +11936,7 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
   }
 
 /**  */
+/** message:[String] The message to display, also triggers resume and step over controls. */
   dart_async.Future setPausedInDebuggerMessage({String message}) {
     var params = {};
     if (message != null) params['message'] = message;
@@ -9160,6 +11946,7 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
   }
 
 /** Requests that backend shows debug borders on layers */
+/** show:[bool] True for showing debug borders */
   dart_async.Future setShowDebugBorders({bool show}) {
     var params = {};
     if (show != null) params['show'] = show;
@@ -9168,6 +11955,7 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
   }
 
 /** Requests that backend shows the FPS counter */
+/** show:[bool] True for showing the FPS counter */
   dart_async.Future setShowFPSCounter({bool show}) {
     var params = {};
     if (show != null) params['show'] = show;
@@ -9176,6 +11964,7 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
   }
 
 /** Requests that backend shows paint rectangles */
+/** result:[bool] True for showing paint rectangles */
   dart_async.Future setShowPaintRects({bool result}) {
     var params = {};
     if (result != null) params['result'] = result;
@@ -9184,6 +11973,7 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
   }
 
 /** Requests that backend shows scroll bottleneck rects */
+/** show:[bool] True for showing scroll bottleneck rects */
   dart_async.Future setShowScrollBottleneckRects({bool show}) {
     var params = {};
     if (show != null) params['show'] = show;
@@ -9193,6 +11983,7 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
   }
 
 /** Paints viewport size upon main frame resize. */
+/** show:[bool] Whether to paint size or not. */
   dart_async.Future setShowViewportSizeOnResize({bool show}) {
     var params = {};
     if (show != null) params['show'] = show;
@@ -9202,6 +11993,7 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
   }
 
 /**  */
+/** suspended:[bool] Whether overlay should be suspended and not consume any resources until resumed. */
   dart_async.Future setSuspended({bool suspended}) {
     var params = {};
     if (suspended != null) params['suspended'] = suspended;
@@ -9209,24 +12001,34 @@ Backend then generates 'inspectNodeRequested' event upon element selection. */
     return _devtools.rpc.sendRequest('Overlay.setSuspended', params);
   }
 
-/** Fired when the node should be inspected. This happens after call to `setInspectMode` or when
+/** Broadcast stream: Fired when the node should be inspected. This happens after call to `setInspectMode` or when
 user manually inspects an element. */
-  dart_async.Stream get onInspectNodeRequested =>
-      _onInspectNodeRequested.stream;
-/** Fired when the node should be highlighted. This happens after call to `setInspectMode`. */
-  dart_async.Stream get onNodeHighlightRequested =>
-      _onNodeHighlightRequested.stream;
-/** Fired when user asks to capture screenshot of some area on the page. */
-  dart_async.Stream get onScreenshotRequested => _onScreenshotRequested.stream;
+  dart_async.Stream<OverlayInspectNodeRequestedEvent>
+      get onInspectNodeRequested => _onInspectNodeRequested.stream;
+/** Broadcast stream: Fired when the node should be highlighted. This happens after call to `setInspectMode`. */
+  dart_async.Stream<OverlayNodeHighlightRequestedEvent>
+      get onNodeHighlightRequested => _onNodeHighlightRequested.stream;
+/** Broadcast stream: Fired when user asks to capture screenshot of some area on the page. */
+  dart_async.Stream<OverlayScreenshotRequestedEvent>
+      get onScreenshotRequested => _onScreenshotRequested.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Overlay.inspectNodeRequested', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Overlay.inspectNodeRequested',
+        (json_rpc_2.Parameters params) {
+      _onInspectNodeRequested
+          .add(new OverlayInspectNodeRequestedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Overlay.nodeHighlightRequested', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Overlay.nodeHighlightRequested',
+        (json_rpc_2.Parameters params) {
+      _onNodeHighlightRequested
+          .add(new OverlayNodeHighlightRequestedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Overlay.screenshotRequested', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Overlay.screenshotRequested',
+        (json_rpc_2.Parameters params) {
+      _onScreenshotRequested
+          .add(new OverlayScreenshotRequestedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -9271,7 +12073,9 @@ class PageCreateIsolatedWorldResponse {
 class PageGetAppManifestResponse {
   PageGetAppManifestResponse(Map map) {
     url = map['url'];
-    errors = map['errors'];
+    errors = map.containsKey('errors')
+        ? map['errors'].map((m) => new AppManifestError(m)).toList()
+        : null;
     data = map['data'];
   }
 
@@ -9284,7 +12088,9 @@ class PageGetAppManifestResponse {
 
 class PageGetCookiesResponse {
   PageGetCookiesResponse(Map map) {
-    cookies = map['cookies'];
+    cookies = map.containsKey('cookies')
+        ? map['cookies'].map((m) => new Cookie(m)).toList()
+        : null;
   }
 
   List<Cookie> cookies;
@@ -9292,7 +12098,8 @@ class PageGetCookiesResponse {
 
 class PageGetFrameTreeResponse {
   PageGetFrameTreeResponse(Map map) {
-    frameTree = map['frameTree'];
+    frameTree =
+        map.containsKey('frameTree') ? new FrameTree(map['frameTree']) : null;
   }
 
   FrameTree frameTree;
@@ -9300,9 +12107,14 @@ class PageGetFrameTreeResponse {
 
 class PageGetLayoutMetricsResponse {
   PageGetLayoutMetricsResponse(Map map) {
-    layoutViewport = map['layoutViewport'];
-    visualViewport = map['visualViewport'];
-    contentSize = map['contentSize'];
+    layoutViewport = map.containsKey('layoutViewport')
+        ? new LayoutViewport(map['layoutViewport'])
+        : null;
+    visualViewport = map.containsKey('visualViewport')
+        ? new VisualViewport(map['visualViewport'])
+        : null;
+    contentSize =
+        map.containsKey('contentSize') ? new Rect(map['contentSize']) : null;
   }
 
   LayoutViewport layoutViewport;
@@ -9315,7 +12127,9 @@ class PageGetLayoutMetricsResponse {
 class PageGetNavigationHistoryResponse {
   PageGetNavigationHistoryResponse(Map map) {
     currentIndex = map['currentIndex'];
-    entries = map['entries'];
+    entries = map.containsKey('entries')
+        ? map['entries'].map((m) => new NavigationEntry(m)).toList()
+        : null;
   }
 
   int currentIndex;
@@ -9336,7 +12150,9 @@ class PageGetResourceContentResponse {
 
 class PageGetResourceTreeResponse {
   PageGetResourceTreeResponse(Map map) {
-    frameTree = map['frameTree'];
+    frameTree = map.containsKey('frameTree')
+        ? new FrameResourceTree(map['frameTree'])
+        : null;
   }
 
   FrameResourceTree frameTree;
@@ -9366,10 +12182,250 @@ class PagePrintToPDFResponse {
 
 class PageSearchInResourceResponse {
   PageSearchInResourceResponse(Map map) {
-    result = map['result'];
+    result = map.containsKey('result')
+        ? map['result'].map((m) => new SearchMatch(m)).toList()
+        : null;
   }
 
   List<SearchMatch> result;
+}
+
+/// Fired on `Page.domContentEventFired`.
+class PageDomContentEventFiredEvent {
+  PageDomContentEventFiredEvent(Map map) {
+    timestamp = map['timestamp'];
+  }
+
+/**  */
+  num timestamp;
+}
+
+/// Fired on `Page.frameAttached`.
+class PageFrameAttachedEvent {
+  PageFrameAttachedEvent(Map map) {
+    frameId = map['frameId'];
+    parentFrameId = map['parentFrameId'];
+    stack = map.containsKey('stack') ? new StackTrace(map['stack']) : null;
+  }
+
+/** Id of the frame that has been attached. */
+  String frameId;
+
+/** Parent frame identifier. */
+  String parentFrameId;
+
+/** JavaScript stack trace of when frame was attached, only set if frame initiated from script. */
+  StackTrace stack;
+}
+
+/// Fired on `Page.frameClearedScheduledNavigation`.
+class PageFrameClearedScheduledNavigationEvent {
+  PageFrameClearedScheduledNavigationEvent(Map map) {
+    frameId = map['frameId'];
+  }
+
+/** Id of the frame that has cleared its scheduled navigation. */
+  String frameId;
+}
+
+/// Fired on `Page.frameDetached`.
+class PageFrameDetachedEvent {
+  PageFrameDetachedEvent(Map map) {
+    frameId = map['frameId'];
+  }
+
+/** Id of the frame that has been detached. */
+  String frameId;
+}
+
+/// Fired on `Page.frameNavigated`.
+class PageFrameNavigatedEvent {
+  PageFrameNavigatedEvent(Map map) {
+    frame = map.containsKey('frame') ? new Frame(map['frame']) : null;
+  }
+
+/** Frame object. */
+  Frame frame;
+}
+
+/// Fired on `Page.frameResized`.
+class PageFrameResizedEvent {
+  PageFrameResizedEvent(Map map) {}
+}
+
+/// Fired on `Page.frameScheduledNavigation`.
+class PageFrameScheduledNavigationEvent {
+  PageFrameScheduledNavigationEvent(Map map) {
+    frameId = map['frameId'];
+    delay = map['delay'];
+    reason = map['reason'];
+    url = map['url'];
+  }
+
+/** Id of the frame that has scheduled a navigation. */
+  String frameId;
+
+/** Delay (in seconds) until the navigation is scheduled to begin. The navigation is not
+guaranteed to start. */
+  num delay;
+
+/** The reason for the navigation. */
+  String reason;
+
+/** The destination URL for the scheduled navigation. */
+  String url;
+}
+
+/// Fired on `Page.frameStartedLoading`.
+class PageFrameStartedLoadingEvent {
+  PageFrameStartedLoadingEvent(Map map) {
+    frameId = map['frameId'];
+  }
+
+/** Id of the frame that has started loading. */
+  String frameId;
+}
+
+/// Fired on `Page.frameStoppedLoading`.
+class PageFrameStoppedLoadingEvent {
+  PageFrameStoppedLoadingEvent(Map map) {
+    frameId = map['frameId'];
+  }
+
+/** Id of the frame that has stopped loading. */
+  String frameId;
+}
+
+/// Fired on `Page.interstitialHidden`.
+class PageInterstitialHiddenEvent {
+  PageInterstitialHiddenEvent(Map map) {}
+}
+
+/// Fired on `Page.interstitialShown`.
+class PageInterstitialShownEvent {
+  PageInterstitialShownEvent(Map map) {}
+}
+
+/// Fired on `Page.javascriptDialogClosed`.
+class PageJavascriptDialogClosedEvent {
+  PageJavascriptDialogClosedEvent(Map map) {
+    result = map['result'];
+    userInput = map['userInput'];
+  }
+
+/** Whether dialog was confirmed. */
+  bool result;
+
+/** User input in case of prompt. */
+  String userInput;
+}
+
+/// Fired on `Page.javascriptDialogOpening`.
+class PageJavascriptDialogOpeningEvent {
+  PageJavascriptDialogOpeningEvent(Map map) {
+    url = map['url'];
+    message = map['message'];
+    type = map['type'];
+    defaultPrompt = map['defaultPrompt'];
+  }
+
+/** Frame url. */
+  String url;
+
+/** Message that will be displayed by the dialog. */
+  String message;
+
+/** Dialog type. */
+  String type;
+
+/** Default dialog prompt. */
+  String defaultPrompt;
+}
+
+/// Fired on `Page.lifecycleEvent`.
+class PageLifecycleEventEvent {
+  PageLifecycleEventEvent(Map map) {
+    frameId = map['frameId'];
+    loaderId = map['loaderId'];
+    name = map['name'];
+    timestamp = map['timestamp'];
+  }
+
+/** Id of the frame. */
+  String frameId;
+
+/** Loader identifier. Empty string if the request is fetched from worker. */
+  String loaderId;
+
+/**  */
+  String name;
+
+/**  */
+  num timestamp;
+}
+
+/// Fired on `Page.loadEventFired`.
+class PageLoadEventFiredEvent {
+  PageLoadEventFiredEvent(Map map) {
+    timestamp = map['timestamp'];
+  }
+
+/**  */
+  num timestamp;
+}
+
+/// Fired on `Page.screencastFrame`.
+class PageScreencastFrameEvent {
+  PageScreencastFrameEvent(Map map) {
+    data = map['data'];
+    metadata = map.containsKey('metadata')
+        ? new ScreencastFrameMetadata(map['metadata'])
+        : null;
+    sessionId = map['sessionId'];
+  }
+
+/** Base64-encoded compressed image. */
+  String data;
+
+/** Screencast frame metadata. */
+  ScreencastFrameMetadata metadata;
+
+/** Frame number. */
+  int sessionId;
+}
+
+/// Fired on `Page.screencastVisibilityChanged`.
+class PageScreencastVisibilityChangedEvent {
+  PageScreencastVisibilityChangedEvent(Map map) {
+    visible = map['visible'];
+  }
+
+/** True if the page is visible. */
+  bool visible;
+}
+
+/// Fired on `Page.windowOpen`.
+class PageWindowOpenEvent {
+  PageWindowOpenEvent(Map map) {
+    url = map['url'];
+    windowName = map['windowName'];
+    windowFeatures = map.containsKey('windowFeatures')
+        ? new List(map['windowFeatures'])
+        : null;
+    userGesture = map['userGesture'];
+  }
+
+/** The URL for the new window. */
+  String url;
+
+/** Window name. */
+  String windowName;
+
+/** An array of enabled window features. */
+  List windowFeatures;
+
+/** Whether or not it was triggered by user gesture. */
+  bool userGesture;
 }
 
 class DevToolsPage {
@@ -9377,60 +12433,64 @@ class DevToolsPage {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onDomContentEventFired =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageDomContentEventFiredEvent>
+      _onDomContentEventFired = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameAttached =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameAttachedEvent> _onFrameAttached =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameClearedScheduledNavigation =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameClearedScheduledNavigationEvent>
+      _onFrameClearedScheduledNavigation =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameDetached =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameDetachedEvent> _onFrameDetached =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameNavigated =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameNavigatedEvent> _onFrameNavigated =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameResized =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameResizedEvent> _onFrameResized =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameScheduledNavigation =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameScheduledNavigationEvent>
+      _onFrameScheduledNavigation = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameStartedLoading =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameStartedLoadingEvent>
+      _onFrameStartedLoading = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onFrameStoppedLoading =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageFrameStoppedLoadingEvent>
+      _onFrameStoppedLoading = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onInterstitialHidden =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageInterstitialHiddenEvent>
+      _onInterstitialHidden = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onInterstitialShown =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageInterstitialShownEvent> _onInterstitialShown =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onJavascriptDialogClosed =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageJavascriptDialogClosedEvent>
+      _onJavascriptDialogClosed = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onJavascriptDialogOpening =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageJavascriptDialogOpeningEvent>
+      _onJavascriptDialogOpening = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onLifecycleEvent =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageLifecycleEventEvent> _onLifecycleEvent =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onLoadEventFired =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageLoadEventFiredEvent> _onLoadEventFired =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onScreencastFrame =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageScreencastFrameEvent> _onScreencastFrame =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onScreencastVisibilityChanged =
-      new dart_async.StreamController();
+  dart_async.StreamController<PageScreencastVisibilityChangedEvent>
+      _onScreencastVisibilityChanged =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWindowOpen = new dart_async.StreamController();
+  dart_async.StreamController<PageWindowOpenEvent> _onWindowOpen =
+      new dart_async.StreamController.broadcast();
 
 /** Deprecated, please use addScriptToEvaluateOnNewDocument instead. */
+/** scriptSource:[String]  */
   dart_async.Future<PageAddScriptToEvaluateOnLoadResponse>
       addScriptToEvaluateOnLoad({String scriptSource}) {
     var params = {};
@@ -9443,6 +12503,7 @@ class DevToolsPage {
   }
 
 /** Evaluates given script in every frame upon creation (before loading frame's scripts). */
+/** source:[String]  */
   dart_async.Future<PageAddScriptToEvaluateOnNewDocumentResponse>
       addScriptToEvaluateOnNewDocument({String source}) {
     var params = {};
@@ -9461,6 +12522,10 @@ class DevToolsPage {
   }
 
 /** Capture page screenshot. */
+/** format:[String] Image compression format (defaults to png). */
+/** quality:[int] Compression quality from range [0..100] (jpeg only). */
+/** clip:[Viewport] Capture the screenshot of a given region only. */
+/** fromSurface:[bool] Capture the screenshot from the surface, rather than the view. Defaults to true. */
   dart_async.Future<PageCaptureScreenshotResponse> captureScreenshot(
       {String format, int quality, Viewport clip, bool fromSurface}) {
     var params = {};
@@ -9497,6 +12562,10 @@ class DevToolsPage {
   }
 
 /** Creates an isolated world for the given frame. */
+/** frameId:[String] Id of the frame in which the isolated world should be created. */
+/** worldName:[String] An optional name which is reported in the Execution Context. */
+/** grantUniveralAccess:[bool] Whether or not universal access should be granted to the isolated world. This is a powerful
+option, use with caution. */
   dart_async.Future<PageCreateIsolatedWorldResponse> createIsolatedWorld(
       {String frameId, String worldName, bool grantUniveralAccess}) {
     var params = {};
@@ -9513,6 +12582,8 @@ class DevToolsPage {
   }
 
 /** Deletes browser cookie with given name, domain and path. */
+/** cookieName:[String] Name of the cookie to remove. */
+/** url:[String] URL to match cooke domain and path. */
   dart_async.Future deleteCookie({String cookieName, String url}) {
     var params = {};
     if (cookieName != null) params['cookieName'] = cookieName;
@@ -9576,6 +12647,8 @@ information in the `cookies` field. */
   }
 
 /** Returns content of the given resource. */
+/** frameId:[String] Frame id to get resource for. */
+/** url:[String] URL of the resource to get content for. */
   dart_async.Future<PageGetResourceContentResponse> getResourceContent(
       {String frameId, String url}) {
     var params = {};
@@ -9597,6 +12670,9 @@ information in the `cookies` field. */
   }
 
 /** Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload). */
+/** accept:[bool] Whether to accept or dismiss the dialog. */
+/** promptText:[String] The text to enter into the dialog prompt before accepting. Used only if this is a prompt
+dialog. */
   dart_async.Future handleJavaScriptDialog({bool accept, String promptText}) {
     var params = {};
     if (accept != null) params['accept'] = accept;
@@ -9607,6 +12683,10 @@ information in the `cookies` field. */
   }
 
 /** Navigates current page to the given URL. */
+/** url:[String] URL to navigate the page to. */
+/** referrer:[String] Referrer URL. */
+/** transitionType:[String] Intended transition type. */
+/** frameId:[String] Frame id to navigate, if not specified navigates the top frame. */
   dart_async.Future<PageNavigateResponse> navigate(
       {String url, String referrer, String transitionType, String frameId}) {
     var params = {};
@@ -9624,6 +12704,7 @@ information in the `cookies` field. */
   }
 
 /** Navigates current page to the given history entry. */
+/** entryId:[int] Unique id of the entry to navigate to. */
   dart_async.Future navigateToHistoryEntry({int entryId}) {
     var params = {};
     if (entryId != null) params['entryId'] = entryId;
@@ -9632,6 +12713,32 @@ information in the `cookies` field. */
   }
 
 /** Print page as PDF. */
+/** landscape:[bool] Paper orientation. Defaults to false. */
+/** displayHeaderFooter:[bool] Display header and footer. Defaults to false. */
+/** printBackground:[bool] Print background graphics. Defaults to false. */
+/** scale:[num] Scale of the webpage rendering. Defaults to 1. */
+/** paperWidth:[num] Paper width in inches. Defaults to 8.5 inches. */
+/** paperHeight:[num] Paper height in inches. Defaults to 11 inches. */
+/** marginTop:[num] Top margin in inches. Defaults to 1cm (~0.4 inches). */
+/** marginBottom:[num] Bottom margin in inches. Defaults to 1cm (~0.4 inches). */
+/** marginLeft:[num] Left margin in inches. Defaults to 1cm (~0.4 inches). */
+/** marginRight:[num] Right margin in inches. Defaults to 1cm (~0.4 inches). */
+/** pageRanges:[String] Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means
+print all pages. */
+/** ignoreInvalidPageRanges:[bool] Whether to silently ignore invalid but successfully parsed page ranges, such as '3-2'.
+Defaults to false. */
+/** headerTemplate:[String] HTML template for the print header. Should be valid HTML markup with following
+classes used to inject printing values into them:
+- date - formatted print date
+- title - document title
+- url - document location
+- pageNumber - current page number
+- totalPages - total pages in the document
+
+For example, <span class=title></span> would generate span containing the title. */
+/** footerTemplate:[String] HTML template for the print footer. Should use the same format as the `headerTemplate`. */
+/** preferCSSPageSize:[bool] Whether or not to prefer page size as defined by css. Defaults to false,
+in which case the content will be scaled to fit the paper size. */
   dart_async.Future<PagePrintToPDFResponse> printToPDF(
       {bool landscape,
       bool displayHeaderFooter,
@@ -9688,6 +12795,9 @@ information in the `cookies` field. */
   }
 
 /** Reloads given page optionally ignoring the cache. */
+/** ignoreCache:[bool] If true, browser cache is ignored (as if the user pressed Shift+refresh). */
+/** scriptToEvaluateOnLoad:[String] If set, the script will be injected into all frames of the inspected page after reload.
+Argument will be ignored if reloading dataURL origin. */
   dart_async.Future reload({bool ignoreCache, String scriptToEvaluateOnLoad}) {
     var params = {};
     if (ignoreCache != null) params['ignoreCache'] = ignoreCache;
@@ -9699,6 +12809,7 @@ information in the `cookies` field. */
   }
 
 /** Deprecated, please use removeScriptToEvaluateOnNewDocument instead. */
+/** identifier:[String]  */
   dart_async.Future removeScriptToEvaluateOnLoad({String identifier}) {
     var params = {};
     if (identifier != null) params['identifier'] = identifier;
@@ -9708,6 +12819,7 @@ information in the `cookies` field. */
   }
 
 /** Removes given script from the list. */
+/** identifier:[String]  */
   dart_async.Future removeScriptToEvaluateOnNewDocument({String identifier}) {
     var params = {};
     if (identifier != null) params['identifier'] = identifier;
@@ -9723,6 +12835,7 @@ information in the `cookies` field. */
   }
 
 /** Acknowledges that a screencast frame has been received by the frontend. */
+/** sessionId:[int] Frame number. */
   dart_async.Future screencastFrameAck({int sessionId}) {
     var params = {};
     if (sessionId != null) params['sessionId'] = sessionId;
@@ -9731,6 +12844,11 @@ information in the `cookies` field. */
   }
 
 /** Searches for given string in resource content. */
+/** frameId:[String] Frame id for resource to search in. */
+/** url:[String] URL of the resource to search in. */
+/** query:[String] String to search for. */
+/** caseSensitive:[bool] If true, search is case sensitive. */
+/** isRegex:[bool] If true, treats string parameter as regex. */
   dart_async.Future<PageSearchInResourceResponse> searchInResource(
       {String frameId,
       String url,
@@ -9754,6 +12872,7 @@ information in the `cookies` field. */
   }
 
 /** Enable Chrome's experimental ad filter on all sites. */
+/** enabled:[bool] Whether to block ads. */
   dart_async.Future setAdBlockingEnabled({bool enabled}) {
     var params = {};
     if (enabled != null) params['enabled'] = enabled;
@@ -9764,6 +12883,19 @@ information in the `cookies` field. */
 /** Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
 window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media
 query results). */
+/** width:[int] Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override. */
+/** height:[int] Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override. */
+/** deviceScaleFactor:[num] Overriding device scale factor value. 0 disables the override. */
+/** mobile:[bool] Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
+autosizing and more. */
+/** scale:[num] Scale to apply to resulting view image. */
+/** screenWidth:[int] Overriding screen width value in pixels (minimum 0, maximum 10000000). */
+/** screenHeight:[int] Overriding screen height value in pixels (minimum 0, maximum 10000000). */
+/** positionX:[int] Overriding view X position on screen in pixels (minimum 0, maximum 10000000). */
+/** positionY:[int] Overriding view Y position on screen in pixels (minimum 0, maximum 10000000). */
+/** dontSetVisibleSize:[bool] Do not set visible view size, rely upon explicit setVisibleSize call. */
+/** screenOrientation:[ScreenOrientation] Screen orientation override. */
+/** viewport:[Viewport] The viewport dimensions and scale. If not set, the override is cleared. */
   dart_async.Future setDeviceMetricsOverride(
       {int width,
       int height,
@@ -9809,6 +12941,9 @@ query results). */
   }
 
 /** Overrides the Device Orientation. */
+/** alpha:[num] Mock alpha */
+/** beta:[num] Mock beta */
+/** gamma:[num] Mock gamma */
   dart_async.Future setDeviceOrientationOverride(
       {num alpha, num beta, num gamma}) {
     var params = {};
@@ -9823,6 +12958,8 @@ query results). */
   }
 
 /** Sets given markup as the document's HTML. */
+/** frameId:[String] Frame id to set HTML for. */
+/** html:[String] HTML content to set. */
   dart_async.Future setDocumentContent({String frameId, String html}) {
     var params = {};
     if (frameId != null) params['frameId'] = frameId;
@@ -9833,6 +12970,9 @@ query results). */
   }
 
 /** Set the behavior when downloading a file. */
+/** behavior:[String] Whether to allow all or deny all download requests, or use default Chrome behavior if
+available (otherwise deny). */
+/** downloadPath:[String] The default path to save downloaded files to. This is requred if behavior is set to 'allow' */
   dart_async.Future setDownloadBehavior(
       {String behavior, String downloadPath}) {
     var params = {};
@@ -9845,6 +12985,9 @@ query results). */
 
 /** Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
 unavailable. */
+/** latitude:[num] Mock latitude */
+/** longitude:[num] Mock longitude */
+/** accuracy:[num] Mock accuracy */
   dart_async.Future setGeolocationOverride(
       {num latitude, num longitude, num accuracy}) {
     var params = {};
@@ -9858,6 +13001,7 @@ unavailable. */
   }
 
 /** Controls whether page will emit lifecycle events. */
+/** enabled:[bool] If true, starts emitting lifecycle events. */
   dart_async.Future setLifecycleEventsEnabled({bool enabled}) {
     var params = {};
     if (enabled != null) params['enabled'] = enabled;
@@ -9866,6 +13010,8 @@ unavailable. */
   }
 
 /** Toggles mouse event-based touch event emulation. */
+/** enabled:[bool] Whether the touch event emulation should be enabled. */
+/** configuration:[String] Touch/gesture events configuration. Default: current platform. */
   dart_async.Future setTouchEmulationEnabled(
       {bool enabled, String configuration}) {
     var params = {};
@@ -9877,6 +13023,11 @@ unavailable. */
   }
 
 /** Starts sending each frame using the `screencastFrame` event. */
+/** format:[String] Image compression format. */
+/** quality:[int] Compression quality from range [0..100]. */
+/** maxWidth:[int] Maximum screenshot width. */
+/** maxHeight:[int] Maximum screenshot height. */
+/** everyNthFrame:[int] Send every n-th frame. */
   dart_async.Future startScreencast(
       {String format,
       int quality,
@@ -9915,101 +13066,155 @@ unavailable. */
     return _devtools.rpc.sendRequest('Page.stopScreencast', params);
   }
 
-/**  */
-  dart_async.Stream get onDomContentEventFired =>
+/** Broadcast stream:  */
+  dart_async.Stream<PageDomContentEventFiredEvent> get onDomContentEventFired =>
       _onDomContentEventFired.stream;
-/** Fired when frame has been attached to its parent. */
-  dart_async.Stream get onFrameAttached => _onFrameAttached.stream;
-/** Fired when frame no longer has a scheduled navigation. */
-  dart_async.Stream get onFrameClearedScheduledNavigation =>
-      _onFrameClearedScheduledNavigation.stream;
-/** Fired when frame has been detached from its parent. */
-  dart_async.Stream get onFrameDetached => _onFrameDetached.stream;
-/** Fired once navigation of the frame has completed. Frame is now associated with the new loader. */
-  dart_async.Stream get onFrameNavigated => _onFrameNavigated.stream;
-/**  */
-  dart_async.Stream get onFrameResized => _onFrameResized.stream;
-/** Fired when frame schedules a potential navigation. */
-  dart_async.Stream get onFrameScheduledNavigation =>
-      _onFrameScheduledNavigation.stream;
-/** Fired when frame has started loading. */
-  dart_async.Stream get onFrameStartedLoading => _onFrameStartedLoading.stream;
-/** Fired when frame has stopped loading. */
-  dart_async.Stream get onFrameStoppedLoading => _onFrameStoppedLoading.stream;
-/** Fired when interstitial page was hidden */
-  dart_async.Stream get onInterstitialHidden => _onInterstitialHidden.stream;
-/** Fired when interstitial page was shown */
-  dart_async.Stream get onInterstitialShown => _onInterstitialShown.stream;
-/** Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) has been
+/** Broadcast stream: Fired when frame has been attached to its parent. */
+  dart_async.Stream<PageFrameAttachedEvent> get onFrameAttached =>
+      _onFrameAttached.stream;
+/** Broadcast stream: Fired when frame no longer has a scheduled navigation. */
+  dart_async.Stream<PageFrameClearedScheduledNavigationEvent>
+      get onFrameClearedScheduledNavigation =>
+          _onFrameClearedScheduledNavigation.stream;
+/** Broadcast stream: Fired when frame has been detached from its parent. */
+  dart_async.Stream<PageFrameDetachedEvent> get onFrameDetached =>
+      _onFrameDetached.stream;
+/** Broadcast stream: Fired once navigation of the frame has completed. Frame is now associated with the new loader. */
+  dart_async.Stream<PageFrameNavigatedEvent> get onFrameNavigated =>
+      _onFrameNavigated.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<PageFrameResizedEvent> get onFrameResized =>
+      _onFrameResized.stream;
+/** Broadcast stream: Fired when frame schedules a potential navigation. */
+  dart_async.Stream<PageFrameScheduledNavigationEvent>
+      get onFrameScheduledNavigation => _onFrameScheduledNavigation.stream;
+/** Broadcast stream: Fired when frame has started loading. */
+  dart_async.Stream<PageFrameStartedLoadingEvent> get onFrameStartedLoading =>
+      _onFrameStartedLoading.stream;
+/** Broadcast stream: Fired when frame has stopped loading. */
+  dart_async.Stream<PageFrameStoppedLoadingEvent> get onFrameStoppedLoading =>
+      _onFrameStoppedLoading.stream;
+/** Broadcast stream: Fired when interstitial page was hidden */
+  dart_async.Stream<PageInterstitialHiddenEvent> get onInterstitialHidden =>
+      _onInterstitialHidden.stream;
+/** Broadcast stream: Fired when interstitial page was shown */
+  dart_async.Stream<PageInterstitialShownEvent> get onInterstitialShown =>
+      _onInterstitialShown.stream;
+/** Broadcast stream: Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) has been
 closed. */
-  dart_async.Stream get onJavascriptDialogClosed =>
-      _onJavascriptDialogClosed.stream;
-/** Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) is about to
+  dart_async.Stream<PageJavascriptDialogClosedEvent>
+      get onJavascriptDialogClosed => _onJavascriptDialogClosed.stream;
+/** Broadcast stream: Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) is about to
 open. */
-  dart_async.Stream get onJavascriptDialogOpening =>
-      _onJavascriptDialogOpening.stream;
-/** Fired for top level page lifecycle events such as navigation, load, paint, etc. */
-  dart_async.Stream get onLifecycleEvent => _onLifecycleEvent.stream;
-/**  */
-  dart_async.Stream get onLoadEventFired => _onLoadEventFired.stream;
-/** Compressed image data requested by the `startScreencast`. */
-  dart_async.Stream get onScreencastFrame => _onScreencastFrame.stream;
-/** Fired when the page with currently enabled screencast was shown or hidden `. */
-  dart_async.Stream get onScreencastVisibilityChanged =>
-      _onScreencastVisibilityChanged.stream;
-/** Fired when a new window is going to be opened, via window.open(), link click, form submission,
+  dart_async.Stream<PageJavascriptDialogOpeningEvent>
+      get onJavascriptDialogOpening => _onJavascriptDialogOpening.stream;
+/** Broadcast stream: Fired for top level page lifecycle events such as navigation, load, paint, etc. */
+  dart_async.Stream<PageLifecycleEventEvent> get onLifecycleEvent =>
+      _onLifecycleEvent.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<PageLoadEventFiredEvent> get onLoadEventFired =>
+      _onLoadEventFired.stream;
+/** Broadcast stream: Compressed image data requested by the `startScreencast`. */
+  dart_async.Stream<PageScreencastFrameEvent> get onScreencastFrame =>
+      _onScreencastFrame.stream;
+/** Broadcast stream: Fired when the page with currently enabled screencast was shown or hidden `. */
+  dart_async.Stream<PageScreencastVisibilityChangedEvent>
+      get onScreencastVisibilityChanged =>
+          _onScreencastVisibilityChanged.stream;
+/** Broadcast stream: Fired when a new window is going to be opened, via window.open(), link click, form submission,
 etc. */
-  dart_async.Stream get onWindowOpen => _onWindowOpen.stream;
+  dart_async.Stream<PageWindowOpenEvent> get onWindowOpen =>
+      _onWindowOpen.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Page.domContentEventFired', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.domContentEventFired',
+        (json_rpc_2.Parameters params) {
+      _onDomContentEventFired
+          .add(new PageDomContentEventFiredEvent(params.asMap));
+    });
 
-    rpc.registerMethod('Page.frameAttached', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.frameAttached', (json_rpc_2.Parameters params) {
+      _onFrameAttached.add(new PageFrameAttachedEvent(params.asMap));
+    });
 
     rpc.registerMethod('Page.frameClearedScheduledNavigation',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onFrameClearedScheduledNavigation
+          .add(new PageFrameClearedScheduledNavigationEvent(params.asMap));
+    });
 
-    rpc.registerMethod('Page.frameDetached', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.frameDetached', (json_rpc_2.Parameters params) {
+      _onFrameDetached.add(new PageFrameDetachedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.frameNavigated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.frameNavigated', (json_rpc_2.Parameters params) {
+      _onFrameNavigated.add(new PageFrameNavigatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod('Page.frameResized', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.frameResized', (json_rpc_2.Parameters params) {
+      _onFrameResized.add(new PageFrameResizedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.frameScheduledNavigation', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.frameScheduledNavigation',
+        (json_rpc_2.Parameters params) {
+      _onFrameScheduledNavigation
+          .add(new PageFrameScheduledNavigationEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.frameStartedLoading', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.frameStartedLoading',
+        (json_rpc_2.Parameters params) {
+      _onFrameStartedLoading
+          .add(new PageFrameStartedLoadingEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.frameStoppedLoading', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.frameStoppedLoading',
+        (json_rpc_2.Parameters params) {
+      _onFrameStoppedLoading
+          .add(new PageFrameStoppedLoadingEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.interstitialHidden', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.interstitialHidden',
+        (json_rpc_2.Parameters params) {
+      _onInterstitialHidden.add(new PageInterstitialHiddenEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.interstitialShown', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.interstitialShown',
+        (json_rpc_2.Parameters params) {
+      _onInterstitialShown.add(new PageInterstitialShownEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.javascriptDialogClosed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.javascriptDialogClosed',
+        (json_rpc_2.Parameters params) {
+      _onJavascriptDialogClosed
+          .add(new PageJavascriptDialogClosedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.javascriptDialogOpening', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.javascriptDialogOpening',
+        (json_rpc_2.Parameters params) {
+      _onJavascriptDialogOpening
+          .add(new PageJavascriptDialogOpeningEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.lifecycleEvent', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.lifecycleEvent', (json_rpc_2.Parameters params) {
+      _onLifecycleEvent.add(new PageLifecycleEventEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.loadEventFired', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.loadEventFired', (json_rpc_2.Parameters params) {
+      _onLoadEventFired.add(new PageLoadEventFiredEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.screencastFrame', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.screencastFrame', (json_rpc_2.Parameters params) {
+      _onScreencastFrame.add(new PageScreencastFrameEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Page.screencastVisibilityChanged', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.screencastVisibilityChanged',
+        (json_rpc_2.Parameters params) {
+      _onScreencastVisibilityChanged
+          .add(new PageScreencastVisibilityChangedEvent(params.asMap));
+    });
 
-    rpc.registerMethod('Page.windowOpen', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Page.windowOpen', (json_rpc_2.Parameters params) {
+      _onWindowOpen.add(new PageWindowOpenEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -10036,10 +13241,28 @@ etc. */
 
 class PerformanceGetMetricsResponse {
   PerformanceGetMetricsResponse(Map map) {
-    metrics = map['metrics'];
+    metrics = map.containsKey('metrics')
+        ? map['metrics'].map((m) => new Metric(m)).toList()
+        : null;
   }
 
   List<Metric> metrics;
+}
+
+/// Fired on `Performance.metrics`.
+class PerformanceMetricsEvent {
+  PerformanceMetricsEvent(Map map) {
+    metrics = map.containsKey('metrics')
+        ? map['metrics'].map((m) => new Metric(m)).toList()
+        : null;
+    title = map['title'];
+  }
+
+/** Current values of the metrics. */
+  List<Metric> metrics;
+
+/** Timestamp title. */
+  String title;
 }
 
 class DevToolsPerformance {
@@ -10047,7 +13270,8 @@ class DevToolsPerformance {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onMetrics = new dart_async.StreamController();
+  dart_async.StreamController<PerformanceMetricsEvent> _onMetrics =
+      new dart_async.StreamController.broadcast();
 
 /** Disable collecting and reporting metrics. */
   dart_async.Future disable() {
@@ -10069,11 +13293,12 @@ class DevToolsPerformance {
         .then((response) => new PerformanceGetMetricsResponse(response));
   }
 
-/** Current values of the metrics. */
-  dart_async.Stream get onMetrics => _onMetrics.stream;
+/** Broadcast stream: Current values of the metrics. */
+  dart_async.Stream<PerformanceMetricsEvent> get onMetrics => _onMetrics.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Performance.metrics', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Performance.metrics', (json_rpc_2.Parameters params) {
+      _onMetrics.add(new PerformanceMetricsEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -10081,16 +13306,67 @@ class DevToolsPerformance {
   }
 }
 
+/// Fired on `Security.certificateError`.
+class SecurityCertificateErrorEvent {
+  SecurityCertificateErrorEvent(Map map) {
+    eventId = map['eventId'];
+    errorType = map['errorType'];
+    requestURL = map['requestURL'];
+  }
+
+/** The ID of the event. */
+  int eventId;
+
+/** The type of the error. */
+  String errorType;
+
+/** The url that was requested. */
+  String requestURL;
+}
+
+/// Fired on `Security.securityStateChanged`.
+class SecuritySecurityStateChangedEvent {
+  SecuritySecurityStateChangedEvent(Map map) {
+    securityState = map['securityState'];
+    schemeIsCryptographic = map['schemeIsCryptographic'];
+    explanations = map.containsKey('explanations')
+        ? map['explanations']
+            .map((m) => new SecurityStateExplanation(m))
+            .toList()
+        : null;
+    insecureContentStatus = map.containsKey('insecureContentStatus')
+        ? new InsecureContentStatus(map['insecureContentStatus'])
+        : null;
+    summary = map['summary'];
+  }
+
+/** Security state. */
+  String securityState;
+
+/** True if the page was loaded over cryptographic transport such as HTTPS. */
+  bool schemeIsCryptographic;
+
+/** List of explanations for the security state. If the overall security state is `insecure` or
+`warning`, at least one corresponding explanation should be included. */
+  List<SecurityStateExplanation> explanations;
+
+/** Information about insecure content on the page. */
+  InsecureContentStatus insecureContentStatus;
+
+/** Overrides user-visible description of the state. */
+  String summary;
+}
+
 class DevToolsSecurity {
   DevToolsSecurity(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onCertificateError =
-      new dart_async.StreamController();
+  dart_async.StreamController<SecurityCertificateErrorEvent>
+      _onCertificateError = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onSecurityStateChanged =
-      new dart_async.StreamController();
+  dart_async.StreamController<SecuritySecurityStateChangedEvent>
+      _onSecurityStateChanged = new dart_async.StreamController.broadcast();
 
 /** Disables tracking security state changes. */
   dart_async.Future disable() {
@@ -10105,6 +13381,7 @@ class DevToolsSecurity {
   }
 
 /** Enable/disable whether all certificate errors should be ignored. */
+/** ignore:[bool] If true, all certificate errors will be ignored. */
   dart_async.Future setIgnoreCertificateErrors({bool ignore}) {
     var params = {};
     if (ignore != null) params['ignore'] = ignore;
@@ -10114,6 +13391,8 @@ class DevToolsSecurity {
   }
 
 /** Handles a certificate error that fired a certificateError event. */
+/** eventId:[int] The ID of the event. */
+/** action:[String] The action to take on the certificate error. */
   dart_async.Future handleCertificateError({int eventId, String action}) {
     var params = {};
     if (eventId != null) params['eventId'] = eventId;
@@ -10125,6 +13404,7 @@ class DevToolsSecurity {
 
 /** Enable/disable overriding certificate errors. If enabled, all certificate error events need to
 be handled by the DevTools client and should be answered with handleCertificateError commands. */
+/** override:[bool] If true, certificate errors will be overridden. */
   dart_async.Future setOverrideCertificateErrors({bool override}) {
     var params = {};
     if (override != null) params['override'] = override;
@@ -10133,20 +13413,26 @@ be handled by the DevTools client and should be answered with handleCertificateE
         .sendRequest('Security.setOverrideCertificateErrors', params);
   }
 
-/** There is a certificate error. If overriding certificate errors is enabled, then it should be
+/** Broadcast stream: There is a certificate error. If overriding certificate errors is enabled, then it should be
 handled with the handleCertificateError command. Note: this event does not fire if the
 certificate error has been allowed internally. Only one client per target should override
 certificate errors at the same time. */
-  dart_async.Stream get onCertificateError => _onCertificateError.stream;
-/** The security state of the page changed. */
-  dart_async.Stream get onSecurityStateChanged =>
-      _onSecurityStateChanged.stream;
+  dart_async.Stream<SecurityCertificateErrorEvent> get onCertificateError =>
+      _onCertificateError.stream;
+/** Broadcast stream: The security state of the page changed. */
+  dart_async.Stream<SecuritySecurityStateChangedEvent>
+      get onSecurityStateChanged => _onSecurityStateChanged.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Security.certificateError', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Security.certificateError',
+        (json_rpc_2.Parameters params) {
+      _onCertificateError.add(new SecurityCertificateErrorEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Security.securityStateChanged', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Security.securityStateChanged',
+        (json_rpc_2.Parameters params) {
+      _onSecurityStateChanged
+          .add(new SecuritySecurityStateChangedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -10155,21 +13441,63 @@ certificate errors at the same time. */
   }
 }
 
+/// Fired on `ServiceWorker.workerErrorReported`.
+class ServiceWorkerWorkerErrorReportedEvent {
+  ServiceWorkerWorkerErrorReportedEvent(Map map) {
+    errorMessage = map.containsKey('errorMessage')
+        ? new ServiceWorkerErrorMessage(map['errorMessage'])
+        : null;
+  }
+
+/**  */
+  ServiceWorkerErrorMessage errorMessage;
+}
+
+/// Fired on `ServiceWorker.workerRegistrationUpdated`.
+class ServiceWorkerWorkerRegistrationUpdatedEvent {
+  ServiceWorkerWorkerRegistrationUpdatedEvent(Map map) {
+    registrations = map.containsKey('registrations')
+        ? map['registrations']
+            .map((m) => new ServiceWorkerRegistration(m))
+            .toList()
+        : null;
+  }
+
+/**  */
+  List<ServiceWorkerRegistration> registrations;
+}
+
+/// Fired on `ServiceWorker.workerVersionUpdated`.
+class ServiceWorkerWorkerVersionUpdatedEvent {
+  ServiceWorkerWorkerVersionUpdatedEvent(Map map) {
+    versions = map.containsKey('versions')
+        ? map['versions'].map((m) => new ServiceWorkerVersion(m)).toList()
+        : null;
+  }
+
+/**  */
+  List<ServiceWorkerVersion> versions;
+}
+
 class DevToolsServiceWorker {
   DevToolsServiceWorker(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onWorkerErrorReported =
-      new dart_async.StreamController();
+  dart_async.StreamController<ServiceWorkerWorkerErrorReportedEvent>
+      _onWorkerErrorReported = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWorkerRegistrationUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<ServiceWorkerWorkerRegistrationUpdatedEvent>
+      _onWorkerRegistrationUpdated =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onWorkerVersionUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<ServiceWorkerWorkerVersionUpdatedEvent>
+      _onWorkerVersionUpdated = new dart_async.StreamController.broadcast();
 
 /**  */
+/** origin:[String]  */
+/** registrationId:[String]  */
+/** data:[String]  */
   dart_async.Future deliverPushMessage(
       {String origin, String registrationId, String data}) {
     var params = {};
@@ -10190,6 +13518,10 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** origin:[String]  */
+/** registrationId:[String]  */
+/** tag:[String]  */
+/** lastChance:[bool]  */
   dart_async.Future dispatchSyncEvent(
       {String origin, String registrationId, String tag, bool lastChance}) {
     var params = {};
@@ -10211,6 +13543,7 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** versionId:[String]  */
   dart_async.Future inspectWorker({String versionId}) {
     var params = {};
     if (versionId != null) params['versionId'] = versionId;
@@ -10219,6 +13552,7 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** forceUpdateOnPageLoad:[bool]  */
   dart_async.Future setForceUpdateOnPageLoad({bool forceUpdateOnPageLoad}) {
     var params = {};
     if (forceUpdateOnPageLoad != null)
@@ -10229,6 +13563,7 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** scopeURL:[String]  */
   dart_async.Future skipWaiting({String scopeURL}) {
     var params = {};
     if (scopeURL != null) params['scopeURL'] = scopeURL;
@@ -10237,6 +13572,7 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** scopeURL:[String]  */
   dart_async.Future startWorker({String scopeURL}) {
     var params = {};
     if (scopeURL != null) params['scopeURL'] = scopeURL;
@@ -10251,6 +13587,7 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** versionId:[String]  */
   dart_async.Future stopWorker({String versionId}) {
     var params = {};
     if (versionId != null) params['versionId'] = versionId;
@@ -10259,6 +13596,7 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** scopeURL:[String]  */
   dart_async.Future unregister({String scopeURL}) {
     var params = {};
     if (scopeURL != null) params['scopeURL'] = scopeURL;
@@ -10267,6 +13605,7 @@ class DevToolsServiceWorker {
   }
 
 /**  */
+/** scopeURL:[String]  */
   dart_async.Future updateRegistration({String scopeURL}) {
     var params = {};
     if (scopeURL != null) params['scopeURL'] = scopeURL;
@@ -10275,23 +13614,33 @@ class DevToolsServiceWorker {
         .sendRequest('ServiceWorker.updateRegistration', params);
   }
 
-/**  */
-  dart_async.Stream get onWorkerErrorReported => _onWorkerErrorReported.stream;
-/**  */
-  dart_async.Stream get onWorkerRegistrationUpdated =>
-      _onWorkerRegistrationUpdated.stream;
-/**  */
-  dart_async.Stream get onWorkerVersionUpdated =>
-      _onWorkerVersionUpdated.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<ServiceWorkerWorkerErrorReportedEvent>
+      get onWorkerErrorReported => _onWorkerErrorReported.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<ServiceWorkerWorkerRegistrationUpdatedEvent>
+      get onWorkerRegistrationUpdated => _onWorkerRegistrationUpdated.stream;
+/** Broadcast stream:  */
+  dart_async.Stream<ServiceWorkerWorkerVersionUpdatedEvent>
+      get onWorkerVersionUpdated => _onWorkerVersionUpdated.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'ServiceWorker.workerErrorReported', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('ServiceWorker.workerErrorReported',
+        (json_rpc_2.Parameters params) {
+      _onWorkerErrorReported
+          .add(new ServiceWorkerWorkerErrorReportedEvent(params.asMap));
+    });
 
     rpc.registerMethod('ServiceWorker.workerRegistrationUpdated',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onWorkerRegistrationUpdated
+          .add(new ServiceWorkerWorkerRegistrationUpdatedEvent(params.asMap));
+    });
 
     rpc.registerMethod('ServiceWorker.workerVersionUpdated',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onWorkerVersionUpdated
+          .add(new ServiceWorkerWorkerVersionUpdatedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -10305,7 +13654,9 @@ class StorageGetUsageAndQuotaResponse {
   StorageGetUsageAndQuotaResponse(Map map) {
     usage = map['usage'];
     quota = map['quota'];
-    usageBreakdown = map['usageBreakdown'];
+    usageBreakdown = map.containsKey('usageBreakdown')
+        ? map['usageBreakdown'].map((m) => new UsageForType(m)).toList()
+        : null;
   }
 
   num usage;
@@ -10315,24 +13666,79 @@ class StorageGetUsageAndQuotaResponse {
   List<UsageForType> usageBreakdown;
 }
 
+/// Fired on `Storage.cacheStorageContentUpdated`.
+class StorageCacheStorageContentUpdatedEvent {
+  StorageCacheStorageContentUpdatedEvent(Map map) {
+    origin = map['origin'];
+    cacheName = map['cacheName'];
+  }
+
+/** Origin to update. */
+  String origin;
+
+/** Name of cache in origin. */
+  String cacheName;
+}
+
+/// Fired on `Storage.cacheStorageListUpdated`.
+class StorageCacheStorageListUpdatedEvent {
+  StorageCacheStorageListUpdatedEvent(Map map) {
+    origin = map['origin'];
+  }
+
+/** Origin to update. */
+  String origin;
+}
+
+/// Fired on `Storage.indexedDBContentUpdated`.
+class StorageIndexedDBContentUpdatedEvent {
+  StorageIndexedDBContentUpdatedEvent(Map map) {
+    origin = map['origin'];
+    databaseName = map['databaseName'];
+    objectStoreName = map['objectStoreName'];
+  }
+
+/** Origin to update. */
+  String origin;
+
+/** Database to update. */
+  String databaseName;
+
+/** ObjectStore to update. */
+  String objectStoreName;
+}
+
+/// Fired on `Storage.indexedDBListUpdated`.
+class StorageIndexedDBListUpdatedEvent {
+  StorageIndexedDBListUpdatedEvent(Map map) {
+    origin = map['origin'];
+  }
+
+/** Origin to update. */
+  String origin;
+}
+
 class DevToolsStorage {
   DevToolsStorage(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onCacheStorageContentUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<StorageCacheStorageContentUpdatedEvent>
+      _onCacheStorageContentUpdated =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onCacheStorageListUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<StorageCacheStorageListUpdatedEvent>
+      _onCacheStorageListUpdated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onIndexedDBContentUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<StorageIndexedDBContentUpdatedEvent>
+      _onIndexedDBContentUpdated = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onIndexedDBListUpdated =
-      new dart_async.StreamController();
+  dart_async.StreamController<StorageIndexedDBListUpdatedEvent>
+      _onIndexedDBListUpdated = new dart_async.StreamController.broadcast();
 
 /** Clears storage for origin. */
+/** origin:[String] Security origin. */
+/** storageTypes:[String] Comma separated origin names. */
   dart_async.Future clearDataForOrigin({String origin, String storageTypes}) {
     var params = {};
     if (origin != null) params['origin'] = origin;
@@ -10343,6 +13749,7 @@ class DevToolsStorage {
   }
 
 /** Returns usage and quota in bytes. */
+/** origin:[String] Security origin. */
   dart_async.Future<StorageGetUsageAndQuotaResponse> getUsageAndQuota(
       {String origin}) {
     var params = {};
@@ -10354,6 +13761,7 @@ class DevToolsStorage {
   }
 
 /** Registers origin to be notified when an update occurs to its cache storage list. */
+/** origin:[String] Security origin. */
   dart_async.Future trackCacheStorageForOrigin({String origin}) {
     var params = {};
     if (origin != null) params['origin'] = origin;
@@ -10363,6 +13771,7 @@ class DevToolsStorage {
   }
 
 /** Registers origin to be notified when an update occurs to its IndexedDB. */
+/** origin:[String] Security origin. */
   dart_async.Future trackIndexedDBForOrigin({String origin}) {
     var params = {};
     if (origin != null) params['origin'] = origin;
@@ -10371,6 +13780,7 @@ class DevToolsStorage {
   }
 
 /** Unregisters origin from receiving notifications for cache storage. */
+/** origin:[String] Security origin. */
   dart_async.Future untrackCacheStorageForOrigin({String origin}) {
     var params = {};
     if (origin != null) params['origin'] = origin;
@@ -10380,6 +13790,7 @@ class DevToolsStorage {
   }
 
 /** Unregisters origin from receiving notifications for IndexedDB. */
+/** origin:[String] Security origin. */
   dart_async.Future untrackIndexedDBForOrigin({String origin}) {
     var params = {};
     if (origin != null) params['origin'] = origin;
@@ -10388,30 +13799,42 @@ class DevToolsStorage {
         .sendRequest('Storage.untrackIndexedDBForOrigin', params);
   }
 
-/** A cache's contents have been modified. */
-  dart_async.Stream get onCacheStorageContentUpdated =>
-      _onCacheStorageContentUpdated.stream;
-/** A cache has been added/deleted. */
-  dart_async.Stream get onCacheStorageListUpdated =>
-      _onCacheStorageListUpdated.stream;
-/** The origin's IndexedDB object store has been modified. */
-  dart_async.Stream get onIndexedDBContentUpdated =>
-      _onIndexedDBContentUpdated.stream;
-/** The origin's IndexedDB database list has been modified. */
-  dart_async.Stream get onIndexedDBListUpdated =>
-      _onIndexedDBListUpdated.stream;
+/** Broadcast stream: A cache's contents have been modified. */
+  dart_async.Stream<StorageCacheStorageContentUpdatedEvent>
+      get onCacheStorageContentUpdated => _onCacheStorageContentUpdated.stream;
+/** Broadcast stream: A cache has been added/deleted. */
+  dart_async.Stream<StorageCacheStorageListUpdatedEvent>
+      get onCacheStorageListUpdated => _onCacheStorageListUpdated.stream;
+/** Broadcast stream: The origin's IndexedDB object store has been modified. */
+  dart_async.Stream<StorageIndexedDBContentUpdatedEvent>
+      get onIndexedDBContentUpdated => _onIndexedDBContentUpdated.stream;
+/** Broadcast stream: The origin's IndexedDB database list has been modified. */
+  dart_async.Stream<StorageIndexedDBListUpdatedEvent>
+      get onIndexedDBListUpdated => _onIndexedDBListUpdated.stream;
   void listen(json_rpc_2.Peer rpc) {
     rpc.registerMethod('Storage.cacheStorageContentUpdated',
-        (json_rpc_2.Parameters params) {});
+        (json_rpc_2.Parameters params) {
+      _onCacheStorageContentUpdated
+          .add(new StorageCacheStorageContentUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Storage.cacheStorageListUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Storage.cacheStorageListUpdated',
+        (json_rpc_2.Parameters params) {
+      _onCacheStorageListUpdated
+          .add(new StorageCacheStorageListUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Storage.indexedDBContentUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Storage.indexedDBContentUpdated',
+        (json_rpc_2.Parameters params) {
+      _onIndexedDBContentUpdated
+          .add(new StorageIndexedDBContentUpdatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Storage.indexedDBListUpdated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Storage.indexedDBListUpdated',
+        (json_rpc_2.Parameters params) {
+      _onIndexedDBListUpdated
+          .add(new StorageIndexedDBListUpdatedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -10424,7 +13847,7 @@ class DevToolsStorage {
 
 class SystemInfoGetInfoResponse {
   SystemInfoGetInfoResponse(Map map) {
-    gpu = map['gpu'];
+    gpu = map.containsKey('gpu') ? new GPUInfo(map['gpu']) : null;
     modelName = map['modelName'];
     modelVersion = map['modelVersion'];
     commandLine = map['commandLine'];
@@ -10498,7 +13921,9 @@ class TargetDisposeBrowserContextResponse {
 
 class TargetGetTargetInfoResponse {
   TargetGetTargetInfoResponse(Map map) {
-    targetInfo = map['targetInfo'];
+    targetInfo = map.containsKey('targetInfo')
+        ? new TargetInfo(map['targetInfo'])
+        : null;
   }
 
   TargetInfo targetInfo;
@@ -10506,10 +13931,98 @@ class TargetGetTargetInfoResponse {
 
 class TargetGetTargetsResponse {
   TargetGetTargetsResponse(Map map) {
-    targetInfos = map['targetInfos'];
+    targetInfos = map.containsKey('targetInfos')
+        ? map['targetInfos'].map((m) => new TargetInfo(m)).toList()
+        : null;
   }
 
   List<TargetInfo> targetInfos;
+}
+
+/// Fired on `Target.attachedToTarget`.
+class TargetAttachedToTargetEvent {
+  TargetAttachedToTargetEvent(Map map) {
+    sessionId = map['sessionId'];
+    targetInfo = map.containsKey('targetInfo')
+        ? new TargetInfo(map['targetInfo'])
+        : null;
+    waitingForDebugger = map['waitingForDebugger'];
+  }
+
+/** Identifier assigned to the session used to send/receive messages. */
+  String sessionId;
+
+/**  */
+  TargetInfo targetInfo;
+
+/**  */
+  bool waitingForDebugger;
+}
+
+/// Fired on `Target.detachedFromTarget`.
+class TargetDetachedFromTargetEvent {
+  TargetDetachedFromTargetEvent(Map map) {
+    sessionId = map['sessionId'];
+    targetId = map['targetId'];
+  }
+
+/** Detached session identifier. */
+  String sessionId;
+
+/** Deprecated. */
+  String targetId;
+}
+
+/// Fired on `Target.receivedMessageFromTarget`.
+class TargetReceivedMessageFromTargetEvent {
+  TargetReceivedMessageFromTargetEvent(Map map) {
+    sessionId = map['sessionId'];
+    message = map['message'];
+    targetId = map['targetId'];
+  }
+
+/** Identifier of a session which sends a message. */
+  String sessionId;
+
+/**  */
+  String message;
+
+/** Deprecated. */
+  String targetId;
+}
+
+/// Fired on `Target.targetCreated`.
+class TargetTargetCreatedEvent {
+  TargetTargetCreatedEvent(Map map) {
+    targetInfo = map.containsKey('targetInfo')
+        ? new TargetInfo(map['targetInfo'])
+        : null;
+  }
+
+/**  */
+  TargetInfo targetInfo;
+}
+
+/// Fired on `Target.targetDestroyed`.
+class TargetTargetDestroyedEvent {
+  TargetTargetDestroyedEvent(Map map) {
+    targetId = map['targetId'];
+  }
+
+/**  */
+  String targetId;
+}
+
+/// Fired on `Target.targetInfoChanged`.
+class TargetTargetInfoChangedEvent {
+  TargetTargetInfoChangedEvent(Map map) {
+    targetInfo = map.containsKey('targetInfo')
+        ? new TargetInfo(map['targetInfo'])
+        : null;
+  }
+
+/**  */
+  TargetInfo targetInfo;
 }
 
 class DevToolsTarget {
@@ -10517,25 +14030,27 @@ class DevToolsTarget {
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onAttachedToTarget =
-      new dart_async.StreamController();
+  dart_async.StreamController<TargetAttachedToTargetEvent> _onAttachedToTarget =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onDetachedFromTarget =
-      new dart_async.StreamController();
+  dart_async.StreamController<TargetDetachedFromTargetEvent>
+      _onDetachedFromTarget = new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onReceivedMessageFromTarget =
-      new dart_async.StreamController();
+  dart_async.StreamController<TargetReceivedMessageFromTargetEvent>
+      _onReceivedMessageFromTarget =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onTargetCreated =
-      new dart_async.StreamController();
+  dart_async.StreamController<TargetTargetCreatedEvent> _onTargetCreated =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onTargetDestroyed =
-      new dart_async.StreamController();
+  dart_async.StreamController<TargetTargetDestroyedEvent> _onTargetDestroyed =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onTargetInfoChanged =
-      new dart_async.StreamController();
+  dart_async.StreamController<TargetTargetInfoChangedEvent>
+      _onTargetInfoChanged = new dart_async.StreamController.broadcast();
 
 /** Activates (focuses) the target. */
+/** targetId:[String]  */
   dart_async.Future activateTarget({String targetId}) {
     var params = {};
     if (targetId != null) params['targetId'] = targetId;
@@ -10544,6 +14059,7 @@ class DevToolsTarget {
   }
 
 /** Attaches to the target with given id. */
+/** targetId:[String]  */
   dart_async.Future<TargetAttachToTargetResponse> attachToTarget(
       {String targetId}) {
     var params = {};
@@ -10555,6 +14071,7 @@ class DevToolsTarget {
   }
 
 /** Closes the target. If the target is a page that gets closed too. */
+/** targetId:[String]  */
   dart_async.Future<TargetCloseTargetResponse> closeTarget({String targetId}) {
     var params = {};
     if (targetId != null) params['targetId'] = targetId;
@@ -10574,6 +14091,12 @@ one. */
   }
 
 /** Creates a new page. */
+/** url:[String] The initial URL the page will be navigated to. */
+/** width:[int] Frame width in DIP (headless chrome only). */
+/** height:[int] Frame height in DIP (headless chrome only). */
+/** browserContextId:[String] The browser context to create the page in (headless chrome only). */
+/** enableBeginFrameControl:[bool] Whether BeginFrames for this target will be controlled via DevTools (headless chrome only,
+not supported on MacOS yet, false by default). */
   dart_async.Future<TargetCreateTargetResponse> createTarget(
       {String url,
       int width,
@@ -10598,6 +14121,8 @@ one. */
   }
 
 /** Detaches session with given id. */
+/** sessionId:[String] Session to detach. */
+/** targetId:[String] Deprecated. */
   dart_async.Future detachFromTarget({String sessionId, String targetId}) {
     var params = {};
     if (sessionId != null) params['sessionId'] = sessionId;
@@ -10608,6 +14133,7 @@ one. */
   }
 
 /** Deletes a BrowserContext, will fail of any open page uses it. */
+/** browserContextId:[String]  */
   dart_async.Future<TargetDisposeBrowserContextResponse> disposeBrowserContext(
       {String browserContextId}) {
     var params = {};
@@ -10619,6 +14145,7 @@ one. */
   }
 
 /** Returns information about a target. */
+/** targetId:[String]  */
   dart_async.Future<TargetGetTargetInfoResponse> getTargetInfo(
       {String targetId}) {
     var params = {};
@@ -10638,6 +14165,9 @@ one. */
   }
 
 /** Sends protocol message over session with given id. */
+/** message:[String]  */
+/** sessionId:[String] Identifier of the session. */
+/** targetId:[String] Deprecated. */
   dart_async.Future sendMessageToTarget(
       {String message, String sessionId, String targetId}) {
     var params = {};
@@ -10653,6 +14183,9 @@ one. */
 /** Controls whether to automatically attach to new targets which are considered to be related to
 this one. When turned on, attaches to all existing related targets as well. When turned off,
 automatically detaches from all currently attached targets. */
+/** autoAttach:[bool] Whether to auto-attach to related targets. */
+/** waitForDebuggerOnStart:[bool] Whether to pause new targets when attaching to them. Use `Runtime.runIfWaitingForDebugger`
+to run paused targets. */
   dart_async.Future setAutoAttach(
       {bool autoAttach, bool waitForDebuggerOnStart}) {
     var params = {};
@@ -10666,6 +14199,7 @@ automatically detaches from all currently attached targets. */
 
 /** Controls whether to discover available targets and notify via
 `targetCreated/targetInfoChanged/targetDestroyed` events. */
+/** discover:[bool] Whether to discover available targets. */
   dart_async.Future setDiscoverTargets({bool discover}) {
     var params = {};
     if (discover != null) params['discover'] = discover;
@@ -10675,6 +14209,7 @@ automatically detaches from all currently attached targets. */
 
 /** Enables target discovery for the specified locations, when `setDiscoverTargets` was set to
 `true`. */
+/** locations:[List] List of remote locations. */
   dart_async.Future setRemoteLocations({List<RemoteLocation> locations}) {
     var params = {};
     if (locations != null) params['locations'] = locations;
@@ -10682,40 +14217,58 @@ automatically detaches from all currently attached targets. */
     return _devtools.rpc.sendRequest('Target.setRemoteLocations', params);
   }
 
-/** Issued when attached to target because of auto-attach or `attachToTarget` command. */
-  dart_async.Stream get onAttachedToTarget => _onAttachedToTarget.stream;
-/** Issued when detached from target for any reason (including `detachFromTarget` command). Can be
+/** Broadcast stream: Issued when attached to target because of auto-attach or `attachToTarget` command. */
+  dart_async.Stream<TargetAttachedToTargetEvent> get onAttachedToTarget =>
+      _onAttachedToTarget.stream;
+/** Broadcast stream: Issued when detached from target for any reason (including `detachFromTarget` command). Can be
 issued multiple times per target if multiple sessions have been attached to it. */
-  dart_async.Stream get onDetachedFromTarget => _onDetachedFromTarget.stream;
-/** Notifies about a new protocol message received from the session (as reported in
+  dart_async.Stream<TargetDetachedFromTargetEvent> get onDetachedFromTarget =>
+      _onDetachedFromTarget.stream;
+/** Broadcast stream: Notifies about a new protocol message received from the session (as reported in
 `attachedToTarget` event). */
-  dart_async.Stream get onReceivedMessageFromTarget =>
-      _onReceivedMessageFromTarget.stream;
-/** Issued when a possible inspection target is created. */
-  dart_async.Stream get onTargetCreated => _onTargetCreated.stream;
-/** Issued when a target is destroyed. */
-  dart_async.Stream get onTargetDestroyed => _onTargetDestroyed.stream;
-/** Issued when some information about a target has changed. This only happens between
+  dart_async.Stream<TargetReceivedMessageFromTargetEvent>
+      get onReceivedMessageFromTarget => _onReceivedMessageFromTarget.stream;
+/** Broadcast stream: Issued when a possible inspection target is created. */
+  dart_async.Stream<TargetTargetCreatedEvent> get onTargetCreated =>
+      _onTargetCreated.stream;
+/** Broadcast stream: Issued when a target is destroyed. */
+  dart_async.Stream<TargetTargetDestroyedEvent> get onTargetDestroyed =>
+      _onTargetDestroyed.stream;
+/** Broadcast stream: Issued when some information about a target has changed. This only happens between
 `targetCreated` and `targetDestroyed`. */
-  dart_async.Stream get onTargetInfoChanged => _onTargetInfoChanged.stream;
+  dart_async.Stream<TargetTargetInfoChangedEvent> get onTargetInfoChanged =>
+      _onTargetInfoChanged.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Target.attachedToTarget', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Target.attachedToTarget',
+        (json_rpc_2.Parameters params) {
+      _onAttachedToTarget.add(new TargetAttachedToTargetEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Target.detachedFromTarget', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Target.detachedFromTarget',
+        (json_rpc_2.Parameters params) {
+      _onDetachedFromTarget
+          .add(new TargetDetachedFromTargetEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Target.receivedMessageFromTarget', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Target.receivedMessageFromTarget',
+        (json_rpc_2.Parameters params) {
+      _onReceivedMessageFromTarget
+          .add(new TargetReceivedMessageFromTargetEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Target.targetCreated', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Target.targetCreated', (json_rpc_2.Parameters params) {
+      _onTargetCreated.add(new TargetTargetCreatedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Target.targetDestroyed', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Target.targetDestroyed',
+        (json_rpc_2.Parameters params) {
+      _onTargetDestroyed.add(new TargetTargetDestroyedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Target.targetInfoChanged', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Target.targetInfoChanged',
+        (json_rpc_2.Parameters params) {
+      _onTargetInfoChanged.add(new TargetTargetInfoChangedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -10728,14 +14281,30 @@ issued multiple times per target if multiple sessions have been attached to it. 
   }
 }
 
+/// Fired on `Tethering.accepted`.
+class TetheringAcceptedEvent {
+  TetheringAcceptedEvent(Map map) {
+    port = map['port'];
+    connectionId = map['connectionId'];
+  }
+
+/** Port number that was successfully bound. */
+  int port;
+
+/** Connection id to be used. */
+  String connectionId;
+}
+
 class DevToolsTethering {
   DevToolsTethering(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onAccepted = new dart_async.StreamController();
+  dart_async.StreamController<TetheringAcceptedEvent> _onAccepted =
+      new dart_async.StreamController.broadcast();
 
 /** Request browser port binding. */
+/** port:[int] Port number to bind. */
   dart_async.Future bind({int port}) {
     var params = {};
     if (port != null) params['port'] = port;
@@ -10744,6 +14313,7 @@ class DevToolsTethering {
   }
 
 /** Request browser port unbinding. */
+/** port:[int] Port number to unbind. */
   dart_async.Future unbind({int port}) {
     var params = {};
     if (port != null) params['port'] = port;
@@ -10751,10 +14321,13 @@ class DevToolsTethering {
     return _devtools.rpc.sendRequest('Tethering.unbind', params);
   }
 
-/** Informs that port was successfully bound and got a specified connection id. */
-  dart_async.Stream get onAccepted => _onAccepted.stream;
+/** Broadcast stream: Informs that port was successfully bound and got a specified connection id. */
+  dart_async.Stream<TetheringAcceptedEvent> get onAccepted =>
+      _onAccepted.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod('Tethering.accepted', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Tethering.accepted', (json_rpc_2.Parameters params) {
+      _onAccepted.add(new TetheringAcceptedEvent(params.asMap));
+    });
   }
 
   void _close() {
@@ -10764,7 +14337,8 @@ class DevToolsTethering {
 
 class TracingGetCategoriesResponse {
   TracingGetCategoriesResponse(Map map) {
-    categories = map['categories'];
+    categories =
+        map.containsKey('categories') ? new List(map['categories']) : null;
   }
 
   List categories;
@@ -10781,19 +14355,63 @@ class TracingRequestMemoryDumpResponse {
   bool success;
 }
 
+/// Fired on `Tracing.bufferUsage`.
+class TracingBufferUsageEvent {
+  TracingBufferUsageEvent(Map map) {
+    percentFull = map['percentFull'];
+    eventCount = map['eventCount'];
+    value = map['value'];
+  }
+
+/** A number in range [0..1] that indicates the used size of event buffer as a fraction of its
+total size. */
+  num percentFull;
+
+/** An approximate number of events in the trace log. */
+  num eventCount;
+
+/** A number in range [0..1] that indicates the used size of event buffer as a fraction of its
+total size. */
+  num value;
+}
+
+/// Fired on `Tracing.dataCollected`.
+class TracingDataCollectedEvent {
+  TracingDataCollectedEvent(Map map) {
+    value = map.containsKey('value') ? new List(map['value']) : null;
+  }
+
+/**  */
+  List value;
+}
+
+/// Fired on `Tracing.tracingComplete`.
+class TracingTracingCompleteEvent {
+  TracingTracingCompleteEvent(Map map) {
+    stream = map['stream'];
+    streamCompression = map['streamCompression'];
+  }
+
+/** A handle of the stream that holds resulting trace data. */
+  String stream;
+
+/** Compression format of returned stream. */
+  String streamCompression;
+}
+
 class DevToolsTracing {
   DevToolsTracing(this._devtools);
 
   final ChromeDevToolsBase _devtools;
 
-  dart_async.StreamController _onBufferUsage =
-      new dart_async.StreamController();
+  dart_async.StreamController<TracingBufferUsageEvent> _onBufferUsage =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onDataCollected =
-      new dart_async.StreamController();
+  dart_async.StreamController<TracingDataCollectedEvent> _onDataCollected =
+      new dart_async.StreamController.broadcast();
 
-  dart_async.StreamController _onTracingComplete =
-      new dart_async.StreamController();
+  dart_async.StreamController<TracingTracingCompleteEvent> _onTracingComplete =
+      new dart_async.StreamController.broadcast();
 
 /** Stop trace events collection. */
   dart_async.Future end() {
@@ -10810,6 +14428,7 @@ class DevToolsTracing {
   }
 
 /** Record a clock sync marker in the trace. */
+/** syncId:[String] The ID of this clock sync marker */
   dart_async.Future recordClockSyncMarker({String syncId}) {
     var params = {};
     if (syncId != null) params['syncId'] = syncId;
@@ -10826,6 +14445,14 @@ class DevToolsTracing {
   }
 
 /** Start trace events collection. */
+/** categories:[String] Category/tag filter */
+/** options:[String] Tracing options */
+/** bufferUsageReportingInterval:[num] If set, the agent will issue bufferUsage events at this interval, specified in milliseconds */
+/** transferMode:[String] Whether to report trace events as series of dataCollected events or to save trace to a
+stream (defaults to `ReportEvents`). */
+/** streamCompression:[String] Compression format to use. This only applies when using `ReturnAsStream`
+transfer mode (defaults to `none`) */
+/** traceConfig:[TraceConfig]  */
   dart_async.Future start(
       {String categories,
       String options,
@@ -10851,23 +14478,30 @@ class DevToolsTracing {
     return _devtools.rpc.sendRequest('Tracing.start', params);
   }
 
-/**  */
-  dart_async.Stream get onBufferUsage => _onBufferUsage.stream;
-/** Contains an bucket of collected trace events. When tracing is stopped collected events will be
+/** Broadcast stream:  */
+  dart_async.Stream<TracingBufferUsageEvent> get onBufferUsage =>
+      _onBufferUsage.stream;
+/** Broadcast stream: Contains an bucket of collected trace events. When tracing is stopped collected events will be
 send as a sequence of dataCollected events followed by tracingComplete event. */
-  dart_async.Stream get onDataCollected => _onDataCollected.stream;
-/** Signals that tracing is stopped and there is no trace buffers pending flush, all data were
+  dart_async.Stream<TracingDataCollectedEvent> get onDataCollected =>
+      _onDataCollected.stream;
+/** Broadcast stream: Signals that tracing is stopped and there is no trace buffers pending flush, all data were
 delivered via dataCollected events. */
-  dart_async.Stream get onTracingComplete => _onTracingComplete.stream;
+  dart_async.Stream<TracingTracingCompleteEvent> get onTracingComplete =>
+      _onTracingComplete.stream;
   void listen(json_rpc_2.Peer rpc) {
-    rpc.registerMethod(
-        'Tracing.bufferUsage', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Tracing.bufferUsage', (json_rpc_2.Parameters params) {
+      _onBufferUsage.add(new TracingBufferUsageEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Tracing.dataCollected', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Tracing.dataCollected', (json_rpc_2.Parameters params) {
+      _onDataCollected.add(new TracingDataCollectedEvent(params.asMap));
+    });
 
-    rpc.registerMethod(
-        'Tracing.tracingComplete', (json_rpc_2.Parameters params) {});
+    rpc.registerMethod('Tracing.tracingComplete',
+        (json_rpc_2.Parameters params) {
+      _onTracingComplete.add(new TracingTracingCompleteEvent(params.asMap));
+    });
   }
 
   void _close() {

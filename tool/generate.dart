@@ -11,7 +11,6 @@ final ArgParser argParser = new ArgParser()
       help: 'The Git source tree to download the spec from.',
       defaultsTo: 'master');
 
-// TODO: Enum support
 main(List<String> args) async {
   try {
     var argResults = argParser.parse(args);
@@ -57,8 +56,8 @@ Future<Map> downloadSpec(String name, String tree) async {
 }
 
 void Function(FileBuilder) generateFromSpec(Map spec) {
-  return (builder) {
-    builder
+  return (fileBuilder) {
+    fileBuilder
       ..directives.addAll([
         new Directive.import(
           'dart:async',
@@ -90,7 +89,8 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
       // Map/generate all types
       if (domain.containsKey('types')) {
         for (Map type in domain['types']) {
-          d.types[type['id']] = mapToType(type, d, ctx, builder);
+          d.types[type['id']] =
+              stringifyType(mapToType(type, d, ctx, fileBuilder));
         }
       }
     }
@@ -104,34 +104,89 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
         var clazz = d.classes.removeLast();
         var spec = domain['types'].firstWhere((Map m) => m['id'] == clazz.name);
 
-        var updatedClazz = clazz.rebuild((builder) {
+        var updatedClazz = clazz.rebuild((classBuilder) {
           if (spec.containsKey('properties')) {
-            for (Map prop in spec['properties']) {
-              builder.fields.add(new Field((builder) {
-                builder
-                  ..name = dartEscape(prop['name'])
-                  ..docs.add('/** ${prop['description'] ?? ''} */')
-                  ..type = mapToReference(prop, d, ctx);
-              }));
-            }
+            // Generate constructor
+            classBuilder.constructors.add(new Constructor((b) {
+              b
+                ..requiredParameters.add(
+                  new Parameter((b) {
+                    b
+                      ..name = 'map'
+                      ..type = new Reference('Map');
+                  }),
+                )
+                ..body = new Block((b) {
+                  // Simultaneously, generate property fields
+                  for (Map prop in spec['properties']) {
+                    // Gen the field
+                    classBuilder.fields.add(new Field((fieldBuilder) {
+                      fieldBuilder
+                        ..name = dartEscape(prop['name'])
+                        ..docs.add('/** ${prop['description'] ?? ''} */')
+                        ..type = mapToReference(prop, d, ctx);
 
-            builder.methods.add(generateToJsonMethod(spec['properties']));
+                      // Add deserialization logic
+                      deserializeFrom(fieldBuilder.name, fieldBuilder.type,
+                          'map', d, b, ctx);
+
+                      // Generate enum, if any
+                      if (prop.containsKey('enum')) {
+                        fileBuilder.body.add(new Class((b) {
+                          b
+                            ..name = '${d.name}${classBuilder.name}'
+                                '${new ReCase(fieldBuilder.name).pascalCase}'
+                                'Enum'
+                            ..abstract = true
+                            ..docs.add('/// All possible values of '
+                                '${d.name}.${spec['id']}.${prop['name']}.');
+
+                          for (var value in prop['enum']) {
+                            if (value is String) {
+                              var rc = new ReCase(value);
+                              b.fields.add(
+                                new Field((b) {
+                                  b
+                                    ..name = dartEscape(rc.camelCase)
+                                    ..static = true
+                                    ..modifier = FieldModifier.constant
+                                    ..assignment = new Code("'$value'");
+                                }),
+                              );
+                            }
+                          }
+                        }));
+                      }
+                    }));
+                  }
+                });
+            }));
+          } else {
+            // Generate default constructor
+            classBuilder.constructors.add(new Constructor((b) {
+              b.requiredParameters.add(
+                new Parameter((b) {
+                  b..name = '_';
+                }),
+              );
+            }));
           }
         });
 
-        builder.body
+        fileBuilder.body
           ..remove(clazz)
           ..add(updatedClazz);
       }
 
       if (domain.containsKey('types')) {
         for (Map type in domain['types']) {
-          d.types[type['id']] = mapToType(type, d, ctx, builder);
+          d.types[type['id']] =
+              stringifyType(mapToType(type, d, ctx, fileBuilder));
         }
       }
     }
 
-    builder.body.add(generateMixinClass(ctx, builder));
+    fileBuilder.body.add(generateMixinClass(ctx, fileBuilder));
   };
 }
 
@@ -234,10 +289,15 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
         if (domain.containsKey('commands')) {
           for (Map command in domain['commands']) {
             classBuilder.methods.add(new Method((b) {
+              b.docs.add('/** ${command['description'] ?? ''} */');
+
               // Add all parameters
               if (command.containsKey('parameters')) {
                 for (Map parameter in command['parameters']) {
-                  // TODO: Add docs for each parameter
+                  b.docs.add('/** ${parameter['name']}:'
+                      '[${mapToReference(parameter, d, ctx).symbol}]'
+                      ' ${parameter['description'] ?? ''} */');
+
                   b.optionalParameters.add(new Parameter((b) {
                     b
                       ..named = true
@@ -252,7 +312,7 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
               String responseClassName;
 
               if (command['returns'] is List) {
-                // TODO: Build response class
+                // Build response class
                 var rc = new ReCase(command['name']);
                 responseClassName = '${d.name}${rc.pascalCase}Response';
 
@@ -262,11 +322,13 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                     b..name = responseClassName;
 
                     // Add all fields
+                    Map<String, Reference> types = {};
                     for (Map spec in command['returns']) {
                       b.fields.add(new Field((b) {
                         b
                           ..name = spec['name']
-                          ..type = mapToReference(spec, d, ctx);
+                          ..type = types[spec['name']] =
+                              mapToReference(spec, d, ctx);
                       }));
                     }
 
@@ -284,9 +346,8 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                           // Apply all fields
                           for (Map spec in command['returns']) {
                             var name = spec['name'];
-                            // TODO: Check if the target type needs to be deserialized
-                            // TODO: Check if the target type is a List of deserializing-necessary objects
-                            b.statements.add(new Code("$name = map['$name'];"));
+                            var type = types[name];
+                            deserializeFrom(name, type, 'map', d, b, ctx);
                           }
                         });
                     }));
@@ -302,7 +363,6 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
 
               b
                 ..name = command['name']
-                ..docs.add('/** ${command['description'] ?? ''} */')
                 ..returns = returnType ?? new Reference('dart_async.Future')
                 ..body = new Block((b) {
                   b.statements.add(new Code('var params = {};'));
@@ -353,18 +413,57 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
           b.body = new Block((b) {
             if (domain.containsKey('events')) {
               for (Map event in domain['events']) {
-                // TODO: Create an event type
                 var rc = new ReCase(event['name']);
                 var name = 'on' + rc.pascalCase;
+
+                // Create an event type
+                var eventTypeName = '${d.name}${rc.pascalCase}Event';
+                fileBuilder.body.add(new Class((eventTypeBuilder) {
+                  eventTypeBuilder
+                    ..name = eventTypeName
+                    ..docs.add('/// Fired on `${d.name}.${event['name']}`.')
+                    ..constructors.add(new Constructor((b) {
+                      b
+                        ..requiredParameters.add(
+                          new Parameter((b) {
+                            b
+                              ..name = 'map'
+                              ..type = new Reference('Map');
+                          }),
+                        )
+                        ..body = new Block((b) {
+                          if (event.containsKey('parameters')) {
+                            for (Map parameter in event['parameters']) {
+                              // Create a field from each parameter
+                              eventTypeBuilder.fields.add(new Field((f) {
+                                f
+                                  ..name = parameter['name']
+                                  ..docs.add('/** ${parameter['description'] ??
+                                      ''} */')
+                                  ..type = mapToReference(parameter, d, ctx);
+
+                                // ... And finally, deserialization logic for the event type.
+                                deserializeFrom(
+                                    f.name, f.type, 'map', d, b, ctx);
+                              }));
+                            }
+                          }
+                        });
+                    }));
+                }));
 
                 // Create a StreamController
                 classBuilder.fields.add(
                   new Field((b) {
                     b
                       ..name = '_$name'
-                      ..type = new Reference('dart_async.StreamController')
-                      ..assignment =
-                          new Code('new dart_async.StreamController()');
+                      ..type = new TypeReference((b) {
+                        b.symbol = 'dart_async.StreamController';
+                        if (eventTypeName != null)
+                          b.types.add(new Reference(eventTypeName));
+                      })
+                      ..assignment = new Code(
+                          'new dart_async.StreamController.broadcast()');
                   }),
                 );
 
@@ -373,9 +472,14 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                   new Method((b) {
                     b
                       ..name = name
-                      ..docs.add('/** ${event['description'] ?? ''} */')
+                      ..docs.add('/** Broadcast stream:'
+                          ' ${event['description'] ?? ''} */')
                       ..type = MethodType.getter
-                      ..returns = new Reference('dart_async.Stream')
+                      ..returns = new TypeReference((b) {
+                        b.symbol = 'dart_async.Stream';
+                        if (eventTypeName != null)
+                          b.types.add(new Reference(eventTypeName));
+                      })
                       ..lambda = true
                       ..body = new Code('_${name}.stream');
                   }),
@@ -387,6 +491,7 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                 buf.writeln("rpc.registerMethod("
                     "'${d
                     .name}.${event['name']}', (json_rpc_2.Parameters params) {");
+                buf.writeln('_$name.add(new $eventTypeName(params.asMap));');
                 buf.writeln("});");
                 b.statements.add(new Code(buf.toString()));
               }
@@ -423,38 +528,68 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
   });
 }
 
+Reference deserializeFrom(
+    name, Reference type, String map, Domain d, BlockBuilder b, Ctx ctx) {
+  if (type is TypeReference) {
+    if (type.symbol == 'List') {
+      var refType = type.types[0];
+      var ref = deserializeFrom(name, refType, map, d, null, ctx);
+
+      if (ref is TypeReference) {
+        b?.statements?.add(new Code("$name = $map.containsKey('$name')"
+            " ? $map['$name'].map((m) => new ${ref.symbol}(m)).toList()"
+            " : null;"));
+      } else {
+        // This is a normal list!
+        b?.statements?.add(new Code("$name = $map['$name'];"));
+      }
+
+      return type;
+    }
+
+    // AFAIK, the target type will NEVER a Map<String,T> of deserializing-necessary objects.
+    else {
+      throw new UnsupportedError(
+          'Unsupported type for $name on PODO ${d.name}: ${type.symbol}');
+    }
+  } else {
+    if (const [
+      'String',
+      'int',
+      'double',
+      'num',
+      'bool',
+      'Null',
+      'dynamic',
+      'Object',
+      'Map<String, dynamic>'
+    ].contains(type.symbol)) {
+      b?.statements?.add(new Code("$name = $map['$name'];"));
+      return type;
+    } else {
+      // Initialize a reference class
+      b?.statements?.add(new Code("$name = $map.containsKey('$name')"
+          " ? new ${type.symbol}($map['$name'])"
+          " : null;"));
+      return new TypeReference((b) {
+        b..symbol = type.symbol;
+      });
+    }
+  }
+}
+
 Reference mapToReference(Map prop, Domain d, Ctx ctx) {
   if (prop['\$ref'] is String)
     return new Reference(ctx.resolveType(prop['\$ref'], d));
   else if (prop['type'] is String && prop['type'] != 'object') {
-    var resolved = mapToType(prop, d, ctx, null);
-    return new Reference(resolved);
+    return mapToType(prop, d, ctx, null);
   } else if (prop['type'] == 'object') {
-    // TODO: Figure out how to get these into Maps
-    return new Reference('Map');
+    // Anything that reaches this point is a "dictionary" of sorts.
+    // Don't return a `TypeReference` because those are handled specially.
+    return new Reference('Map<String, dynamic>');
   }
 
   throw new UnsupportedError(prop.toString());
-}
-
-Method generateFromJsonMethod(List<Map> props) {
-  // TODO: fromJson
-  return new Method((b) {
-    var buf = new StringBuffer('return {');
-
-    for (int i = 0; i < props.length; i++) {
-      if (i > 0) buf.write(', ');
-      var name = props[i]['name'];
-      buf.write('"$name": $name');
-    }
-
-    buf.write('};');
-
-    b
-      ..name = 'toJson'
-      ..returns = new Reference('Map<String, dynamic>')
-      ..body = new Code(buf.toString());
-  });
 }
 
 Method generateToJsonMethod(List<Map> props) {
@@ -476,29 +611,33 @@ Method generateToJsonMethod(List<Map> props) {
   });
 }
 
-String mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
+Reference mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
   switch (spec['type']) {
     case 'string':
-      return 'String';
+      return new Reference('String');
     case 'integer':
-      return 'int';
+      return new Reference('int');
     case 'number':
-      return 'num';
+      return new Reference('num');
     case 'boolean':
-      return 'bool';
+      return new Reference('bool');
     case 'any':
-      return 'Object';
+      return new Reference('Object');
     case 'array':
       if (spec.containsKey('items') && spec['items']['\$ref'] is String) {
         var refType = ctx.resolveType(spec['items']['\$ref'], domain);
-        return 'List<$refType>';
+        return new TypeReference((b) {
+          b
+            ..symbol = 'List'
+            ..types.add(new Reference(refType));
+        });
       }
 
-      return 'List';
+      return new Reference('List');
     case 'object':
       break;
     default:
-      throw 'Unsupported type: ${spec['type']}';
+      throw 'Unsupported type: ${spec['type']} from $spec';
       break;
   }
 
@@ -515,7 +654,7 @@ String mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
     fileBuilder.body.add(clazz);
   }
 
-  return className;
+  return new Reference(className);
 }
 
 String commentify(String s) {
@@ -539,9 +678,20 @@ String dartEscape(String s) {
     'else',
     'switch',
     'case',
-    'default'
+    'default',
+    'break',
+    'var',
+    'final',
+    'new',
+    'with',
+    'catch',
+    'null',
   ].contains(s)) return '\$$s';
   return s;
+}
+
+String stringifyType(Reference ref) {
+  return ref.accept(new DartEmitter()).toString();
 }
 
 class Ctx {
@@ -550,7 +700,8 @@ class Ctx {
 
   String resolveType(String name, Domain currentDomain) {
     if (const ['string', 'integer', 'number', 'boolean', 'any'].contains(name))
-      return mapToType({'type': name}, currentDomain, this, null);
+      return stringifyType(
+          mapToType({'type': name}, currentDomain, this, null));
 
     if (!name.contains('.')) return currentDomain.types[name];
     var split = name.split('.');

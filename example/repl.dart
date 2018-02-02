@@ -1,20 +1,29 @@
 import 'dart:io';
 import 'package:google_chrome/google_chrome.dart';
 
-// TODO: Hangs forever
 main() async {
-  var repl = new ChromeRepl();
-  await repl.start();
+  var chrome = new Chrome();
 
-  stdout.write('> ');
-  String line;
+  try {
+    await chrome.start();
+    await chrome.runtime.enable();
 
-  while ((line = stdin.readLineSync()) != 'quit') {
-    var result = await repl.eval(line);
-    print('Yup: $result');
     stdout.write('> ');
-  }
+    String line;
 
-  await repl.kill();
-  await repl.exitCode;
+    while ((line = stdin.readLineSync()) != 'quit') {
+      var remoteObject = await chrome.runtime.evaluate(expression: line);
+
+      if (remoteObject.exceptionDetails != null) {
+        stderr.writeln(remoteObject.exceptionDetails.exception.description);
+      } else {
+        var result = remoteObject.result.value;
+        print(result ?? 'undefined');
+      }
+
+      stdout.write('> ');
+    }
+  } finally {
+    await chrome.close();
+  }
 }
