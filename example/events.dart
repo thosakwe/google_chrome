@@ -16,7 +16,7 @@ main() async {
     await chrome.runtime.enable();
 
     // Use a `StreamQueue` to sequentially await events on-demand.
-    var onLoad = new StreamQueue(chrome.page.onLoadEventFired);
+    var onLoad = new StreamQueue(chrome.page.onDomContentEventFired);
 
     // Change the page.
     await chrome.page.navigate(url: 'https://pub.dartlang.org');

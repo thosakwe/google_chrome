@@ -1,13 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:async/async.dart';
 import 'package:google_chrome/google_chrome.dart';
 import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc_2;
-import 'pretty_logging.dart';
 
 main() async {
   var chrome = new Chrome();
-  chrome.logger.onRecord.listen(prettyLog);
+  //chrome.logger.onRecord.listen(prettyLog);
 
   try {
     await chrome.start();
@@ -18,18 +14,21 @@ main() async {
     await chrome.dom.enable();
     await chrome.runtime.enable();
 
-    var onLoad = new StreamQueue(chrome.page.onDomContentEventFired);
-
     // Surf to a URL...
-    await chrome.page.navigate(url: 'https://wren.io');
-    await onLoad.next;
+    var angelDartPage =
+        await chrome.page.navigate(url: 'https://angel-dart.github.io');
+
+    // Wait specifically for our page to load.
+    await for (var info in chrome.page.onFrameStoppedLoading) {
+      if (info.frameId == angelDartPage.frameId) break;
+    }
 
     // Get a reference to window.document so that we can run querySelectorAll()
     var document = await chrome.dom.getDocument();
 
-    // Print the contents of the document
-    var contents = await chrome.dom.getOuterHTML(nodeId: document.root.nodeId);
-    print(contents.outerHTML);
+    // Fetch the contents of the document
+    // var contents = await chrome.dom.getOuterHTML(nodeId: document.root.nodeId);
+    //print(contents.outerHTML);
 
     // We need to pass a reference to the target element to run a querySelectorAll.
     // In this case, we point to document.body
@@ -38,9 +37,24 @@ main() async {
       selector: 'link[rel="stylesheet"]',
     );
 
+    // Loop through each node
     for (var id in styleSheets.nodeIds) {
-      var stylesheet = await chrome.dom.resolveNode(nodeId: id);
-      print(stylesheet.object.description);
+      // Fetch attributes
+      var attributes = await chrome.dom.getAttributes(nodeId: id);
+
+      // Chrome sends attributes as [name1, value1, ...]
+      // So use an iterator to imperatively read them.
+      var it = attributes.attributes.iterator;
+
+      while (it.moveNext()) {
+        String name = it.current;
+        it.moveNext();
+
+        if (name == 'href') {
+          print('Found stylesheet: ${it.current}');
+          break;
+        }
+      }
     }
   } on json_rpc_2.RpcException catch (e) {
     throw new ArgumentError(e.data);
