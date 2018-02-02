@@ -8,7 +8,7 @@ main() async {
     await chrome.start();
     await chrome.runtime.enable();
 
-    stdout.write('> ');
+    stdout.write('chrome> ');
     String line;
 
     while ((line = stdin.readLineSync()) != 'quit') {
@@ -21,7 +21,7 @@ main() async {
         print(result ?? 'undefined');
       }
 
-      stdout.write('> ');
+      stdout.write('chrome> ');
     }
   } finally {
     await chrome.close();

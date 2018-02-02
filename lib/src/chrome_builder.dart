@@ -33,6 +33,9 @@ class ChromeBuilder {
   /// Create a PDF of the page.
   ChromeBuilder printToPdf() => add('--print-to-pdf');
 
+  /// Directory where the browser stores the user profile.
+  ChromeBuilder userDataDir(String dir) => add('--user-data-dir=$dir');
+
   /// Take a screenshot.
   ChromeBuilder screenshot() => add('--screenshot');
 

@@ -40,9 +40,9 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
 
   Future close() async {
     httpClient.close(force: true);
-    await _sub.cancel();
-    await _rpc.close();
-    await _websocket.close();
+    await _sub?.cancel();
+    await _rpc?.close();
+    await _websocket?.close();
     await super.close();
   }
 

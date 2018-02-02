@@ -39,10 +39,12 @@ class Chrome extends ChromeDevToolsBaseClient {
       } else if (Platform.isWindows) {
         // Discern Windows version
         // https://kingluddite.com/uncategorized/where-does-the-chrome-browser-install-itself-on-windows-7
-        var username = Platform.environment['USERNAME'];
-        var ver = await Process.run('ver', []);
+        //var username = Platform.environment['USERNAME'];
+        //var ver = await Process.run('ver', []);
         String chromeDir;
-        String versionString = await ver.stdout.transform(UTF8.decoder).join();
+
+        /*
+        String versionString = '';// await ver.stdout.transform(UTF8.decoder).join();
 
         if (versionString.contains('XP')) {
           //  C:\Documents and Settings\UserName\Local Settings\ApplicationData\GoogleChrome
@@ -65,18 +67,16 @@ class Chrome extends ChromeDevToolsBaseClient {
             'GoogleChrome',
           );
         } else {
-          // \Users\[you]\AppData\Local\Google\Chrome\Application
+          */
+          // \pgx86\Google\Chrome\Application
           chromeDir = p.join(
             'C:',
-            'Users',
-            username,
-            'AppData',
-            'Local',
+            'Program Files (x86)',
             'Google',
             'Chrome',
             'Application',
           );
-        }
+        //}
 
         chromePath = p.join(chromeDir, 'chrome.exe');
       } else {

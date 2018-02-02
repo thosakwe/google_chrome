@@ -7,6 +7,10 @@ Built against
 of the
 [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol).
 
+Tested on:
+* MacOS Sierra
+* Windows 10
+
 Possibilities include:
 * Server-side rendering
 * JavaScript sandbox with ES6 support (though it has high memory use)
