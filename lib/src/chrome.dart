@@ -143,7 +143,7 @@ class Chrome extends ChromeDevToolsBaseClient {
 
   @override
   Future close() async {
-    await _directory?.delete(recursive: true);
+    await _directory?.delete(recursive: true)?.catchError((_) => null);
     _process?.kill();
     return await super.close();
   }
