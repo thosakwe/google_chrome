@@ -60,7 +60,6 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
     return new ChromeTabInfo(json);
   }
 
-
   Future waitMs(int ms) {
     return new Future.delayed(new Duration(milliseconds: ms));
   }

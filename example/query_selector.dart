@@ -1,4 +1,5 @@
 import 'package:google_chrome/google_chrome.dart';
+import 'package:google_chrome/spec.dart';
 import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc_2;
 
 main() async {
