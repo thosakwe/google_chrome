@@ -112,7 +112,7 @@ class Chrome extends ChromeDevToolsBaseClient {
 
     var sub = err.split().listen(null);
     var lines = new SubscriptionStream(sub)
-        .transform(UTF8.decoder)
+        .transform(utf8.decoder)
         .transform(const LineSplitter());
     var queue = new StreamQueue(lines);
 
@@ -128,8 +128,8 @@ class Chrome extends ChromeDevToolsBaseClient {
             'GET', browserDevUri.replace(scheme: 'http', path: '/json'));
         var rs = await rq.close();
         var schema =
-            await rs.transform(UTF8.decoder).join().then(JSON.decode) as List;
-        var wsDebuggerUrl = Uri.parse(schema[0]['webSocketDebuggerUrl']);
+            await rs.transform(utf8.decoder).join().then(json.decode) as List;
+        var wsDebuggerUrl = Uri.parse(schema[0]['webSocketDebuggerUrl'] as String);
         await connect(wsDebuggerUrl);
         queue.cancel();
         sub.cancel();

@@ -25,7 +25,7 @@ main() async {
 
     // Easily save a screenshot of the current page!
     var screenshot = await chrome.page.captureScreenshot(format: 'png');
-    var imgData = BASE64.decode(screenshot.data);
+    var imgData = base64.decode(screenshot.data);
     await new File('screenshot.png').writeAsBytes(imgData);
     print('Saved to screenshot.png!');
   } finally {

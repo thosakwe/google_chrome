@@ -22,14 +22,14 @@ main(List<String> args) async {
       var browser = await downloadSpec('browser', tree);
       var js = await downloadSpec('js', tree);
       browser['domains'].insertAll(0, js['domains']);
-      await specFile.writeAsString(JSON.encode(browser));
+      await specFile.writeAsString(json.encode(browser));
     }
 
     specContents = await specFile.readAsString();
-    var spec = JSON.decode(specContents);
-    var file = new File(generateFromSpec(spec));
+    var spec = json.decode(specContents);
+    var lib = new Library(generateFromSpec(spec));
     var emitter = new DartEmitter();
-    var dart = file.accept(emitter).toString();
+    var dart = lib.accept(emitter).toString();
 
     try {
       dart = new DartFormatter().format(dart);
@@ -52,12 +52,12 @@ Future<Map> downloadSpec(String name, String tree) async {
   var rq = await client.openUrl('GET', Uri.parse(url));
   var rs = await rq.close();
   await client.close();
-  return (await rs.transform(UTF8.decoder).join().then(JSON.decode)) as Map;
+  return (await rs.transform(utf8.decoder).join().then(json.decode)) as Map;
 }
 
-void Function(FileBuilder) generateFromSpec(Map spec) {
-  return (fileBuilder) {
-    fileBuilder
+void Function(LibraryBuilder) generateFromSpec(Map spec) {
+  return (lib) {
+    lib
       ..directives.addAll([
         new Directive.import(
           'dart:async',
@@ -89,8 +89,7 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
       // Map/generate all types
       if (domain.containsKey('types')) {
         for (Map type in domain['types']) {
-          d.types[type['id']] =
-              stringifyType(mapToType(type, d, ctx, fileBuilder));
+          d.types[type['id']] = stringifyType(mapToType(type, d, ctx, lib));
         }
       }
     }
@@ -132,7 +131,7 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
 
                       // Generate enum, if any
                       if (prop.containsKey('enum')) {
-                        fileBuilder.body.add(new Class((b) {
+                        lib.body.add(new Class((b) {
                           b
                             ..name = '${d.name}${classBuilder.name}'
                                 '${new ReCase(fieldBuilder.name).pascalCase}'
@@ -173,20 +172,19 @@ void Function(FileBuilder) generateFromSpec(Map spec) {
           }
         });
 
-        fileBuilder.body
+        lib.body
           ..remove(clazz)
           ..add(updatedClazz);
       }
 
       if (domain.containsKey('types')) {
         for (Map type in domain['types']) {
-          d.types[type['id']] =
-              stringifyType(mapToType(type, d, ctx, fileBuilder));
+          d.types[type['id']] = stringifyType(mapToType(type, d, ctx, lib));
         }
       }
     }
 
-    fileBuilder.body.add(generateMixinClass(ctx, fileBuilder));
+    lib.body.add(generateMixinClass(ctx, lib));
   };
 }
 
@@ -200,7 +198,7 @@ Class generateDomainClass(Map domain) {
 const String chromeDevToolsBase = 'ChromeDevToolsBase';
 final RegExp _caps = new RegExp(r'^[A-Z]+$');
 
-Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
+Class generateMixinClass(Ctx ctx, LibraryBuilder lib) {
   return new Class((mixinBuilder) {
     List<Code> assignments = [];
 
@@ -241,7 +239,7 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
 
       // Generate a class for each domain.
       // It has one final field which points to the mixin.
-      fileBuilder.body.add(new Class((classBuilder) {
+      lib.body.add(new Class((classBuilder) {
         classBuilder
           ..name = 'DevTools${d.name}'
           ..fields.add(new Field((builder) {
@@ -318,7 +316,7 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
 
                 if (!ctx.createdClasses.contains(responseClassName)) {
                   ctx.createdClasses.add(responseClassName);
-                  fileBuilder.body.add(new Class((b) {
+                  lib.body.add(new Class((b) {
                     b..name = responseClassName;
 
                     // Add all fields
@@ -379,8 +377,9 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                   }
 
                   var buf = new StringBuffer();
-                  buf..write("return _devtools.rpc.sendRequest('${d
-                        .name}.${command['name']}', params)");
+                  buf
+                    ..write(
+                        "return _devtools.rpc.sendRequest('${d.name}.${command['name']}', params)");
 
                   if (responseClassName != null) {
                     // We need to deserialize this
@@ -418,7 +417,7 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
 
                 // Create an event type
                 var eventTypeName = '${d.name}${rc.pascalCase}Event';
-                fileBuilder.body.add(new Class((eventTypeBuilder) {
+                lib.body.add(new Class((eventTypeBuilder) {
                   eventTypeBuilder
                     ..name = eventTypeName
                     ..docs.add('/// Fired on `${d.name}.${event['name']}`.')
@@ -438,8 +437,8 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
                               eventTypeBuilder.fields.add(new Field((f) {
                                 f
                                   ..name = parameter['name']
-                                  ..docs.add('/** ${parameter['description'] ??
-                                      ''} */')
+                                  ..docs.add(
+                                      '/** ${parameter['description'] ?? ''} */')
                                   ..type = mapToReference(parameter, d, ctx);
 
                                 // ... And finally, deserialization logic for the event type.
@@ -489,8 +488,7 @@ Class generateMixinClass(Ctx ctx, FileBuilder fileBuilder) {
 
                 var buf = new StringBuffer();
                 buf.writeln("rpc.registerMethod("
-                    "'${d
-                    .name}.${event['name']}', (json_rpc_2.Parameters params) {");
+                    "'${d.name}.${event['name']}', (json_rpc_2.Parameters params) {");
                 buf.writeln('_$name.add(new $eventTypeName(params.asMap));');
                 buf.writeln("});");
                 b.statements.add(new Code(buf.toString()));
@@ -612,9 +610,16 @@ Method generateToJsonMethod(List<Map> props) {
   });
 }
 
-const List<String> restrictedNames = const ['List', 'Map', 'String', 'int', 'double', 'bool'];
+const List<String> restrictedNames = const [
+  'List',
+  'Map',
+  'String',
+  'int',
+  'double',
+  'bool'
+];
 
-Reference mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
+Reference mapToType(Map spec, Domain domain, Ctx ctx, LibraryBuilder lib) {
   switch (spec['type']) {
     case 'string':
       return new Reference('String');
@@ -646,8 +651,7 @@ Reference mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
 
   var id = spec['id'];
 
-  if (restrictedNames.contains(id))
-    id = '\$$id';
+  if (restrictedNames.contains(id)) id = '\$$id';
 
   var rc = new ReCase(id);
   var className = rc.pascalCase;
@@ -659,7 +663,7 @@ Reference mapToType(Map spec, Domain domain, Ctx ctx, FileBuilder fileBuilder) {
       builder.docs.add('/** ${spec['description'] ?? ''} */');
     });
     domain.classes.add(clazz);
-    fileBuilder.body.add(clazz);
+    lib.body.add(clazz);
   }
 
   return new Reference(className);

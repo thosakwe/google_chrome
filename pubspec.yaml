@@ -1,10 +1,13 @@
-name: "google_chrome"
+name: google_chrome
+environment:
+  sdk: ">=2.0.0-dev <3.0.0"
 dependencies: 
-  http: "^0.11.3"
+  http: ^0.11.3
 dev_dependencies: 
-  args: "^1.0.0"
-  code_builder: "^2.0.0"
-  console: "^2.2.4"
-  json_rpc_2: "^2.0.0"
-  recase: "^1.0.0"
-  web_socket_channel: "^1.0.0"
+  args: ^1.0.0
+  code_builder: ^3.0.0
+  console: ^3.0.0
+  dart_style: ^1.0.0
+  json_rpc_2: ^2.0.0
+  recase: ^2.0.0
+  web_socket_channel: ^1.0.0

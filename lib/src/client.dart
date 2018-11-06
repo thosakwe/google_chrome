@@ -49,15 +49,16 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
   Future<List<ChromeTabInfo>> listTabs() async {
     var rq = await httpClient.openUrl('GET', httpRoot.resolve('json/list'));
     var rs = await rq.close();
-    var json = await rs.transform(UTF8.decoder).transform(JSON.decoder).first as List;
-    return json.map((m) => new ChromeTabInfo(m)).toList();
+    var jsons =
+        await rs.transform(utf8.decoder).transform(json.decoder).first as List;
+    return jsons.map((m) => new ChromeTabInfo(m as Map)).toList();
   }
 
   Future<ChromeTabInfo> newTab() async {
     var rq = await httpClient.openUrl('POST', httpRoot.resolve('json/new'));
     var rs = await rq.close();
-    var json = await rs.transform(UTF8.decoder).transform(JSON.decoder).first;
-    return new ChromeTabInfo(json);
+    var jsons = await rs.transform(utf8.decoder).transform(json.decoder).first;
+    return new ChromeTabInfo(jsons as Map);
   }
 
   Future waitMs(int ms) {
@@ -76,7 +77,7 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
   /// Listens for arbitrary RPC events fired from Chrome.
   Stream<json_rpc_2.Parameters> on(String eventName) {
     return _controllers.putIfAbsent(eventName, () {
-      var ctrl = new StreamController.broadcast();
+      var ctrl = new StreamController<json_rpc_2.Parameters>.broadcast();
       _rpc.registerMethod(eventName, ctrl.add);
       return ctrl;
     }).stream;
@@ -94,8 +95,8 @@ class ChromeDevToolsBaseClient extends ChromeDevToolsBase {
 
     _sub = _websocket.listen((data) {
       logger.info('IN: $data');
-      var valid = _ensureJsonRpc(JSON.decode(data));
-      _ctrl.local.sink.add(JSON.encode(valid));
+      var valid = _ensureJsonRpc(json.decode(data as String));
+      _ctrl.local.sink.add(json.encode(valid));
     });
 
     listen();
